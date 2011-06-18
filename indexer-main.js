@@ -6,11 +6,46 @@ if (require.main !== module)
 // ---------------------------------------
 
 var printf = require ("printf");
-var util = require ("util");
+var timers = require ("timers");
 
+var configuration = require ("./configuration");
 var indexer = require ("./indexer-lib");
+var queue = require ("./queue-lib");
 var store = require ("./store-lib");
 var transcript = require ("./transcript") (module, "warning");
+
+// ---------------------------------------
+
+function _onIndexTaskMessage (_context, _message, _callback) {
+	var _url = _message.url;
+	var _urlClass = _message.urlClass;
+	var _data = _message.data;
+	if ((_url === undefined) || (_urlClass === undefined) || (_data === undefined)) {
+		transcript.traceWarningObject ("received invalid urgent index message; ignoring!", _message);
+		_callback ();
+		return;
+	}
+	_onIndexTask (_context, _url, _urlClass, _data, _callback);
+}
+
+function _onIndexTask (_context, _url, _urlClass, _data, _callback) {
+	transcript.traceInformation ("indexing `%s` (`%s`)...", _url, _urlClass);
+	indexer.indexData (_url, _data, _context,
+			function (_error, _outcome) {
+				if (_error !== null)
+					transcript.traceWarning ("failed indexing `%s`; ignoring!", _url);
+				else
+					_onIndexTaskSucceeded (_context, _url, _urlClass, _outcome);
+				_callback ();
+			});
+}
+
+function _onIndexTaskSucceeded (_context, _url, _urlClass, _outcome) {
+	if (_outcome.currentData != _outcome.previousData)
+		transcript.traceInformation ("succeeded indexing `%s` (new data found); sending index task...", _url);
+	else
+		transcript.traceInformation ("succeeded indexing `%s` (no new data found)", _url);
+}
 
 // ---------------------------------------
 
@@ -22,30 +57,45 @@ function _main () {
 		return;
 	}
 	
-	var _context = {
-		riak : store.createConnector ("127.0.0.1", 24637)
-	};
+	var _context = {};
+	_context.riak = store.createConnector (configuration.riak);
+	_context.rabbit = queue.createConnector (configuration.rabbit);
 	
-	function _callback (_url, _error, _outcome) {
-		if (_error !== null)
-			transcript.traceErrorObject ("failed indexing `%s`", _url, _error);
-		else
-			if (_outcome.items !== null) {
-				transcript.traceInformation ("succeeded indexing `%s` (new items found)", _url);
-				for (var _itemIndex in _outcome.items) {
-					var _item = _outcome.items[_itemIndex];
-					transcript.traceOutput ("%s", _item.title);
-				}
-			} else
-				transcript.traceInformation ("succeeded indexing `%s` (no new items found)", _url);
-	}
+	_context.rabbit.on ("ready",
+			function () {
+				
+				transcript.traceInformation ("indexer initializing...");
+				
+				_context.indexUrgentConsumer = _context.rabbit.createConsumer (
+						{noAck : true}, configuration.indexTaskUrgentQueue, configuration.indexTaskUrgentBinding, configuration.indexTaskExchange);
+				_context.indexUrgentConsumer.on ("consume",
+						function (_message, _headers) {
+							if (_message.urlClass === undefined)
+								_message.urlClass = "urgent";
+							_onIndexTaskMessage (_context, _message,
+									function () {
+										_context.indexUrgentConsumer.acknowledge ();
+									});
+						});
+				
+				_context.indexBatchConsumer = _context.rabbit.createConsumer (
+						{noAck : true}, configuration.indexTaskBatchQueue, configuration.indexTaskBatchBinding, configuration.indexTaskExchange);
+				_context.indexBatchConsumer.on ("consume",
+						function (_message, _headers) {
+							if (_message.urlClass === undefined)
+								_message.urlClass = "batch";
+							_onIndexTaskMessage (_context, _message,
+									function () {
+										_context.indexBatchConsumer.acknowledge ();
+									});
+						});
+			});
 	
-	function _index (_url) {
-		indexer.indexUrl (_url, _context, function (_error, _outcome) { _callback (_url, _error, _outcome); });
-	}
-	
-	_index ("http://search.twitter.com/search.atom?q=%23nextfriday");
-	_index ("http://search.twitter.com/search.atom?q=%23somebodytellmewhy");
+	_context.rabbit.on ("error",
+			function (_error) {
+				transcript.traceErrorObject (_error);
+				process.exit (1);
+			});
 }
 
 _main ();

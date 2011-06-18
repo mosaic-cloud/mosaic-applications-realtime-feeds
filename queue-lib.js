@@ -1,5 +1,10 @@
 // ---------------------------------------
 
+if (require.main === module)
+	throw (new Error ());
+
+// ---------------------------------------
+
 var amqp = require ("amqp");
 var events = require ("events");
 var sys = require ("sys");
@@ -23,7 +28,7 @@ Connector.prototype.createConsumer = function (_consumerConfiguration, _queueCon
 	if (_consumerConfiguration === null)
 		_consumerConfiguration = {ack : false};
 	else if (typeof (_consumerConfiguration) === "boolean")
-		_consumerConfiguration = {ack : _consumerConfiguration};
+		_consumerConfiguration = {noAck : _consumerConfiguration};
 	else if (typeof (_consumerConfiguration) !== "object")
 		throw (new Error ("consumer configuration is mandatory either a boolean or a dictionary"));
 	
@@ -139,10 +144,13 @@ Connector.prototype.createPublisher = function (_publisherConfiguration, _exchan
 		if (!_publisher._ready)
 			throw (new Error ("publisher not ready"));
 		if (_routingKey === undefined)
-			_routingKey = "";
+			_routingKey = _publisher._publisherConfiguration.routingKey;
+		if (typeof (_routingKey) != "string")
+			throw (new Error ("routing key is mandatory a string"));
 		var _mergedOptions = {};
-		for (var _optionName in _options)
-			_mergedOptions[_optionName] = _options[_optionName];
+		if (_options !== undefined)
+			for (var _optionName in _options)
+				_mergedOptions[_optionName] = _options[_optionName];
 		for (var _optionName in _publisher._publisherConfiguration)
 			if (_mergedOptions[_optionName] === undefined)
 				_mergedOptions[_optionName] = _publisher._publisherConfiguration[_optionName];

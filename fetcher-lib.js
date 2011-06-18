@@ -5,14 +5,11 @@ if (require.main === module)
 
 // ---------------------------------------
 
-var _fetchTaskType = "fetch-data";
-
-// ---------------------------------------
-
 var http = require ("http");
 var url = require ("url");
 var util = require ("util");
 
+var configuration = require ("./configuration");
 var store = require ("./store-lib")
 var transcript = require ("./transcript") (module);
 
@@ -23,7 +20,7 @@ function _fetch (_url, _context, _callback) {
 	_task.url = _url;
 	_task.context = _context;
 	_task.callback = _callback;
-	_task.type = _fetchTaskType;
+	_task.type = configuration.fetchTaskType;
 	_task.feedKey = store.generateFeedKey (_task.url);
 	_task.taskKey = store.generateFeedTaskKey (_task.url, _task.type);
 	_task.contentType = "application/atom+xml; charset=utf-8";
@@ -136,7 +133,7 @@ function _onFetchStep4 (_task) {
 }
 
 function _onFetchError (_task) {
-	transcript.traceWarning ("failed fetching `%s`: %s", _task.url, _task.error.message);
+	transcript.traceWarning ("failed fetching `%s`: %s", _task.url, _task.error.reason);
 	_task.callback (_task.error, undefined);
 }
 

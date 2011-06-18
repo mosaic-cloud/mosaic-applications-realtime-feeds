@@ -5,14 +5,10 @@ if (require.main === module)
 
 // ---------------------------------------
 
-var _indexTaskType = "index-data";
-var _fetchTaskType = "fetch-data";
-
-// ---------------------------------------
-
 var printf = require ("printf");
 var util = require ("util");
 
+var configuration = require ("./configuration");
 var parser = require ("./parser-lib");
 var store = require ("./store-lib");
 var transcript = require ("./transcript") (module);
@@ -92,7 +88,7 @@ function _indexFeed (_url, _feed, _context, _callback) {
 	_task.feed = _feed;
 	_task.context = _context;
 	_task.callback = _callback;
-	_task.type = _indexTaskType;
+	_task.type = configuration.indexTaskType;
 	_task.feedKey = store.generateFeedKey (_task.url);
 	_task.taskKey = store.generateFeedTaskKey (_task.url, _task.type);
 	_doIndexFeedStep1 (_task);
@@ -165,7 +161,7 @@ function _doIndexFeedStep2 (_task) {
 			_item.key = store.generateFeedItemKey (_task.url, _item.id);
 			_item.url = _task.url;
 			_item.feed = _task.feedKey;
-			_task.currentTimeline.items.push (_item.id);
+			_task.currentTimeline.items.push (_item.key);
 		}
 		
 		if (_task.previousMetaData)
@@ -252,7 +248,7 @@ function _doIndexFeedStep4 (_task) {
 // ---------------------------------------
 
 function _onIndexError (_task) {
-	transcript.traceError ("failed indexing `%s`: %s", _task.url, _task.error.message);
+	transcript.traceError ("failed indexing `%s`: %s", _task.url, _task.error.reason);
 	_task.callback (_task.error, undefined);
 }
 
