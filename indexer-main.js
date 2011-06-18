@@ -21,7 +21,7 @@ function _onIndexTaskMessage (_context, _message, _callback) {
 	var _urlClass = _message.urlClass;
 	var _data = _message.data;
 	if ((_url === undefined) || (_urlClass === undefined) || (_data === undefined)) {
-		transcript.traceWarningObject ("received invalid urgent index message; ignoring!", _message);
+		transcript.traceWarningObject ("received invalid index message; ignoring!", _message);
 		_callback ();
 		return;
 	}
@@ -67,27 +67,33 @@ function _main () {
 				transcript.traceInformation ("indexer initializing...");
 				
 				_context.indexUrgentConsumer = _context.rabbit.createConsumer (
-						{noAck : true}, configuration.indexTaskUrgentQueue, configuration.indexTaskUrgentBinding, configuration.indexTaskExchange);
+						configuration.indexTaskUrgentConsumer, configuration.indexTaskUrgentQueue,
+						configuration.indexTaskUrgentBinding, configuration.indexTaskExchange);
 				_context.indexUrgentConsumer.on ("consume",
-						function (_message, _headers) {
-							if (_message.urlClass === undefined)
-								_message.urlClass = "urgent";
-							_onIndexTaskMessage (_context, _message,
-									function () {
-										_context.indexUrgentConsumer.acknowledge ();
-									});
+						function (_message, _headers, _acknowledge) {
+							if (_headers.contentType != "application/json") {
+								transcript.traceError ("received invalid index message content type: `%s`; ignoring!", _headers.contentType);
+								_acknowledge ();
+							} else {
+								if (_message.urlClass === undefined)
+									_message.urlClass = "urgent";
+								_onIndexTaskMessage (_context, _message, _acknowledge);
+							}
 						});
 				
 				_context.indexBatchConsumer = _context.rabbit.createConsumer (
-						{noAck : true}, configuration.indexTaskBatchQueue, configuration.indexTaskBatchBinding, configuration.indexTaskExchange);
+						configuration.indexTaskBatchConsumer, configuration.indexTaskBatchQueue,
+						configuration.indexTaskBatchBinding, configuration.indexTaskExchange);
 				_context.indexBatchConsumer.on ("consume",
-						function (_message, _headers) {
-							if (_message.urlClass === undefined)
-								_message.urlClass = "batch";
-							_onIndexTaskMessage (_context, _message,
-									function () {
-										_context.indexBatchConsumer.acknowledge ();
-									});
+						function (_message, _headers, _acknowledge) {
+							if (_headers.contentType != "application/json") {
+								transcript.traceError ("received invalid index message content type: `%s`; ignoring!", _headers.contentType);
+								_acknowledge ();
+							} else {
+								if (_message.urlClass === undefined)
+									_message.urlClass = "batch";
+								_onIndexTaskMessage (_context, _message, _acknowledge);
+							}
 						});
 			});
 	

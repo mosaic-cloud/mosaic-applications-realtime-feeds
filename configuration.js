@@ -20,6 +20,11 @@ module.exports.rabbit = _rabbit;
 
 // ---------------------------------------
 
+var _taskUrgentPrefetchCount = 1;
+var _taskBatchPrefetchCount = 16;
+
+// ---------------------------------------
+
 var _fetchTaskExchange = {
 		type : "topic",
 		name : "feeds.fetch-data",
@@ -57,13 +62,35 @@ var _fetchTaskBatchBinding = {
 		routingKey : _fetchTaskBatchRoutingKey,
 };
 
+var _fetchTaskUrgentConsumer = {
+		noAck : true,
+		prefetchCount : _taskUrgentPrefetchCount,
+};
+
+var _fetchTaskBatchConsumer = {
+		noAck : true,
+		prefetchCount : _taskBatchPrefetchCount,
+};
+
+var _fetchTaskUrgentPublisher = {
+		routingKey : _fetchTaskUrgentRoutingKey,
+};
+
+var _fetchTaskBatchPublisher = {
+		routingKey : _fetchTaskBatchRoutingKey,
+};
+
 module.exports.fetchTaskExchange = _fetchTaskExchange;
 module.exports.fetchTaskUrgentQueue = _fetchTaskUrgentQueue;
 module.exports.fetchTaskUrgentRoutingKey = _fetchTaskUrgentRoutingKey;
 module.exports.fetchTaskUrgentBinding = _fetchTaskUrgentBinding;
+module.exports.fetchTaskUrgentConsumer = _fetchTaskUrgentConsumer;
+module.exports.fetchTaskUrgentPublisher = _fetchTaskUrgentPublisher;
 module.exports.fetchTaskBatchQueue = _fetchTaskBatchQueue;
 module.exports.fetchTaskBatchRoutingKey = _fetchTaskBatchRoutingKey;
 module.exports.fetchTaskBatchBinding = _fetchTaskBatchBinding;
+module.exports.fetchTaskBatchConsumer = _fetchTaskBatchConsumer;
+module.exports.fetchTaskBatchPublisher = _fetchTaskBatchPublisher;
 
 // ---------------------------------------
 
@@ -104,13 +131,35 @@ var _indexTaskBatchBinding = {
 		routingKey : _indexTaskBatchRoutingKey,
 };
 
+var _indexTaskUrgentConsumer = {
+		noAck : true,
+		prefetchCount : _taskUrgentPrefetchCount,
+};
+
+var _indexTaskBatchConsumer = {
+		noAck : true,
+		prefetchCount : _taskBatchPrefetchCount,
+};
+
+var _indexTaskUrgentPublisher = {
+		routingKey : _indexTaskUrgentRoutingKey,
+};
+
+var _indexTaskBatchPublisher = {
+		routingKey : _indexTaskBatchRoutingKey,
+};
+
 module.exports.indexTaskExchange = _indexTaskExchange;
 module.exports.indexTaskUrgentQueue = _indexTaskUrgentQueue;
 module.exports.indexTaskUrgentRoutingKey = _indexTaskUrgentRoutingKey;
 module.exports.indexTaskUrgentBinding = _indexTaskUrgentBinding;
+module.exports.indexTaskUrgentConsumer = _indexTaskUrgentConsumer;
+module.exports.indexTaskUrgentPublisher = _indexTaskUrgentPublisher;
 module.exports.indexTaskBatchQueue = _indexTaskBatchQueue;
 module.exports.indexTaskBatchRoutingKey = _indexTaskBatchRoutingKey;
 module.exports.indexTaskBatchBinding = _indexTaskBatchBinding;
+module.exports.indexTaskBatchConsumer = _indexTaskBatchConsumer;
+module.exports.indexTaskBatchPublisher = _indexTaskBatchPublisher;
 
 // ---------------------------------------
 
@@ -137,9 +186,10 @@ module.exports.feedTaskBucket = _feedTaskBucket;
 // ---------------------------------------
 
 _feedTestUrls = [
-		"http://feeds.feedburner.com/ThinkFault?format=xml",
+		// "http://feeds.feedburner.com/ThinkFault?format=xml",
 		"http://search.twitter.com/search.atom?q=%23nextfriday",
 		"http://search.twitter.com/search.atom?q=%23somebodytellmewhy",
+		"http://search.twitter.com/search.atom?q=%23howtopleaseahoodrat",
 ]
 
 module.exports.feedTestUrls = _feedTestUrls;

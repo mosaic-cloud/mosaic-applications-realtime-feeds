@@ -9,6 +9,8 @@ var amqp = require ("amqp");
 var events = require ("events");
 var sys = require ("sys");
 
+var transcript = require ("./transcript") (module);
+
 // ---------------------------------------
 
 var Connector = function (_configuration) {
@@ -64,12 +66,6 @@ Connector.prototype.createConsumer = function (_consumerConfiguration, _queueCon
 		_consumer.emit ("error", _error);
 	});
 	
-	_consumer.acknowledge = function () {
-		if (!_consumer._ready)
-			throw (new Error ("consumer not ready"));
-		_consumer._queue.shift ();
-	};
-	
 	var _declareQueue = function () {
 		_consumer._queue = _this._connection.queue (_consumer._queueConfiguration.name,
 				{passive : _consumer._queueConfiguration.passive, durable : _consumer._queueConfiguration.durable,
@@ -101,15 +97,56 @@ Connector.prototype.createConsumer = function (_consumerConfiguration, _queueCon
 	};
 	
 	var _subscribeQueue = function () {
-		_consumer._queue.subscribe ({ack : _consumer._consumerConfiguration.noAck}, _consume);
-		_consumer._queue.on ("basicQosOk", function () {
+		_consumer._queue.subscribeRaw (
+				{ack : _consumer._consumerConfiguration.noAck, prefetchCount : _consumer._consumerConfiguration.prefetchCount},
+				_consume);
+		_consumer._queue.on ("basicConsumeOk", function () {
 			_consumer._ready = true;
 			_consumer.emit ("ready");
 		});
 	};
 	
-	var _consume = function (_message, _headers) {
-		_consumer.emit ("consume", _message, _headers);
+	var _consume = function (_message) {
+		
+		var _buffers = [];
+		
+		var _acknowledge = function () {
+			_message.acknowledge ();
+		}
+		
+		var _dispatch = function (_data) {
+			var _headers = {};
+			var _value = _message.data;
+			if (_message.contentType == "application/json")
+				try {
+					_value = JSON.parse (_value);
+				} catch (_error) {
+					_message.contentType = "application/json-invalid";
+				}
+			_headers.contentType = _message.contentType;
+			_consumer.emit ("consume", _value, _headers, _acknowledge);
+		}
+		
+		_message.on ("data",
+				function (_data) {
+					_buffers.push (_data);
+				});
+		
+		_message.on ("end",
+				function () {
+					var _bufferSize = 0;
+					for (var _bufferIndex in _buffers)
+						_bufferSize += _buffers[_bufferIndex].length;
+					var _buffer = new Buffer (_bufferSize);
+					var _bufferOffset = 0;
+					for (var _bufferIndex in _buffers) {
+						var _bufferItem = _buffers[_bufferIndex];
+						_bufferItem.copy (_buffer, _bufferOffset);
+						_bufferOffset += _bufferItem.length;
+					}
+					_message.data = _buffer;
+					_dispatch ();
+				});
 	};
 	
 	_declareQueue ();
@@ -154,7 +191,12 @@ Connector.prototype.createPublisher = function (_publisherConfiguration, _exchan
 		for (var _optionName in _publisher._publisherConfiguration)
 			if (_mergedOptions[_optionName] === undefined)
 				_mergedOptions[_optionName] = _publisher._publisherConfiguration[_optionName];
-		_publisher._exchange.publish (_routingKey, _message, _options);
+		if ((typeof (_message) != "string") && !(_message instanceof Buffer)) {
+			_message = JSON.stringify (_message);
+			if (_mergedOptions.contentType === undefined)
+				_mergedOptions.contentType = "application/json";
+		}
+		_publisher._exchange.publish (_routingKey, _message, _mergedOptions);
 	};
 	
 	var _declareExchange = function () {

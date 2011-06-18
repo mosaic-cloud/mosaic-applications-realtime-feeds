@@ -20,7 +20,7 @@ function _onFetchTaskMessage (_context, _message, _callback) {
 	var _url = _message.url;
 	var _urlClass = _message.urlClass;
 	if ((_url === undefined) || (_urlClass === undefined)) {
-		transcript.traceWarningObject ("received invalid urgent fetch message; ignoring!", _message);
+		transcript.traceWarningObject ("received invalid fetch message; ignoring!", _message);
 		_callback ();
 		return;
 	}
@@ -90,33 +90,39 @@ function _main () {
 				transcript.traceInformation ("fetcher initializing...");
 				
 				_context.fetchUrgentConsumer = _context.rabbit.createConsumer (
-						{noAck : true}, configuration.fetchTaskUrgentQueue, configuration.fetchTaskUrgentBinding, configuration.fetchTaskExchange);
+						configuration.fetchTaskUrgentConsumer, configuration.fetchTaskUrgentQueue,
+						configuration.fetchTaskUrgentBinding, configuration.fetchTaskExchange);
 				_context.fetchUrgentConsumer.on ("consume",
-						function (_message, _headers) {
-							if (_message.urlClass === undefined)
-								_message.urlClass = "urgent";
-							_onFetchTaskMessage (_context, _message,
-									function () {
-										_context.fetchUrgentConsumer.acknowledge ();
-									});
+						function (_message, _headers, _acknowledge) {
+							if (_headers.contentType != "application/json") {
+								transcript.traceError ("received invalid fetch message content type: `%s`; ignoring!", _headers.contentType);
+								_acknowledge ();
+							} else {
+								if (_message.urlClass === undefined)
+									_message.urlClass = "urgent";
+								_onFetchTaskMessage (_context, _message, _acknowledge);
+							}
 						});
 				
 				_context.fetchBatchConsumer = _context.rabbit.createConsumer (
-						{noAck : true}, configuration.fetchTaskBatchQueue, configuration.fetchTaskBatchBinding, configuration.fetchTaskExchange);
+						configuration.fetchTaskBatchConsumer, configuration.fetchTaskBatchQueue,
+						configuration.fetchTaskBatchBinding, configuration.fetchTaskExchange);
 				_context.fetchBatchConsumer.on ("consume",
-						function (_message, _headers) {
-							if (_message.urlClass === undefined)
-								_message.urlClass = "batch";
-							_onFetchTaskMessage (_context, _message,
-									function () {
-										_context.fetchBatchConsumer.acknowledge ();
-									});
+						function (_message, _headers, _acknowledge) {
+							if (_headers.contentType != "application/json") {
+								transcript.traceError ("received invalid fetch message content type: `%s`; ignoring!", _headers.contentType);
+								_acknowledge ();
+							} else {
+								if (_message.urlClass === undefined)
+									_message.urlClass = "batch";
+								_onFetchTaskMessage (_context, _message, _acknowledge);
+							}
 						});
 				
 				_context.indexUrgentPublisher = _context.rabbit.createPublisher (
-						{routingKey : configuration.indexTaskUrgentRoutingKey}, configuration.indexTaskExchange);
+						configuration.indexTaskUrgentPublisher, configuration.indexTaskExchange);
 				_context.indexBatchPublisher = _context.rabbit.createPublisher (
-						{routingKey : configuration.indexTaskBatchRoutingKey}, configuration.indexTaskExchange);
+						configuration.indexTaskBatchPublisher, configuration.indexTaskExchange);
 			});
 	
 	_context.rabbit.on ("error",
@@ -128,7 +134,7 @@ function _main () {
 	_context.rabbit.on ("ready",
 			function () {
 				_context.fetchBatchPublisher = _context.rabbit.createPublisher (
-						{routingKey : configuration.fetchTaskBatchRoutingKey}, configuration.fetchTaskExchange);
+						configuration.fetchTaskBatchPublisher, configuration.fetchTaskExchange);
 				_context.fetchBatchPublisher.on ("ready",
 						function () {
 							timers.setInterval (
