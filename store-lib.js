@@ -70,8 +70,10 @@ function _fetchFeedMetaData (_riak, _key, _callback) {
 }
 
 function _updateFeedMetaData (_riak, _key, _feedMetaData, _riakMetaData, _callback) {
-	if (_riakMetaData)
+	if (_riakMetaData) {
 		_riakMetaData.contentType = "application/json";
+		_riakMetaData.contentEncoding = undefined;
+	}
 	_update (_riak, _feedMetaDataBucket, _key, _feedMetaData, _riakMetaData, _callback);
 }
 
@@ -104,8 +106,10 @@ function _fetchFeedTask (_riak, _key, _callback) {
 }
 
 function _updateFeedTask (_riak, _key, _feedTask, _riakMetaData, _callback) {
-	if (_riakMetaData)
+	if (_riakMetaData) {
 		_riakMetaData.contentType = "application/json";
+		_riakMetaData.contentEncoding = undefined;
+	}
 	_update (_riak, _feedTaskBucket, _key, _feedTask, _riakMetaData, _callback);
 }
 
@@ -116,9 +120,13 @@ function _fetch (_riak, _bucket, _key, _riakMetaData, _callback) {
 	_riak.get (_bucket, _key, _riakMetaData,
 			function (_error, _value, _riakMetaData) {
 				if (_error)
-					if (_riakMetaData.statusCode == 404)
+					if (_riakMetaData.statusCode == 404) {
+						_riakMetaData.contentType = undefined;
+						_riakMetaData.contentEncoding = undefined;
+						_riakMetaData.contentRange = undefined;
+						_riakMetaData.etag = undefined;
 						_callback (null, null, _riakMetaData);
-					else {
+					} else {
 						transcript.traceWarning ("failed fetching `%s/%s`: %s...", _bucket, _key, error.toString ());
 						_callback ({reason : "unexpected-reak-error", message : _error.toString (), bucket : _bucket, key : _key, riakMetaData : _riakMetaData});
 					}
@@ -131,8 +139,11 @@ function _fetch (_riak, _bucket, _key, _riakMetaData, _callback) {
 
 function _update (_riak, _bucket, _key, _value, _riakMetaData, _callback) {
 	transcript.traceDebugging ("updating `%s/%s`...", _bucket, _key);
-	if (_riakMetaData)
-		delete _riakMetaData.headers;
+	if (_riakMetaData) {
+		_riakMetaData.headers = undefined;
+		_riakMetaData.etag = undefined;
+		_riakMetaData.contentRange = undefined;
+	}
 	_riak.save (_bucket, _key, _value, _riakMetaData,
 			function (_error, _riakMetaData) {
 				if (_error) {
