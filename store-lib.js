@@ -8,7 +8,6 @@ if (require.main === module)
 var crypto = require ("crypto");
 var printf = require ("printf");
 var riak = require ("riak-js");
-var util = require ("util");
 
 var configuration = require ("./configuration")
 var transcript = require ("./transcript") (module);

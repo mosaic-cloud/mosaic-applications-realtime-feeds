@@ -163,6 +163,18 @@ module.exports.indexTaskBatchPublisher = _indexTaskBatchPublisher;
 
 // ---------------------------------------
 
+var _itemExchange = {
+		type : "topic",
+		name : "feeds.items",
+		durable : true,
+		autoDelete : false,
+		passive : false,
+};
+
+module.exports.itemExchange = _itemExchange;
+
+// ---------------------------------------
+
 var _fetchTaskType = "fetch-data";
 var _indexTaskType = "index-data";
 

@@ -29,29 +29,31 @@ Connector.prototype.createConsumer = function (_consumerConfiguration, _queueCon
 	
 	if (_consumerConfiguration === null)
 		_consumerConfiguration = {ack : false};
-	else if (typeof (_consumerConfiguration) === "boolean")
+	else if (typeof (_consumerConfiguration) == "boolean")
 		_consumerConfiguration = {noAck : _consumerConfiguration};
-	else if (typeof (_consumerConfiguration) !== "object")
+	else if (typeof (_consumerConfiguration) != "object")
 		throw (new Error ("consumer configuration is mandatory either a boolean or a dictionary"));
 	
-	if ((_queueConfiguration === null) && (_bindingConfiguration !== undefined))
-		_queueConfiguration = {name : "", exclusive : true, autoDelete : true};
-	else if (typeof (_queueConfiguration) === "string")
-		_queueConfiguration = {name : _queueConfiguration};
-	else if (typeof (_queueConfiguration) !== "object")
-		throw (new Error ("queue configuration is mandatory either a string or a dictionary"));
-	
-	if ((typeof (_bindingConfiguration) === "string") && (_exchangeConfiguration !== undefined))
+	if ((typeof (_bindingConfiguration) == "string") && (_exchangeConfiguration !== null))
 		_bindingConfiguration = {routingKey : _bindingConfiguration};
-	else if ((_bindingConfiguration !== undefined) && (typeof (_bindingConfiguration) !== "object"))
+	else if ((_bindingConfiguration === null) && (_exchangeConfiguration !== null))
+		_bindingConfiguration = {routingKey : "#"};
+	else if ((_bindingConfiguration === null) || (typeof (_bindingConfiguration) != "object"))
 		throw (new Error ("binding configuration is optionally a dictionary"));
 	
-	if (typeof (_exchangeConfiguration) === "string")
+	if ((_queueConfiguration === null) && (_bindingConfiguration !== null))
+		_queueConfiguration = {name : "", exclusive : true, autoDelete : true, durable : false, passive : false};
+	else if (typeof (_queueConfiguration) == "string")
+		_queueConfiguration = {name : _queueConfiguration};
+	else if (typeof (_queueConfiguration) != "object")
+		throw (new Error ("queue configuration is mandatory either a string or a dictionary"));
+	
+	if (typeof (_exchangeConfiguration) == "string")
 		_exchangeConfiguration = {name : _exchangeConfiguration};
-	else if ((_exchangeConfiguration !== undefined) && (typeof (_exchangeConfiguration) !== "object"))
+	else if ((_exchangeConfiguration !== null) && (typeof (_exchangeConfiguration) != "object"))
 		throw (new Error ("exchange configuration is optionally either a string or a dictionary"));
 	
-	if ((_exchangeConfiguration !== undefined) && (_bindingConfiguration === undefined))
+	if ((_exchangeConfiguration !== null) && (_bindingConfiguration === null))
 		throw (new Error ("exchange configuration implies binding configuration"));
 	
 	var _consumer = new events.EventEmitter ();
@@ -67,14 +69,14 @@ Connector.prototype.createConsumer = function (_consumerConfiguration, _queueCon
 	});
 	
 	var _declareQueue = function () {
-		_consumer._queue = _this._connection.queue (_consumer._queueConfiguration.name,
+		_consumer._queue = _this._connection.queue (_consumer._queueConfiguration ? _consumer._queueConfiguration.name : "",
 				{passive : _consumer._queueConfiguration.passive, durable : _consumer._queueConfiguration.durable,
-						exclusive : _consumer._queueConfiguration.exclusive, autoDelete : _consumer._queueConfiguration.autoDelete},
+						exclusive : _consumer._queueConfiguration, autoDelete : _consumer._queueConfiguration.autoDelete},
 				function (_queueName, _messagesCount, _consumersCount) {
 					_consumer._queueName = _queueName;
-					if (_consumer._exchangeConfiguration !== undefined)
+					if (_consumer._exchangeConfiguration !== null)
 						_declareExchange ();
-					else if (_consumer._bindingConfiguration !== undefined)
+					else if (_consumer._bindingConfiguration !== null)
 						_bindQueue ();
 					else
 						_subscribeQueue ();
@@ -90,7 +92,7 @@ Connector.prototype.createConsumer = function (_consumerConfiguration, _queueCon
 	
 	var _bindQueue = function () {
 		var _exchangeName = _consumer._bindingConfiguration.exchange;
-		if (_exchangeName === undefined)
+		if ((_exchangeName === null) || (_exchangeName === undefined))
 			_exchangeName = _consumer._exchangeConfiguration.name;
 		_consumer._queue.bind (_exchangeName, _consumer._bindingConfiguration.routingKey);
 		_consumer._queue.on ("queueBindOk", function () { _subscribeQueue (); });
@@ -159,12 +161,12 @@ Connector.prototype.createPublisher = function (_publisherConfiguration, _exchan
 	
 	if (_publisherConfiguration === null)
 		_publisherConfiguration = {};
-	else if (typeof (_publisherConfiguration) !== "object")
+	else if (typeof (_publisherConfiguration) != "object")
 		throw (new Error ("publisher configuration is mandatory a dictionary"));
 	
-	if (typeof (_exchangeConfiguration) === "string")
+	if (typeof (_exchangeConfiguration) == "string")
 		_exchangeConfiguration = {name : _exchangeConfiguration};
-	else if (typeof (_exchangeConfiguration) !== "object")
+	else if (typeof (_exchangeConfiguration) != "object")
 		throw (new Error ("exchange configuration is mandatory either a string or a dictionary"));
 	
 	var _publisher = new events.EventEmitter ();
@@ -180,12 +182,12 @@ Connector.prototype.createPublisher = function (_publisherConfiguration, _exchan
 	_publisher.publish = function (_message, _routingKey, _options) {
 		if (!_publisher._ready)
 			throw (new Error ("publisher not ready"));
-		if (_routingKey === undefined)
+		if ((_routingKey === null) || (_routingKey === undefined))
 			_routingKey = _publisher._publisherConfiguration.routingKey;
 		if (typeof (_routingKey) != "string")
 			throw (new Error ("routing key is mandatory a string"));
 		var _mergedOptions = {};
-		if (_options !== undefined)
+		if ((_options !== null) && (_options !== undefined))
 			for (var _optionName in _options)
 				_mergedOptions[_optionName] = _options[_optionName];
 		for (var _optionName in _publisher._publisherConfiguration)

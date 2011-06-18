@@ -5,7 +5,6 @@ if (require.main !== module)
 
 // ---------------------------------------
 
-var printf = require ("printf");
 var timers = require ("timers");
 
 var configuration = require ("./configuration");
@@ -54,13 +53,13 @@ function _onFetchTaskSucceeded (_context, _url, _urlClass, _outcome) {
 				if ((_context.indexUrgentPublisher !== undefined) && (_context.indexUrgentPublisher._ready))
 					_context.indexUrgentPublisher.publish (_message);
 				else
-					transcript.traceWarning ("failed pushing urgent index task; ignoring!");
+					transcript.traceWarning ("failed sending urgent index task; ignoring!");
 				break;
 			case "batch" :
 				if ((_context.indexBatchPublisher !== undefined) && (_context.indexBatchPublisher._ready))
 					_context.indexBatchPublisher.publish (_message);
 				else
-					transcript.traceWarning ("failed pushing batch index task; ignoring!");
+					transcript.traceWarning ("failed sending batch index task; ignoring!");
 				break;
 			default :
 				transcript.traceError ("invalid URL class `%s`; ignoring!", _urlClass);
@@ -144,7 +143,7 @@ function _main () {
 											transcript.traceDebugging ("sending fetch task for `%s`...", _url);
 											_context.fetchBatchPublisher.publish ({url : _url});
 										}
-									}, 1000);
+									}, 10 * 1000);
 						});
 			});
 }

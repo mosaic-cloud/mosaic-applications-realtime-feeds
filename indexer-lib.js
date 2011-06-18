@@ -5,9 +5,6 @@ if (require.main === module)
 
 // ---------------------------------------
 
-var printf = require ("printf");
-var util = require ("util");
-
 var configuration = require ("./configuration");
 var parser = require ("./parser-lib");
 var store = require ("./store-lib");

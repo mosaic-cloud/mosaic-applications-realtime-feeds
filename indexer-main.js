@@ -5,9 +5,6 @@ if (require.main !== module)
 
 // ---------------------------------------
 
-var printf = require ("printf");
-var timers = require ("timers");
-
 var configuration = require ("./configuration");
 var indexer = require ("./indexer-lib");
 var queue = require ("./queue-lib");
@@ -41,10 +38,17 @@ function _onIndexTask (_context, _url, _urlClass, _data, _callback) {
 }
 
 function _onIndexTaskSucceeded (_context, _url, _urlClass, _outcome) {
-	if (_outcome.currentData != _outcome.previousData)
-		transcript.traceInformation ("succeeded indexing `%s` (new data found); sending index task...", _url);
-	else
-		transcript.traceInformation ("succeeded indexing `%s` (no new data found)", _url);
+	if (_outcome.items !== null) {
+		transcript.traceInformation ("succeeded indexing `%s` (new items found); sending items...", _url);
+		if ((_context.itemPublisher !== undefined) && (_context.itemPublisher._ready))
+			for (var _itemIndex in _outcome.items) {
+				var _item = _outcome.items[_itemIndex];
+				_context.itemPublisher.publish (_item, _item.feed);
+			}
+		else
+			transcript.traceWarning ("failed sending item; ignoring!");
+	} else
+		transcript.traceInformation ("succeeded indexing `%s` (no new items found)", _url);
 }
 
 // ---------------------------------------
@@ -95,6 +99,9 @@ function _main () {
 								_onIndexTaskMessage (_context, _message, _acknowledge);
 							}
 						});
+				
+				_context.itemPublisher = _context.rabbit.createPublisher (
+						null, configuration.itemExchange);
 			});
 	
 	_context.rabbit.on ("error",
