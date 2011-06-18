@@ -70,6 +70,8 @@ function _fetchFeedMetaData (_riak, _key, _callback) {
 }
 
 function _updateFeedMetaData (_riak, _key, _feedMetaData, _riakMetaData, _callback) {
+	if (_riakMetaData)
+		_riakMetaData.contentType = "application/json";
 	_update (_riak, _feedMetaDataBucket, _key, _feedMetaData, _riakMetaData, _callback);
 }
 
@@ -102,6 +104,8 @@ function _fetchFeedTask (_riak, _key, _callback) {
 }
 
 function _updateFeedTask (_riak, _key, _feedTask, _riakMetaData, _callback) {
+	if (_riakMetaData)
+		_riakMetaData.contentType = "application/json";
 	_update (_riak, _feedTaskBucket, _key, _feedTask, _riakMetaData, _callback);
 }
 
