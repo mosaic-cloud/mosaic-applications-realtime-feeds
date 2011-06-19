@@ -2,13 +2,17 @@
 
 set -e -E -u -C -o pipefail || exit 1
 
+test "${0}" == ./sources/pusher-urls-twitter.sh
+
 (
-	cat ./pusher-urls.txt
+	cat ./sources/pusher-urls-twitter.txt
 	curl -s 'http://search.twitter.com/search' \
 	| grep -o -E -e 'href="/search\?q=[^ ]+"' \
 	| sed -r -e 's|^href="/search(.*)"|http://search.twitter.com/search.atom\1|' \
 ) \
 | sort -u \
->./pusher-urls-new.txt
+>./sources/pusher-urls-twitter-new.txt
 
-mv ./pusher-urls-new.txt ./pusher-urls.txt
+mv ./sources/pusher-urls-twitter-new.txt ./sources/pusher-urls-twitter.txt
+
+exit 0

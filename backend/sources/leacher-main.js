@@ -3,18 +3,21 @@
 if (require.main !== module)
 	throw (new Error ());
 
-if (process.argv.length != 2)
-	throw (new Error ());
-
 // ---------------------------------------
 
 var configuration = require ("./configuration");
 var queue = require ("./queue-lib");
-var transcript = require ("./transcript") (module);
+var transcript = require ("./transcript") (module, "information");
 
 // ---------------------------------------
 
 function _main () {
+	
+	if (process.argv.length != 2) {
+		transcript.traceError ("invalid arguments; aborting!");
+		process.exit (1);
+		return;
+	}
 	
 	var _rabbit = queue.createConnector (configuration.rabbit);
 	_rabbit.on ("ready",

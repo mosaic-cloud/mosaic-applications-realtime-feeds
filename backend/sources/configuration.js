@@ -20,6 +20,12 @@ module.exports.rabbit = _rabbit;
 
 // ---------------------------------------
 
+var _scavangeInterval = 6 * 1000;
+
+module.exports.scavangeInterval = _scavangeInterval;
+
+// ---------------------------------------
+
 var _taskUrgentPrefetchCount = 1;
 var _taskBatchPrefetchCount = 16;
 
@@ -194,39 +200,5 @@ module.exports.feedDataBucket = _feedDataBucket;
 module.exports.feedTimelineBucket = _feedTimelineBucket;
 module.exports.feedItemBucket = _feedItemBucket;
 module.exports.feedTaskBucket = _feedTaskBucket;
-
-// ---------------------------------------
-
-_feedTestUrls = [
-		"http://search.twitter.com/search.atom?q=%22Brittany+Murphy%22",
-		"http://search.twitter.com/search.atom?q=%22Bruno+%26+Phil%22",
-		"http://search.twitter.com/search.atom?q=%22EDC+Dallas%22",
-		"http://search.twitter.com/search.atom?q=%22Epic+Movie%22",
-		"http://search.twitter.com/search.atom?q=%22Fried+Kool-Aid%22",
-		"http://search.twitter.com/search.atom?q=%22Giovani+Casillas%22",
-		"http://search.twitter.com/search.atom?q=%22Glen+Coco%22",
-		"http://search.twitter.com/search.atom?q=%22Her+Room%22",
-		"http://search.twitter.com/search.atom?q=%22Hugh+Grant%22",
-		"http://search.twitter.com/search.atom?q=%22is+down%22",
-		"http://search.twitter.com/search.atom?q=%22Joe+%26+Nick%22",
-		"http://search.twitter.com/search.atom?q=%22listening+to%22",
-		"http://search.twitter.com/search.atom?q=%22Parental+Control%22",
-		"http://search.twitter.com/search.atom?q=%22RIP+Clarence+Clemons%22",
-		"http://search.twitter.com/search.atom?q=%22Tommy+Boy%22",
-		"http://search.twitter.com/search.atom?q=%231xtrasoundclash",
-		"http://search.twitter.com/search.atom?q=%23haiku",
-		"http://search.twitter.com/search.atom?q=%23happyfathersday",
-		"http://search.twitter.com/search.atom?q=%23howtopleaseahoodrat",
-		"http://search.twitter.com/search.atom?q=%23nextfriday",
-		"http://search.twitter.com/search.atom?q=%23trespalabraschilenas",
-		"http://search.twitter.com/search.atom?q=%23wordsthatdescribeme",
-		"http://search.twitter.com/search.atom?q=cool+filter%3Alinks",
-		"http://search.twitter.com/search.atom?q=Daddies",
-		"http://search.twitter.com/search.atom?q=flight+%3A%28",
-		"http://search.twitter.com/search.atom?q=love+OR+hate",
-		"http://search.twitter.com/search.atom?q=movie+%3A%29",
-]
-
-module.exports.feedTestUrls = _feedTestUrls;
 
 // ---------------------------------------

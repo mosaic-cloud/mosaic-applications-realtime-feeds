@@ -14,6 +14,9 @@ case "$( basename "${0}" .bash )" in
 	( run-indexer )
 		_component=indexer
 	;;
+	( run-scavanger )
+		_component=scavanger
+	;;
 	( run-leacher )
 		_component=leacher
 	;;

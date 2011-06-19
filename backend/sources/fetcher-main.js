@@ -3,18 +3,13 @@
 if (require.main !== module)
 	throw (new Error ());
 
-if (process.argv.length != 2)
-	throw (new Error ());
-
 // ---------------------------------------
-
-var timers = require ("timers");
 
 var configuration = require ("./configuration");
 var fetcher = require ("./fetcher-lib");
 var queue = require ("./queue-lib");
 var store = require ("./store-lib");
-var transcript = require ("./transcript") (module, "warning");
+var transcript = require ("./transcript") (module, "information");
 
 // ---------------------------------------
 
@@ -77,7 +72,7 @@ function _onFetchTaskSucceeded (_context, _url, _urlClass, _outcome) {
 function _main () {
 	
 	if (process.argv.length != 2) {
-		console.log ("error: invalid arguments");
+		transcript.traceError ("invalid arguments; aborting!");
 		process.exit (1);
 		return;
 	}

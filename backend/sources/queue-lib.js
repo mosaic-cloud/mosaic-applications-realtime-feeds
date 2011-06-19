@@ -20,12 +20,17 @@ var Connector = function (_configuration) {
 	this._connection.on ("ready", _boundedMethod (this, this._onReady));
 	this._connection.on ("close", _boundedMethod (this, this._onClose));
 	this._connection.on ("error", _boundedMethod (this, this._onError));
+	this._ready = false;
 };
 
 sys.inherits (Connector, events.EventEmitter);
 
 Connector.prototype.createConsumer = function (_consumerConfiguration, _queueConfiguration, _bindingConfiguration, _exchangeConfiguration) {
 	var _this = this;
+	if (!this._ready)
+		throw (new Error ("connector not ready"));
+	
+	transcript.traceDebuggingObject ("creating consumer...", [_consumerConfiguration, _queueConfiguration, _bindingConfiguration, _exchangeConfiguration]);
 	
 	if (_consumerConfiguration === null)
 		_consumerConfiguration = {ack : false};
@@ -67,13 +72,18 @@ Connector.prototype.createConsumer = function (_consumerConfiguration, _queueCon
 		_consumer._ready = false;
 		_consumer.emit ("error", _error);
 	});
+	_this._connection.on ("end", function () {
+		_consumer._ready = false;
+	});
 	
 	var _declareQueue = function () {
-		_consumer._queue = _this._connection.queue (_consumer._queueConfiguration ? _consumer._queueConfiguration.name : "",
-				{passive : _consumer._queueConfiguration.passive, durable : _consumer._queueConfiguration.durable,
-						exclusive : _consumer._queueConfiguration, autoDelete : _consumer._queueConfiguration.autoDelete},
-				function (_queueName, _messagesCount, _consumersCount) {
-					_consumer._queueName = _queueName;
+		var _name = _consumer._queueConfiguration.name;
+		var _options = {passive : _consumer._queueConfiguration.passive, durable : _consumer._queueConfiguration.durable,
+						exclusive : _consumer._queueConfiguration.exclusive, autoDelete : _consumer._queueConfiguration.autoDelete};
+		transcript.traceDebuggingObject ("declaring queue `%s`...", _name, _options);
+		_consumer._queue = _this._connection.queue (_name, _options,
+				function (_queue, _messagesCount, _consumersCount) {
+					_consumer._queueName = _queue.name;
 					if (_consumer._exchangeConfiguration !== null)
 						_declareExchange ();
 					else if (_consumer._bindingConfiguration !== null)
@@ -84,9 +94,11 @@ Connector.prototype.createConsumer = function (_consumerConfiguration, _queueCon
 	};
 	
 	var _declareExchange = function () {
-		_consumer._exchange = _this._connection.exchange (_consumer._exchangeConfiguration.name,
-				{type : _consumer._exchangeConfiguration.type, passive : _consumer._exchangeConfiguration.passive,
-						durable : _consumer._exchangeConfiguration.durable, autoDelete : _consumer._exchangeConfiguration.autoDelete},
+		var _name = _consumer._exchangeConfiguration.name;
+		var _options = {type : _consumer._exchangeConfiguration.type, passive : _consumer._exchangeConfiguration.passive,
+						durable : _consumer._exchangeConfiguration.durable, autoDelete : _consumer._exchangeConfiguration.autoDelete};
+		transcript.traceDebuggingObject ("declaring exchange `%s`...", _name, _options);
+		_consumer._exchange = _this._connection.exchange (_name, _options,
 				function () { _bindQueue (); });
 	};
 	
@@ -94,14 +106,16 @@ Connector.prototype.createConsumer = function (_consumerConfiguration, _queueCon
 		var _exchangeName = _consumer._bindingConfiguration.exchange;
 		if ((_exchangeName === null) || (_exchangeName === undefined))
 			_exchangeName = _consumer._exchangeConfiguration.name;
-		_consumer._queue.bind (_exchangeName, _consumer._bindingConfiguration.routingKey);
+		var _routingKey = _consumer._bindingConfiguration.routingKey;
+		transcript.traceDebugging ("binding `%s` on `%s` with `%s`...", _consumer._queueName, _routingKey, _exchangeName);
+		_consumer._queue.bind (_exchangeName, _routingKey);
 		_consumer._queue.on ("queueBindOk", function () { _subscribeQueue (); });
 	};
 	
 	var _subscribeQueue = function () {
-		_consumer._queue.subscribeRaw (
-				{ack : _consumer._consumerConfiguration.noAck, prefetchCount : _consumer._consumerConfiguration.prefetchCount},
-				_consume);
+		var _options = {ack : _consumer._consumerConfiguration.noAck, prefetchCount : _consumer._consumerConfiguration.prefetchCount};
+		transcript.traceDebugging ("consuming from `%s`", _consumer._queue.name);
+		_consumer._queue.subscribeRaw (_options, _consume);
 		_consumer._queue.on ("basicConsumeOk", function () {
 			_consumer._ready = true;
 			_consumer.emit ("ready");
@@ -158,6 +172,10 @@ Connector.prototype.createConsumer = function (_consumerConfiguration, _queueCon
 
 Connector.prototype.createPublisher = function (_publisherConfiguration, _exchangeConfiguration) {
 	var _this = this;
+	if (!this._ready)
+		throw (new Error ("connector not ready"));
+	
+	transcript.traceDebuggingObject ("creating publisher", [_publisherConfiguration, _exchangeConfiguration]);
 	
 	if (_publisherConfiguration === null)
 		_publisherConfiguration = {};
@@ -177,6 +195,9 @@ Connector.prototype.createPublisher = function (_publisherConfiguration, _exchan
 	_this._connection.on ("error", function (_error) {
 		_publisher._ready = false;
 		_publisher.emit ("error", _error);
+	});
+	_this._connection.on ("end", function () {
+		_publisher._ready = false;
 	});
 	
 	_publisher.publish = function (_message, _routingKey, _options) {
@@ -202,9 +223,11 @@ Connector.prototype.createPublisher = function (_publisherConfiguration, _exchan
 	};
 	
 	var _declareExchange = function () {
-		_publisher._exchange = _this._connection.exchange (_publisher._exchangeConfiguration.name,
-				{type : _publisher._exchangeConfiguration.type, passive : _publisher._exchangeConfiguration.passive,
-						durable : _publisher._exchangeConfiguration.durable, autoDelete : _publisher._exchangeConfiguration.autoDelete});
+		var _name = _publisher._exchangeConfiguration.name;
+		var _options = {type : _publisher._exchangeConfiguration.type, passive : _publisher._exchangeConfiguration.passive,
+						durable : _publisher._exchangeConfiguration.durable, autoDelete : _publisher._exchangeConfiguration.autoDelete};
+		transcript.traceDebuggingObject ("declaring exchange `%s`...", _name, _options);
+		_publisher._exchange = _this._connection.exchange (_name, _options);
 		_publisher._exchange.on ("open", function () {
 			_publisher._ready = true;
 			_publisher.emit ("ready");
@@ -217,22 +240,29 @@ Connector.prototype.createPublisher = function (_publisherConfiguration, _exchan
 };
 
 Connector.prototype.destroy = function () {
+	transcript.traceDebugging ("destroying connector...");
 	this._connection.end ();
 };
 
 Connector.prototype._onConnect = function () {
+	transcript.traceDebugging ("connector connected");
 	this.emit ("connect");
 };
 
 Connector.prototype._onReady = function () {
+	transcript.traceDebugging ("connector ready");
+	this._ready = true;
 	this.emit ("ready");
 };
 
 Connector.prototype._onClose = function (_failed) {
+	transcript.traceDebugging ("connector closed");
 	this.emit ("closed");
 };
 
 Connector.prototype._onError = function (_error) {
+	transcript.traceDebugging ("connector failed");
+	this.ready = false;
 	this.emit ("error", _error);
 };
 

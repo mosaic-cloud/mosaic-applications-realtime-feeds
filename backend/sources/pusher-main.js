@@ -3,22 +3,29 @@
 if (require.main !== module)
 	throw (new Error ());
 
-if (process.argv.length != 2)
-	throw (new Error ());
-
-if (process.env["_mosaic_feeds_pusher_urls"] === undefined)
-	throw (new Error ());
-
 // ---------------------------------------
 
-var configuration = require ("./configuration");
 var fs = require ("fs");
+
+var configuration = require ("./configuration");
 var queue = require ("./queue-lib");
 var transcript = require ("./transcript") (module);
 
 // ---------------------------------------
 
 function _main () {
+	
+	if (process.argv.length != 2) {
+		transcript.traceError ("invalid arguments; aborting!");
+		process.exit (1);
+		return;
+	}
+	
+	if (process.env["_mosaic_feeds_pusher_urls"] === undefined) {
+		transcript.traceError ("missing environment variable `_mosaic_feeds_pusher_urls`; aborting!");
+		process.exit (1);
+		return;
+	}
 	
 	var _urls = fs.readFileSync (process.env["_mosaic_feeds_pusher_urls"], "ascii");
 	_urls = _urls.split ("\n");

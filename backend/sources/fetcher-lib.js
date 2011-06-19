@@ -39,21 +39,9 @@ function _doFetchStep1 (_task) {
 							&& (
 								(_task.previousTaskOutcome.currentEtag === undefined)
 								|| (_task.previousTaskOutcome.currentTimestamp === undefined)
-								|| (_task.previousTaskOutcome.currentData === undefined)))
+								|| (_task.previousTaskOutcome.currentData === undefined)
+								|| (_task.previousTaskOutcome.updatedTimestamp === undefined)))
 							_task.previousTaskOutcome = null;
-					if (_task.previousTaskOutcome !== null)
-						try {
-							_task.previousEtag = _task.previousTaskOutcome.outcome.currentEtag;
-							_task.previousTimestamp = _task.previousTaskOutcome.outcome.currentTimestamp;
-						} catch (_error) {
-							_task.previousTaskOutcome = null;
-							_task.previousEtag = null;
-							_task.previousTimestamp = null;
-						}
-					else {
-						_task.previousEtag = null;
-						_task.previousTimestamp = null;
-					}
 					_task.taskRiakMetaData = _riakMetaData;
 					_doFetchStep2 (_task);
 				}
@@ -62,7 +50,9 @@ function _doFetchStep1 (_task) {
 
 function _doFetchStep2 (_task) {
 	transcript.traceDebugging ("fetching `%s` step 2 (fetching latest data)...", _task.url);
-	_fetchUrl (_task.url, _task.contentType, _task.previousEtag, _task.previousTimestamp,
+	_fetchUrl (_task.url, _task.contentType,
+			_task.previousTaskOutcome ? _task.previousTaskOutcome.previousEtag : null,
+			_task.previousTaskOutcome ? _task.previousTaskOutcome.previousTimestamp : null,
 			function (_error, _outcome, _data) {
 				if (_error !== null) {
 					_task.error = _error;
@@ -111,12 +101,17 @@ function _onFetchStep4 (_task) {
 		feed : _task.feedKey,
 		url : _task.url,
 		currentData : _task.dataKey,
+		currentEtag : _task.dataOutcome ? _task.dataOutcome.currentEtag : null,
 		currentTimestamp : new Date () .getTime (),
 		previousData : _task.previousTaskOutcome ? _task.previousTaskOutcome.currentData : null,
+		previousEtag : _task.previousTaskOutcome ? _task.previousTaskOutcome.currentEtag : null,
 		previousTimestamp : _task.previousTaskOutcome ? _task.previousTaskOutcome.currentTimestamp : null,
+		updatedTimestamp : _task.previousTaskOutcome ? _task.previousTaskOutcome.updatedTimestamp : null,
 		outcome : _task.dataOutcome,
 		error : _task.error ? _task.error : null
 	};
+	if (_task.currentTaskOutcome.currentData != _task.currentTaskOutcome.previousData)
+		_task.currentTaskOutcome.updatedTimestamp = _task.currentTaskOutcome.currentTimestamp;
 	_task.taskRiakMetaData.contentType = "application/json";
 	store.updateFeedTask (_task.context.riak, _task.taskKey, _task.currentTaskOutcome, _task.taskRiakMetaData,
 			function (_error, _riakMetaData) {

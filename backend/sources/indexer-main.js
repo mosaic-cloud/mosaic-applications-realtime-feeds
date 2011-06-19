@@ -3,16 +3,13 @@
 if (require.main !== module)
 	throw (new Error ());
 
-if (process.argv.length != 2)
-	throw (new Error ());
-
 // ---------------------------------------
 
 var configuration = require ("./configuration");
 var indexer = require ("./indexer-lib");
 var queue = require ("./queue-lib");
 var store = require ("./store-lib");
-var transcript = require ("./transcript") (module, "warning");
+var transcript = require ("./transcript") (module, "information");
 
 // ---------------------------------------
 
@@ -59,7 +56,7 @@ function _onIndexTaskSucceeded (_context, _url, _urlClass, _outcome) {
 function _main () {
 	
 	if (process.argv.length != 2) {
-		console.log ("error: invalid arguments");
+		transcript.traceError ("invalid arguments; aborting!");
 		process.exit (1);
 		return;
 	}
