@@ -3,6 +3,9 @@
 if (require.main !== module)
 	throw (new Error ());
 
+if (process.argv.length != 2)
+	throw (new Error ());
+
 // ---------------------------------------
 
 var configuration = require ("./configuration");

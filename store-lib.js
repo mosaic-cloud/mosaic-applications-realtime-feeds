@@ -112,7 +112,7 @@ function _fetch (_riak, _bucket, _key, _riakMetaData, _callback) {
 	_riak.get (_bucket, _key, _riakMetaData,
 			function (_error, _value, _riakMetaData) {
 				if (_error)
-					if (_riakMetaData.statusCode == 404) {
+					if ((_riakMetaData !== undefined) && (_riakMetaData.statusCode == 404)) {
 						_riakMetaData.contentType = undefined;
 						_riakMetaData.contentEncoding = undefined;
 						_riakMetaData.contentRange = undefined;

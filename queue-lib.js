@@ -216,6 +216,10 @@ Connector.prototype.createPublisher = function (_publisherConfiguration, _exchan
 	return (_publisher);
 };
 
+Connector.prototype.destroy = function () {
+	this._connection.end ();
+};
+
 Connector.prototype._onConnect = function () {
 	this.emit ("connect");
 };

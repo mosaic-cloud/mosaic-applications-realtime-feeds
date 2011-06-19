@@ -3,6 +3,9 @@
 if (require.main !== module)
 	throw (new Error ());
 
+if (process.argv.length != 2)
+	throw (new Error ());
+
 // ---------------------------------------
 
 var timers = require ("timers");
@@ -128,23 +131,6 @@ function _main () {
 			function (_error) {
 				transcript.traceErrorObject (_error);
 				process.exit (1);
-			});
-	
-	_context.rabbit.on ("ready",
-			function () {
-				_context.fetchBatchPublisher = _context.rabbit.createPublisher (
-						configuration.fetchTaskBatchPublisher, configuration.fetchTaskExchange);
-				_context.fetchBatchPublisher.on ("ready",
-						function () {
-							timers.setInterval (
-									function () {
-										for (var _index in configuration.feedTestUrls) {
-											var _url = configuration.feedTestUrls[_index];
-											transcript.traceDebugging ("sending fetch task for `%s`...", _url);
-											_context.fetchBatchPublisher.publish ({url : _url});
-										}
-									}, 10 * 1000);
-						});
 			});
 }
 
