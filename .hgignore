@@ -1,1 +1,9 @@
-node_modules
+
+syntax: regexp
+
+^\..*$
+
+^node_modules$
+
+^.*\#$
+^.*\~$

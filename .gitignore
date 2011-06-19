@@ -1,0 +1,10 @@
+
+.*
+
+!.gitignore
+!.hgignore
+
+node_modules
+
+*#
+*~
