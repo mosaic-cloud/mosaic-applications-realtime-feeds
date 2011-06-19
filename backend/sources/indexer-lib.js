@@ -245,7 +245,7 @@ function _doIndexFeedStep4 (_task) {
 // ---------------------------------------
 
 function _onIndexError (_task) {
-	transcript.traceError ("failed indexing `%s`: %s", _task.url, _task.error.reason);
+	transcript.traceDebuggingObject ("failed indexing `%s`", _task.url, _task.error);
 	_task.callback (_task.error, undefined);
 }
 

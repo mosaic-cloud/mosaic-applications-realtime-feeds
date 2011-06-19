@@ -3,7 +3,10 @@
 if (require.main !== module)
 	throw (new Error ());
 
-if (process.argv.length != 3)
+if (process.argv.length != 2)
+	throw (new Error ());
+
+if (process.env["_mosaic_feeds_pusher_urls"] === undefined)
 	throw (new Error ());
 
 // ---------------------------------------
@@ -17,7 +20,7 @@ var transcript = require ("./transcript") (module);
 
 function _main () {
 	
-	var _urls = fs.readFileSync (process.argv[2], "ascii");
+	var _urls = fs.readFileSync (process.env["_mosaic_feeds_pusher_urls"], "ascii");
 	_urls = _urls.split ("\n");
 	
 	var _rabbit = queue.createConnector (configuration.rabbit);

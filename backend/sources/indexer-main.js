@@ -33,7 +33,7 @@ function _onIndexTask (_context, _url, _urlClass, _data, _callback) {
 	indexer.indexData (_url, _data, _context,
 			function (_error, _outcome) {
 				if (_error !== null)
-					transcript.traceWarning ("failed indexing `%s`; ignoring!", _url);
+					transcript.traceWarningObject ("failed indexing `%s`; ignoring!", _url, _error);
 				else
 					_onIndexTaskSucceeded (_context, _url, _urlClass, _outcome);
 				_callback ();

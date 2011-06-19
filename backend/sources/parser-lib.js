@@ -7,6 +7,8 @@ if (require.main === module)
 
 var libxmljs = require ("libxmljs");
 
+var transcript = require ("./transcript") (module);
+
 // ---------------------------------------
 
 function _parse (_data, _contentType, _callback__) {
@@ -18,7 +20,11 @@ function _parse (_data, _contentType, _callback__) {
 		}
 	}
 	
-	if ((_contentType != "application/atom+xml; charset=utf-8") && (_contentType != "application/atom+xml")) {
+	_contentType = _contentType.toLowerCase ();
+	_contentType = _contentType.replace (" ", "");
+	_contentType = _contentType.split (";");
+	
+	if (_contentType[0] != "application/atom+xml") {
 		_callback ({reason : "unexpected-content-type", contentType : _contentType}, undefined);
 		return;
 	}
@@ -191,13 +197,17 @@ function _parse (_data, _contentType, _callback__) {
 					return (_state);
 				break;
 		}
-		if ((_text != null) && (_text.length > 0))
+		if ((_text != null) && (_text.length > 0)) {
 			_handleFail (_state, "element-text:" + _element[0]);
+			return;
+		}
 		return (_state);
 	};
 	
 	var _handleFail = function (_state, _event) {
-		_callback ({reason : "unexpected-parser-event", event : _event, state : _state});
+		var _error = {reason : "unexpected-parser-event", event : _event, state : _state};
+		transcript.traceDebugging ("failed parsing atom", _error);
+		_callback (_error);
 	};
 	
 	var _getAttribute = function (_attributes, _name, _default) {
@@ -225,7 +235,9 @@ function _parse (_data, _contentType, _callback__) {
 		});
 		
 		_parser.onEndDocument (function () {
-			_handleDocumentEnd (_state);
+			// if (_state === undefined)
+			//	return;
+			// _handleDocumentEnd (_state);
 		});
 		
 		_parser.onStartElementNS (function (_element, _attributes, _prefix, _uri, _namespaces) {
@@ -260,8 +272,8 @@ function _parse (_data, _contentType, _callback__) {
 			_element_stack.shift ();
 			_attributes_stack.shift ();
 			_prefix_stack.shift ();
-			_uri_stack.unshift ();
-			_namespaces_stack.unshift ();
+			_uri_stack.shift ();
+			_namespaces_stack.shift ();
 			if (_element_stack.length == 0)
 				_state = _handleDocumentEnd (_state);
 		});

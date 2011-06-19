@@ -132,7 +132,7 @@ function _onFetchStep4 (_task) {
 }
 
 function _onFetchError (_task) {
-	transcript.traceWarning ("failed fetching `%s`: %s", _task.url, _task.error.reason);
+	transcript.traceDebuggingObject ("failed fetching `%s`", _task.url, _task.error);
 	_task.callback (_task.error, undefined);
 }
 

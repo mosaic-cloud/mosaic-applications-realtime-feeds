@@ -1,0 +1,1 @@
+./run-component.bash

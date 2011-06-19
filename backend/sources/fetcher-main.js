@@ -34,7 +34,7 @@ function _onFetchTask (_context, _url, _urlClass, _callback) {
 	fetcher.fetch (_url, _context,
 			function (_error, _outcome) {
 				if (_error !== null)
-					transcript.traceWarning ("failed fetching `%s`; ignoring!", _url);
+					transcript.traceWarningObject ("failed fetching `%s`; ignoring!", _url, _error);
 				else
 					_onFetchTaskSucceeded (_context, _url, _urlClass, _outcome);
 				_callback ();
