@@ -38,40 +38,55 @@ function _onScavangeStep1 (_task) {
 						var _fetchAge = _now - _value.currentTimestamp;
 						var _staleAge = _value.currentTimestamp - _value.updatedTimestamp;
 						var _fetch = null;
-						if ((_fetch === null) && (_fetchAge <= (6 * 1000)))
-							_fetch = false;
-						if ((_fetch === null) && (_fetchAge >= (30 * 1000)))
-							_fetch = true;
-						if ((_fetch === null) && (_staleAge >= (_fetchAge / 4)))
-							_fetch = true;
-						if (!_fetch)
+						if ((_fetch === null) && (_fetchAge <= (12 * 1000)))
+							_fetch = [false, "fetchAge <=", _fetchAge];
+						if ((_fetch === null) && (_fetchAge >= (600 * 1000)))
+							_fetch = [true, "fetchAge >="];
+						if ((_fetch === null) && (_staleAge <= (_fetchAge * 2)))
+							_fetch = [true, "updateAge <="];
+						if (_fetch === null)
+							_fetch = [false, "default"];
+						if (_fetch && _fetch[0]) {
+							var _outcome = {
+									url : _value.url,
+									fetch : _fetch[0],
+									fetchReason : _fetch[1],
+									fetchMetrics : {
+											fetchAge : _fetchAge,
+											staleAge : _staleAge,
+									},
+							};
+							return ([_outcome]);
+						} else
 							return ([]);
-						return ([_value.url]);
 					})
 			.run (
-					function (_error, _urls) {
+					function (_error, _outcomes) {
 						if (_error) {
 							_task.error = {reason : "unexpected-riak-error", message : _error.toString ()};
 							_onScavangeError (_task);
 						} else
-							_onScavangeStep2 (_task, _urls);
+							_onScavangeStep2 (_task, _outcomes);
 					});
 }
 
-function _onScavangeStep2 (_task, _urls) {
+function _onScavangeStep2 (_task, _outcomes) {
 	transcript.traceInformation ("scavanging step 2 (sending fetch tasks)...");
 	if ((_task.context.fetchBatchPublisher !== undefined) && (_task.context.fetchBatchPublisher._ready)) {
-		for (var _urlIndex in _urls) {
-			var _url = _urls[_urlIndex];
-			transcript.traceInformation ("sending fetch task for `%s`...", _url);
-			_task.context.fetchBatchPublisher.publish ({url : _url});
+		for (var _outcomeIndex in _outcomes) {
+			var _outcome = _outcomes[_outcomeIndex];
+			if (_outcome.fetch) {
+				transcript.traceInformation ("sending fetch task for `%s` with `%s`...", _outcome.url, _outcome.fetchReason);
+				_task.context.fetchBatchPublisher.publish ({url : _outcome.url});
+			} else
+				transcript.traceDebugging ("ignoring `%s`...", _outcome.url, _outcome.fetchReason);
 		}
 	}
 	transcript.traceInformation ("succeeded scavanging");
 	_task.callback (null);
 }
 
-function _onSravangeError (_task) {
+function _onScavangeError (_task) {
 	transcript.traceWarningObject ("failed scavanging", _task.error);
 	_task.callback (_task.error);
 }

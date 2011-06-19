@@ -1,0 +1,37 @@
+{
+	"inputs" : "feed-items",
+	"query" : [
+		{
+			"map" : {
+				"language" : "javascript",
+				"source" : "
+					function (_values, _key, _argument) {
+						
+						var _object = Riak.mapValuesJson (_values) [0];
+						
+						_hashtags = [];
+						var _hashtagRegex = /(?=^|[^a-z0-9_])#([a-z0-9_]+)/g;
+						
+						var _titleHashtags = _object.title ? _object.title.toLowerCase () .match (_hashtagRegex) : null;
+						if (_titleHashtags)
+							_hashtags = _hashtags.concat (_titleHashtags);
+						
+						var _contentHashtags = _object.contents ? _object.content.toLowerCase () .match (_hashtagRegex) : null;
+						if (_contentHashtags)
+							_hashtags = _hashtags.concat (_contentHashtags);
+						
+						return (_hashtags);
+					}
+				",
+				"keep" : false,
+			},
+		}, {
+			"reduce" : {
+				"language" : "erlang",
+				"module" : "riak_kv_mapreduce",
+				"function" : "reduce_set_union",
+				"keep" : true,
+			},
+		},
+	]
+}

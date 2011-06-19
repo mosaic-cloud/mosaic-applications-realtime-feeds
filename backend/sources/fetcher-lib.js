@@ -40,8 +40,10 @@ function _doFetchStep1 (_task) {
 								(_task.previousTaskOutcome.currentEtag === undefined)
 								|| (_task.previousTaskOutcome.currentTimestamp === undefined)
 								|| (_task.previousTaskOutcome.currentData === undefined)
-								|| (_task.previousTaskOutcome.updatedTimestamp === undefined)))
-							_task.previousTaskOutcome = null;
+								|| (_task.previousTaskOutcome.updatedTimestamp === undefined)
+								|| (_task.previousTaskOutcome.outcome === undefined)
+								|| (_task.previousTaskOutcome.error === undefined)))
+						_task.previousTaskOutcome = null;
 					_task.taskRiakMetaData = _riakMetaData;
 					_doFetchStep2 (_task);
 				}
@@ -56,6 +58,7 @@ function _doFetchStep2 (_task) {
 			function (_error, _outcome, _data) {
 				if (_error !== null) {
 					_task.error = _error;
+					_task.outcome = _outcome;
 					_onFetchError (_task);
 				} else {
 					_task.dataOutcome = _outcome;
@@ -128,6 +131,7 @@ function _onFetchStep4 (_task) {
 
 function _onFetchError (_task) {
 	transcript.traceDebuggingObject ("failed fetching `%s`", _task.url, _task.error);
+	// ...
 	_task.callback (_task.error, undefined);
 }
 

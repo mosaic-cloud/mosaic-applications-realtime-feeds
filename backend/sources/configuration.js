@@ -26,8 +26,8 @@ module.exports.scavangeInterval = _scavangeInterval;
 
 // ---------------------------------------
 
-var _taskUrgentPrefetchCount = 1;
-var _taskBatchPrefetchCount = 16;
+var _taskUrgentPrefetchCount = 4;
+var _taskBatchPrefetchCount = 8;
 
 // ---------------------------------------
 

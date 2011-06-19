@@ -33,7 +33,7 @@ function _main () {
 	var _rabbit = queue.createConnector (configuration.rabbit);
 	_rabbit.on ("ready",
 			function () {
-				var _publisher = _rabbit.createPublisher (configuration.fetchTaskUrgentPublisher, configuration.fetchTaskExchange);
+				var _publisher = _rabbit.createPublisher (configuration.fetchTaskBatchPublisher, configuration.fetchTaskExchange);
 				_publisher.on ("ready",
 						function () {
 							for (var _urlIndex in _urls) {
