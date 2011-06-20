@@ -3,7 +3,7 @@
 _scripts="$( readlink -e -- ./scripts || true )"
 _tools="$( readlink -f -- ./.tools || true )"
 _sources="$( readlink -f -- ./sources || true )"
-_node_modules="$( readlink -f -- ./.node_modules || true )"
+_npm_prefix="$( readlink -f -- ./.npm || true )"
 
 _PATH="${_tools}/bin:${PATH}"
 
@@ -19,6 +19,13 @@ if test -z "${_npm}" ; then
 	_erl=erl
 fi
 
-_node_path="${_node_modules}"
+_node_path="${_npm_prefix}/node_modules"
 _node_args=()
-_node_env=()
+_node_env=(
+	PATH="${_PATH}"
+)
+
+_npm_args=( --prefix "${_npm_prefix}" )
+_npm_env=(
+	PATH="${_PATH}"
+)

@@ -1,13 +1,13 @@
 // ---------------------------------------
 
-if (require.main !== module)
+if (require.main === module)
 	throw (new Error ());
 
 // ---------------------------------------
 
 var configuration = require ("./configuration");
 var queue = require ("./queue-lib");
-var transcript = require ("./transcript") (module, "information");
+var transcript = require ("./transcript") (module, configuration.mainTranscriptLevel);
 
 // ---------------------------------------
 
@@ -34,6 +34,6 @@ function _main () {
 			});
 }
 
-_main ();
+module.exports.main = _main;
 
 // ---------------------------------------

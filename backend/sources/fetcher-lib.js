@@ -173,11 +173,13 @@ function _fetchUrl (_url, _contentType, _etag, _timestamp, _callback) {
 		headers : {}
 	};
 	if (_contentType !== null)
-		_requestOptions.headers["accept"] = _contentType;
+		_requestOptions.headers["Accept"] = _contentType;
 	if (_etag !== null)
-		_requestOptions.headers["if-none-match"] = _etag;
+		_requestOptions.headers["If-None-Match"] = _etag;
 	if (_timestamp !== null)
-		_requestOptions.headers["if-modified-since"] = new Date (_timestamp).toGMTString ();
+		_requestOptions.headers["If-Modified-Since"] = new Date (_timestamp).toGMTString ();
+	_requestOptions.headers["User-Agent"] = "mosaic-examples-realtime-feeds/0.1";
+	_requestOptions.headers["Referer"] = "http://mosaic-cloud.eu/";
 	
 	_operation.request = {}
 	_operation.response = {};
@@ -274,6 +276,11 @@ function _fetchUrl (_url, _contentType, _etag, _timestamp, _callback) {
 						_hosts420Age[_operation.urlHost] = configuration.fetcher420MaxAge;
 				} else
 					_hosts420Age[_operation.urlHost] = configuration.fetcher420MinAge;
+				if (_operation.response.headers["retry-after"] !== undefined) {
+					var _retryAfter = parseInt (_operation.response.headers["retry-after"]);
+					if (_retryAfter > 0)
+						_hosts420Age[_operation.urlHost] = _retryAfter * 1000;
+				}
 				transcript.traceWarning ("throtling initiated for `%s` (%.2f)...", _operation.urlHost, _hosts420Age[_operation.urlHost] / 1000);
 			}
 			_hosts420Last[_operation.urlHost] = _operation.finishTimestamp;

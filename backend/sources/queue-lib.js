@@ -81,16 +81,16 @@ Connector.prototype.createConsumer = function (_consumerConfiguration, _queueCon
 		var _options = {passive : _consumer._queueConfiguration.passive, durable : _consumer._queueConfiguration.durable,
 						exclusive : _consumer._queueConfiguration.exclusive, autoDelete : _consumer._queueConfiguration.autoDelete};
 		transcript.traceDebuggingObject ("declaring queue `%s`...", _name, _options);
-		_consumer._queue = _this._connection.queue (_name, _options,
-				function (_queue, _messagesCount, _consumersCount) {
-					_consumer._queueName = _queue.name;
-					if (_consumer._exchangeConfiguration !== null)
-						_declareExchange ();
-					else if (_consumer._bindingConfiguration !== null)
-						_bindQueue ();
-					else
-						_subscribeQueue ();
-				});
+		_consumer._queue = _this._connection.queue (_name, _options);
+		_consumer._queue.on ("open", function (_queue, _messagesCount, _consumersCount) {
+			_consumer._queueName = _queue.name;
+			if (_consumer._exchangeConfiguration !== null)
+				_declareExchange ();
+			else if (_consumer._bindingConfiguration !== null)
+				_bindQueue ();
+			else
+				_subscribeQueue ();
+		});
 	};
 	
 	var _declareExchange = function () {
@@ -98,8 +98,10 @@ Connector.prototype.createConsumer = function (_consumerConfiguration, _queueCon
 		var _options = {type : _consumer._exchangeConfiguration.type, passive : _consumer._exchangeConfiguration.passive,
 						durable : _consumer._exchangeConfiguration.durable, autoDelete : _consumer._exchangeConfiguration.autoDelete};
 		transcript.traceDebuggingObject ("declaring exchange `%s`...", _name, _options);
-		_consumer._exchange = _this._connection.exchange (_name, _options,
-				function () { _bindQueue (); });
+		_consumer._exchange = _this._connection.exchange (_name, _options);
+		_consumer._exchange.on ("open", function () {
+			_bindQueue ();
+		});
 	};
 	
 	var _bindQueue = function () {
@@ -109,7 +111,9 @@ Connector.prototype.createConsumer = function (_consumerConfiguration, _queueCon
 		var _routingKey = _consumer._bindingConfiguration.routingKey;
 		transcript.traceDebugging ("binding `%s` on `%s` with `%s`...", _consumer._queueName, _routingKey, _exchangeName);
 		_consumer._queue.bind (_exchangeName, _routingKey);
-		_consumer._queue.on ("queueBindOk", function () { _subscribeQueue (); });
+		_consumer._queue.on ("queueBindOk", function () {
+			_subscribeQueue ();
+		});
 	};
 	
 	var _subscribeQueue = function () {
@@ -143,26 +147,24 @@ Connector.prototype.createConsumer = function (_consumerConfiguration, _queueCon
 			_consumer.emit ("consume", _value, _headers, _acknowledge);
 		}
 		
-		_message.on ("data",
-				function (_data) {
-					_buffers.push (_data);
-				});
+		_message.on ("data", function (_data) {
+			_buffers.push (_data);
+		});
 		
-		_message.on ("end",
-				function () {
-					var _bufferSize = 0;
-					for (var _bufferIndex in _buffers)
-						_bufferSize += _buffers[_bufferIndex].length;
-					var _buffer = new Buffer (_bufferSize);
-					var _bufferOffset = 0;
-					for (var _bufferIndex in _buffers) {
-						var _bufferItem = _buffers[_bufferIndex];
-						_bufferItem.copy (_buffer, _bufferOffset);
-						_bufferOffset += _bufferItem.length;
-					}
-					_message.data = _buffer;
-					_dispatch ();
-				});
+		_message.on ("end", function () {
+			var _bufferSize = 0;
+			for (var _bufferIndex in _buffers)
+				_bufferSize += _buffers[_bufferIndex].length;
+			var _buffer = new Buffer (_bufferSize);
+			var _bufferOffset = 0;
+			for (var _bufferIndex in _buffers) {
+				var _bufferItem = _buffers[_bufferIndex];
+				_bufferItem.copy (_buffer, _bufferOffset);
+				_bufferOffset += _bufferItem.length;
+			}
+			_message.data = _buffer;
+			_dispatch ();
+		});
 	};
 	
 	_declareQueue ();

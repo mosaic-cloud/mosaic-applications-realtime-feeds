@@ -222,15 +222,15 @@ function _parse (_data, _contentType, _callback__) {
 	var _parser = new libxmljs.SaxParser (function (_parser) {
 		
 		var _state = undefined;
-		var _element_stack = null;
-		var _attributes_stack = null;
-		var _prefix_stack = null;
-		var _uri_stack = null;
-		var _namespaces_stack = null;
+		var _elementStack = null;
+		var _attributesStack = null;
+		var _prefixStack = null;
+		var _uriStack = null;
+		var _namespacesStack = null;
 		var _text = null;
 		
 		_parser.onStartDocument (function () {
-			_element_stack = []; _attributes_stack = []; _prefix_stack = []; _uri_stack = []; _namespaces_stack = [];
+			_elementStack = []; _attributesStack = []; _prefixStack = []; _uriStack = []; _namespacesStack = [];
 			_state = _handleDocumentStart ();
 		});
 		
@@ -245,17 +245,17 @@ function _parse (_data, _contentType, _callback__) {
 				return;
 			if (_text !== null) {
 				if (_text.length > 0)
-					_state = _handleElementText (_state, _element_stack, _attributes_stack, _prefix_stack, _uri_stack, _namespaces_stack, _text.join (''));
+					_state = _handleElementText (_state, _elementStack, _attributesStack, _prefixStack, _uriStack, _namespacesStack, _text.join (''));
 				_text = null;
 			}
 			if (_state === undefined)
 				return;
-			_element_stack.unshift (_element);
-			_attributes_stack.unshift (_attributes);
-			_prefix_stack.unshift (_prefix);
-			_uri_stack.unshift (_uri);
-			_namespaces_stack.unshift (_namespaces);
-			_state = _handleElementStart (_state, _element_stack, _attributes_stack, _prefix_stack, _uri_stack, _namespaces_stack);
+			_elementStack.unshift (_element);
+			_attributesStack.unshift (_attributes);
+			_prefixStack.unshift (_prefix);
+			_uriStack.unshift (_uri);
+			_namespacesStack.unshift (_namespaces);
+			_state = _handleElementStart (_state, _elementStack, _attributesStack, _prefixStack, _uriStack, _namespacesStack);
 		});
 		
 		_parser.onEndElementNS (function (_element, _prefix, _uri) {
@@ -263,18 +263,18 @@ function _parse (_data, _contentType, _callback__) {
 				return;
 			if (_text !== null) {
 				if (_text.length > 0)
-					_state = _handleElementText (_state, _element_stack, _attributes_stack, _prefix_stack, _uri_stack, _namespaces_stack, _text.join (''));
+					_state = _handleElementText (_state, _elementStack, _attributesStack, _prefixStack, _uriStack, _namespacesStack, _text.join (''));
 				_text = null;
 			}
 			if (_state === undefined)
 				return;
-			_state = _handleElementEnd (_state, _element_stack, _attributes_stack, _prefix_stack, _uri_stack, _namespaces_stack);
-			_element_stack.shift ();
-			_attributes_stack.shift ();
-			_prefix_stack.shift ();
-			_uri_stack.shift ();
-			_namespaces_stack.shift ();
-			if (_element_stack.length == 0)
+			_state = _handleElementEnd (_state, _elementStack, _attributesStack, _prefixStack, _uriStack, _namespacesStack);
+			_elementStack.shift ();
+			_attributesStack.shift ();
+			_prefixStack.shift ();
+			_uriStack.shift ();
+			_namespacesStack.shift ();
+			if (_elementStack.length == 0)
 				_state = _handleDocumentEnd (_state);
 		});
 		

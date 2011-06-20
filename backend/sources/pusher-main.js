@@ -1,6 +1,6 @@
 // ---------------------------------------
 
-if (require.main !== module)
+if (require.main === module)
 	throw (new Error ());
 
 // ---------------------------------------
@@ -10,7 +10,7 @@ var timers = require ("timers");
 
 var configuration = require ("./configuration");
 var queue = require ("./queue-lib");
-var transcript = require ("./transcript") (module);
+var transcript = require ("./transcript") (module, configuration.mainTranscriptLevel);
 
 // ---------------------------------------
 
@@ -40,25 +40,36 @@ function _main () {
 				_context.publisher.on ("ready", _onPush);
 			});
 	
+	_context.loopUrls = [];
+	_context.loopIndex = 0;
+	
 	function _onPush () {
-		var _url = _context.urls.pop ();
+		var _url = _context.loopUrls.pop ();
 		if (_url === undefined) {
-			_context.rabbit.destroy ();
-			return;
+			_context.loopIndex += 1;
+			if (_context.loopIndex <= configuration.pusherLoopCount) {
+				_context.loopUrls = _context.urls;
+				if (configuration.pusherLoopDelay > 0)
+					timers.setTimeout (_onPush, configuration.pusherLoopDelay);
+				else
+					process.nextTick (_onPush);
+			} else
+				_context.rabbit.destroy ();
+		} else {
+			_url = _url.trim ();
+			if (_url != "") {
+				transcript.traceInformation ("pushing `%s`...", _url);
+				_context.publisher.publish ({url : _url});
+				if (configuration.pusherPushDelay > 0)
+					timers.setTimeout (_onPush, configuration.pusherPushDelay);
+				else
+					process.nextTick (_onPush);
+			} else
+				_onPush ();
 		}
-		_url = _url.trim ();
-		if (_url != "") {
-			transcript.traceInformation ("pushing `%s`...", _url);
-			_context.publisher.publish ({url : _url});
-			if (configuration.pusherInterval > 0)
-				timers.setTimeout (_onPush, configuration.pusherInterval);
-			else
-				process.nextTick (_onPush);
-		} else
-			_onPush ();
 	}
 }
 
-_main ();
+module.exports.main = _main;
 
 // ---------------------------------------

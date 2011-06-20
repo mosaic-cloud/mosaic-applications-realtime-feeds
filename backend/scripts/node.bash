@@ -8,4 +8,8 @@ _node_env+=(
 		NODE_PATH="${_sources}:${_node_path}"
 )
 
-exec env "${_node_env}" exec "${_node}" "${_node_args}"
+if test "${#_node_args[@]}" -ge 1 ; then
+	exec env "${_node_env[@]}" "${_node}" "${_node_args[@]}"
+else
+	exec env "${_node_env[@]}" "${_node}"
+fi

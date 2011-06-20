@@ -5,6 +5,18 @@ if (require.main === module)
 
 // ---------------------------------------
 
+module.exports.mainTranscriptLevel = "information";
+
+// ---------------------------------------
+
+var _riakGroup = "9cdce23e78027ef6a52636da7db820c47e695d11";
+var _rabbitGroup = "8cd74b5e4ecd322fd7bbfc762ed6cf7d601eede8";
+
+module.exports.riakGroup = _riakGroup;
+module.exports.rabbitGroup = _rabbitGroup;
+
+// ---------------------------------------
+
 var _riak = {
 		host : "127.0.0.1",
 		port : 24637,
@@ -27,12 +39,14 @@ var _fetcher420MaxAge = 30 * _fetcherMinFetchAge;
 var _fetcher420AgeMultiplier = 2.0;
 var _fetcher420AgeDemultiplier = 2.5;
 
-var _scavangerInterval = 3 * _fetcherMinFetchAge;
+var _scavangerInterval = 6 * _fetcherMinFetchAge;
 var _scavangerMinFetchAge = 6 * _fetcherMinFetchAge;
 var _scavangerMaxFetchAge = 600 * _fetcherMinFetchAge;
 var _scavangerMaxStaleAgeMultiplier = 1;
 
-var _pusherInterval = 0;
+var _pusherPushDelay = 1 * 1000;
+var _pusherLoopDelay = _pusherPushDelay;
+var _pusherLoopCount = 1024 * 1024;
 
 module.exports.fetcherMinFetchAge = _fetcherMinFetchAge;
 module.exports.fetcherPushDelay = _fetcherPushDelay;
@@ -44,7 +58,9 @@ module.exports.scavangerInterval = _scavangerInterval;
 module.exports.scavangerMinFetchAge = _scavangerMinFetchAge;
 module.exports.scavangerMaxFetchAge = _scavangerMaxFetchAge;
 module.exports.scavangerMaxStaleAgeMultiplier = 2;
-module.exports.pusherInterval = _pusherInterval;
+module.exports.pusherPushDelay = _pusherPushDelay;
+module.exports.pusherLoopDelay = _pusherLoopDelay;
+module.exports.pusherLoopCount = _pusherLoopCount;
 
 // ---------------------------------------
 

@@ -1,6 +1,6 @@
 // ---------------------------------------
 
-if (require.main !== module)
+if (require.main === module)
 	throw (new Error ());
 
 // ---------------------------------------
@@ -11,7 +11,7 @@ var configuration = require ("./configuration");
 var fetcher = require ("./fetcher-lib");
 var queue = require ("./queue-lib");
 var store = require ("./store-lib");
-var transcript = require ("./transcript") (module, "warning");
+var transcript = require ("./transcript") (module, configuration.mainTranscriptLevel);
 
 // ---------------------------------------
 
@@ -161,6 +161,6 @@ function _main () {
 			});
 }
 
-_main ();
+module.exports.main = _main;
 
 // ---------------------------------------
