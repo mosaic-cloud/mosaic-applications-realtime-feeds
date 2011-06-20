@@ -6,6 +6,7 @@ if (require.main !== module)
 // ---------------------------------------
 
 var fs = require ("fs");
+var timers = require ("timers");
 
 var configuration = require ("./configuration");
 var queue = require ("./queue-lib");
@@ -27,26 +28,35 @@ function _main () {
 		return;
 	}
 	
-	var _urls = fs.readFileSync (process.env["_mosaic_feeds_pusher_urls"], "ascii");
-	_urls = _urls.split ("\n");
+	var _context = {};
 	
-	var _rabbit = queue.createConnector (configuration.rabbit);
-	_rabbit.on ("ready",
+	_context.urls = fs.readFileSync (process.env["_mosaic_feeds_pusher_urls"], "ascii") .split ("\n");
+	
+	_context.rabbit = queue.createConnector (configuration.rabbit);
+	_context.rabbit.on ("ready",
 			function () {
-				var _publisher = _rabbit.createPublisher (configuration.fetchTaskBatchPublisher, configuration.fetchTaskExchange);
-				_publisher.on ("ready",
-						function () {
-							for (var _urlIndex in _urls) {
-								var _url = _urls[_urlIndex];
-								_url = _url.trim ();
-								if (_url != "") {
-									transcript.traceInformation ("pushing `%s`...", _url);
-									_publisher.publish ({url : _url});
-								}
-							}
-							_rabbit.destroy ();
-						});
+				_context.publisher = _context.rabbit.createPublisher (
+						configuration.fetchTaskPushPublisher, configuration.fetchTaskExchange);
+				_context.publisher.on ("ready", _onPush);
 			});
+	
+	function _onPush () {
+		var _url = _context.urls.pop ();
+		if (_url === undefined) {
+			_context.rabbit.destroy ();
+			return;
+		}
+		_url = _url.trim ();
+		if (_url != "") {
+			transcript.traceInformation ("pushing `%s`...", _url);
+			_context.publisher.publish ({url : _url});
+			if (configuration.pusherInterval > 0)
+				timers.setTimeout (_onPush, configuration.pusherInterval);
+			else
+				process.nextTick (_onPush);
+		} else
+			_onPush ();
+	}
 }
 
 _main ();

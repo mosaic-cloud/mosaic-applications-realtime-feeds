@@ -20,14 +20,37 @@ module.exports.rabbit = _rabbit;
 
 // ---------------------------------------
 
-var _scavangeInterval = 6 * 1000;
+var _fetcherMinFetchAge = 12 * 1000;
+var _fetcherPushDelay = 0.1 * 1000;
+var _fetcher420MinAge = 1 * _fetcherMinFetchAge;
+var _fetcher420MaxAge = 30 * _fetcherMinFetchAge;
+var _fetcher420AgeMultiplier = 2.0;
+var _fetcher420AgeDemultiplier = 2.5;
 
-module.exports.scavangeInterval = _scavangeInterval;
+var _scavangerInterval = 3 * _fetcherMinFetchAge;
+var _scavangerMinFetchAge = 6 * _fetcherMinFetchAge;
+var _scavangerMaxFetchAge = 600 * _fetcherMinFetchAge;
+var _scavangerMaxStaleAgeMultiplier = 1;
+
+var _pusherInterval = 0;
+
+module.exports.fetcherMinFetchAge = _fetcherMinFetchAge;
+module.exports.fetcherPushDelay = _fetcherPushDelay;
+module.exports.fetcher420MaxAge = _fetcher420MaxAge;
+module.exports.fetcher420MinAge = _fetcher420MinAge;
+module.exports.fetcher420AgeMultiplier = _fetcher420AgeMultiplier;
+module.exports.fetcher420AgeDemultiplier = _fetcher420AgeDemultiplier;
+module.exports.scavangerInterval = _scavangerInterval;
+module.exports.scavangerMinFetchAge = _scavangerMinFetchAge;
+module.exports.scavangerMaxFetchAge = _scavangerMaxFetchAge;
+module.exports.scavangerMaxStaleAgeMultiplier = 2;
+module.exports.pusherInterval = _pusherInterval;
 
 // ---------------------------------------
 
 var _taskUrgentPrefetchCount = 4;
-var _taskBatchPrefetchCount = 8;
+var _taskBatchPrefetchCount = 16;
+var _taskPushPrefetchCount = 1;
 
 // ---------------------------------------
 
@@ -55,8 +78,17 @@ var _fetchTaskBatchQueue = {
 		passive : _fetchTaskExchange.passive,
 };
 
+var _fetchTaskPushQueue = {
+		name : _fetchTaskExchange.name + ".push",
+		durable : _fetchTaskExchange.durable,
+		exclusive : false,
+		autoDelete : _fetchTaskExchange.autoDelete,
+		passive : _fetchTaskExchange.passive,
+};
+
 var _fetchTaskUrgentRoutingKey = "urgent";
 var _fetchTaskBatchRoutingKey = "batch";
+var _fetchTaskPushRoutingKey = "push";
 
 var _fetchTaskUrgentBinding = {
 		exchange : _fetchTaskExchange.name,
@@ -66,6 +98,11 @@ var _fetchTaskUrgentBinding = {
 var _fetchTaskBatchBinding = {
 		exchange : _fetchTaskExchange.name,
 		routingKey : _fetchTaskBatchRoutingKey,
+};
+
+var _fetchTaskPushBinding = {
+		exchange : _fetchTaskExchange.name,
+		routingKey : _fetchTaskPushRoutingKey,
 };
 
 var _fetchTaskUrgentConsumer = {
@@ -78,12 +115,21 @@ var _fetchTaskBatchConsumer = {
 		prefetchCount : _taskBatchPrefetchCount,
 };
 
+var _fetchTaskPushConsumer = {
+		noAck : true,
+		prefetchCount : _taskPushPrefetchCount,
+};
+
 var _fetchTaskUrgentPublisher = {
 		routingKey : _fetchTaskUrgentRoutingKey,
 };
 
 var _fetchTaskBatchPublisher = {
 		routingKey : _fetchTaskBatchRoutingKey,
+};
+
+var _fetchTaskPushPublisher = {
+		routingKey : _fetchTaskPushRoutingKey,
 };
 
 module.exports.fetchTaskExchange = _fetchTaskExchange;
@@ -97,6 +143,11 @@ module.exports.fetchTaskBatchRoutingKey = _fetchTaskBatchRoutingKey;
 module.exports.fetchTaskBatchBinding = _fetchTaskBatchBinding;
 module.exports.fetchTaskBatchConsumer = _fetchTaskBatchConsumer;
 module.exports.fetchTaskBatchPublisher = _fetchTaskBatchPublisher;
+module.exports.fetchTaskPushQueue = _fetchTaskPushQueue;
+module.exports.fetchTaskPushRoutingKey = _fetchTaskPushRoutingKey;
+module.exports.fetchTaskPushBinding = _fetchTaskPushBinding;
+module.exports.fetchTaskPushConsumer = _fetchTaskPushConsumer;
+module.exports.fetchTaskPushPublisher = _fetchTaskPushPublisher;
 
 // ---------------------------------------
 

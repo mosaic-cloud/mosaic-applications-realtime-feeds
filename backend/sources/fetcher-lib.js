@@ -34,6 +34,7 @@ function _doFetchStep1 (_task) {
 					_task.error = _error;
 					_onFetchError (_task);
 				} else {
+					_task.taskRiakMetaData = _riakMetaData;
 					_task.previousTaskOutcome = _previousTaskOutcome;
 					if ((_task.previousTaskOutcome !== null)
 							&& (
@@ -44,8 +45,13 @@ function _doFetchStep1 (_task) {
 								|| (_task.previousTaskOutcome.outcome === undefined)
 								|| (_task.previousTaskOutcome.error === undefined)))
 						_task.previousTaskOutcome = null;
-					_task.taskRiakMetaData = _riakMetaData;
-					_doFetchStep2 (_task);
+					if ((_task.previousTaskOutcome === null)
+							|| ((new Date () .getTime () - _task.previousTaskOutcome.currentTimestamp) > configuration.fetcherMinFetchAge))
+						_doFetchStep2 (_task);
+					else {
+						_task.error = {reason : "rejected", cause : "fetchAge <="};
+						_onFetchError (_task);
+					}
 				}
 			});
 }
@@ -91,7 +97,7 @@ function _onFetchStep3a (_task) {
 
 function _onFetchStep3b (_task) {
 	transcript.traceDebugging ("fetching `%s` step 3b...", _task.url);
-	_task.dataKey = _task.previousTaskOutcome.currentData;
+	_task.dataKey = _task.previousTaskOutcome ? _task.previousTaskOutcome.currentData : null;
 	_task.dataRiakMetaData = null;
 	_onFetchStep4 (_task);
 }
@@ -131,11 +137,13 @@ function _onFetchStep4 (_task) {
 
 function _onFetchError (_task) {
 	transcript.traceDebuggingObject ("failed fetching `%s`", _task.url, _task.error);
-	// ...
 	_task.callback (_task.error, undefined);
 }
 
 // ---------------------------------------
+
+var _hosts420Last = {};
+var _hosts420Age = {};
 
 function _fetchUrl (_url, _contentType, _etag, _timestamp, _callback) {
 	
@@ -150,11 +158,18 @@ function _fetchUrl (_url, _contentType, _etag, _timestamp, _callback) {
 	if (_callback === undefined)
 		throw (new Error ());
 	
+	var _operation = {};
+	_operation.url = _url;
+	
 	_url = url.parse (_url, false);
+	_operation.urlHost = _url.host;
+	_operation.urlPort = _url.port ? _url.port : 80;
+	_operation.urlPath = _url.pathname + _url.search;
+	
 	var _requestOptions = {
-		host : _url.host,
-		port : _url.port ? _url.port : 80,
-		path : _url.pathname + _url.search,
+		host : _operation.urlHost,
+		port : _operation.urlPort,
+		path : _operation.urlPath,
 		headers : {}
 	};
 	if (_contentType !== null)
@@ -164,7 +179,6 @@ function _fetchUrl (_url, _contentType, _etag, _timestamp, _callback) {
 	if (_timestamp !== null)
 		_requestOptions.headers["if-modified-since"] = new Date (_timestamp).toGMTString ();
 	
-	var _operation = {};
 	_operation.request = {}
 	_operation.response = {};
 	
@@ -176,7 +190,10 @@ function _fetchUrl (_url, _contentType, _etag, _timestamp, _callback) {
 	_operation.previousTimestamp = _timestamp;
 	_operation.beginTimestamp = new Date () .getTime ();
 	
-	var _request = http.get (_requestOptions);
+	function _onResponseAbort (_request, _response) {
+		_response.on ("data", function () {});
+		_response.on ("end", function () {});
+	}
 	
 	function _onResponse200 (_request, _response) {
 		
@@ -230,7 +247,7 @@ function _fetchUrl (_url, _contentType, _etag, _timestamp, _callback) {
 	};
 	
 	function _onResponse304 (_request, _response) {
-		// _request.abort ();
+		_onResponseAbort (_request, _response);
 		_operation.currentEtag = _operation.previousEtag;
 		_operation.currentTimestamp = _operation.previousTimestamp;
 		_operation.contentType = null;
@@ -240,8 +257,33 @@ function _fetchUrl (_url, _contentType, _etag, _timestamp, _callback) {
 		_callback (null, _operation, null);
 	};
 	
+	function _onResponse420 (_request, _response, _simulated) {
+		if (!_simulated)
+			_onResponseAbort (_request, _response);
+		_operation.currentEtag = _operation.previousEtag;
+		_operation.currentTimestamp = _operation.previousTimestamp;
+		_operation.contentType = null;
+		_operation.contentEncoding = null;
+		_operation.contentLength = null;
+		_operation.finishTimestamp = new Date () .getTime ();
+		if (!_simulated) {
+			if ((_hosts420Last[_operation.urlHost] === undefined) || (_hosts420Last[_operation.urlHost] === null)) {
+				if (_hosts420Age[_operation.urlHost] !== undefined) {
+					_hosts420Age[_operation.urlHost] *= configuration.fetcher420AgeMultiplier;
+					if (_hosts420Age[_operation.urlHost] > configuration.fetcher420MaxAge)
+						_hosts420Age[_operation.urlHost] = configuration.fetcher420MaxAge;
+				} else
+					_hosts420Age[_operation.urlHost] = configuration.fetcher420MinAge;
+				transcript.traceWarning ("throtling initiated for `%s` (%.2f)...", _operation.urlHost, _hosts420Age[_operation.urlHost] / 1000);
+			}
+			_hosts420Last[_operation.urlHost] = _operation.finishTimestamp;
+		}
+		_operation.error = {reason : "unexpected-status-code", statusCode : _operation.response.statusCode, simulated : _simulated};
+		_callback (_operation.error, _operation, null);
+	};
+	
 	function _onResponseXXX (_request, _response) {
-		// _request.abort ();
+		_onResponseAbort (_request, _response);
 		_operation.contentType = null;
 		_operation.finishTimestamp = new Date () .getTime ();
 		_operation.error = {reason : "unexpected-status-code", statusCode : _operation.response.statusCode};
@@ -256,13 +298,36 @@ function _fetchUrl (_url, _contentType, _etag, _timestamp, _callback) {
 			_onResponse200 (_request, _response);
 		else if (_operation.response.statusCode == 304)
 			_onResponse304 (_request, _response);
+		else if (_operation.response.statusCode == 420)
+			_onResponse420 (_request, _response, false);
 		else
 			_onResponseXXX (_request, _response);
+		if ((_operation.response.statusCode != 420) && (_hosts420Last[_operation.urlHost] === null)) {
+			delete _hosts420Last[_operation.urlHost];
+			_hosts420Age[_operation.urlHost] /= configuration.fetcher420AgeDemultiplier;
+			if (_hosts420Age[_operation.urlHost] < configuration.fetcher420MinAge)
+				_hosts420Age[_operation.urlHost] = configuration.fetcher420MinAge;
+			transcript.traceWarning ("throtling finalized for `%s` (%.2f)...", _operation.urlHost, _hosts420Age[_operation.urlHost] / 1000);
+		}
 	};
 	
 	function _onError (_error) {
 		_callback ({reason : "unexpected-error", error : _error}, undefined, undefined);
 	};
+	
+	if (_hosts420Last[_operation.urlHost] !== undefined) {
+		if ((_hosts420Last[_operation.urlHost] === null)
+				|| ((_operation.beginTimestamp - _hosts420Last[_operation.urlHost]) <= _hosts420Age[_operation.urlHost])) {
+			_operation.response.httpVersion = "1.1";
+			_operation.response.statusCode = 420;
+			_operation.response.headers = {};
+			_onResponse420 (null, null, true);
+			return;
+		} else
+			_hosts420Last[_operation.urlHost] = null;
+	}
+	
+	var _request = http.get (_requestOptions);
 	
 	_request.on ("response", _onResponse);
 	_request.on ("error", _onError);

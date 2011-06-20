@@ -9,7 +9,7 @@ var configuration = require ("./configuration");
 var indexer = require ("./indexer-lib");
 var queue = require ("./queue-lib");
 var store = require ("./store-lib");
-var transcript = require ("./transcript") (module, "information");
+var transcript = require ("./transcript") (module, "warning");
 
 // ---------------------------------------
 

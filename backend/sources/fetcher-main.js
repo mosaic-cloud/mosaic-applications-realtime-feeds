@@ -5,11 +5,13 @@ if (require.main !== module)
 
 // ---------------------------------------
 
+var timers = require ("timers");
+
 var configuration = require ("./configuration");
 var fetcher = require ("./fetcher-lib");
 var queue = require ("./queue-lib");
 var store = require ("./store-lib");
-var transcript = require ("./transcript") (module, "information");
+var transcript = require ("./transcript") (module, "warning");
 
 // ---------------------------------------
 
@@ -29,7 +31,15 @@ function _onFetchTask (_context, _url, _urlClass, _callback) {
 	fetcher.fetch (_url, _context,
 			function (_error, _outcome) {
 				if (_error !== null)
-					transcript.traceWarningObject ("failed fetching `%s`; ignoring!", _url, _error);
+					if (_error.reason == "unexpected-status-code")
+						if (_error.statusCode != 420)
+							transcript.traceWarning ("failed fetching `%s` (status code: %d); ignoring!", _url, _error.statusCode);
+						else
+							transcript.traceInformation ("failed fetching `%s` (status code: %d); ignoring!", _url, _error.statusCode);
+					else if (_error.reason == "rejected")
+						transcript.traceWarning ("failed fetching `%s` (rejected: %s); ignoring!", _url, _error.cause);
+					else
+						transcript.traceWarningObject ("failed fetching `%s`; ignoring!", _url, _error);
 				else
 					_onFetchTaskSucceeded (_context, _url, _urlClass, _outcome);
 				_callback ();
@@ -54,6 +64,7 @@ function _onFetchTaskSucceeded (_context, _url, _urlClass, _outcome) {
 					transcript.traceWarning ("failed sending urgent index task; ignoring!");
 				break;
 			case "batch" :
+			case "push" :
 				if ((_context.indexBatchPublisher !== undefined) && (_context.indexBatchPublisher._ready))
 					_context.indexBatchPublisher.publish (_message);
 				else
@@ -113,6 +124,27 @@ function _main () {
 								if (_message.urlClass === undefined)
 									_message.urlClass = "batch";
 								_onFetchTaskMessage (_context, _message, _acknowledge);
+							}
+						});
+				
+				_context.fetchPushConsumer = _context.rabbit.createConsumer (
+						configuration.fetchTaskPushConsumer, configuration.fetchTaskPushQueue,
+						configuration.fetchTaskPushBinding, configuration.fetchTaskExchange);
+				_context.fetchPushConsumer.on ("consume",
+						function (_message, _headers, _acknowledge) {
+							if (_headers.contentType != "application/json") {
+								transcript.traceError ("received invalid fetch message content type: `%s`; ignoring!", _headers.contentType);
+								_acknowledge ();
+							} else {
+								if (_message.urlClass === undefined)
+									_message.urlClass = "push";
+								_onFetchTaskMessage (_context, _message,
+										function () {
+											if (configuration.fetcherPushDelay > 0)
+												timers.setTimeout (_acknowledge, configuration.fetcherPushDelay);
+											else
+												_acknowledge ();
+										});
 							}
 						});
 				

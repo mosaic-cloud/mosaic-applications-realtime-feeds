@@ -23,11 +23,11 @@ function _scavange (_context, _callback) {
 }
 
 function _onScavangeStep1 (_task) {
-	transcript.traceInformation ("scavanging step 1 (searching stale feeds)...");
+	transcript.traceDebugging ("scavanging step 1 (searching stale feeds)...");
 	_task.context.riak
 			.add (configuration.feedTaskBucket)
 			.map (
-					function (_values, _key, _argument) {
+					function (_values, _key, _arguments) {
 						var _value = Riak.mapValuesJson (_values) [0];
 						delete _value.outcome;
 						if (_value.type !== "fetch-data")
@@ -38,11 +38,11 @@ function _onScavangeStep1 (_task) {
 						var _fetchAge = _now - _value.currentTimestamp;
 						var _staleAge = _value.currentTimestamp - _value.updatedTimestamp;
 						var _fetch = null;
-						if ((_fetch === null) && (_fetchAge <= (12 * 1000)))
+						if ((_fetch === null) && (_fetchAge <= _arguments[0]))
 							_fetch = [false, "fetchAge <=", _fetchAge];
-						if ((_fetch === null) && (_fetchAge >= (600 * 1000)))
+						if ((_fetch === null) && (_fetchAge >= _arguments[1]))
 							_fetch = [true, "fetchAge >="];
-						if ((_fetch === null) && (_staleAge <= (_fetchAge * 2)))
+						if ((_fetch === null) && (_staleAge <= (_fetchAge * _arguments[2])))
 							_fetch = [true, "updateAge <="];
 						if (_fetch === null)
 							_fetch = [false, "default"];
@@ -59,7 +59,8 @@ function _onScavangeStep1 (_task) {
 							return ([_outcome]);
 						} else
 							return ([]);
-					})
+					},
+					[configuration.scavangerMinFetchAge, configuration.scavangerMaxFetchAge, configuration.scavangerMaxStaleAgeMultiplier])
 			.run (
 					function (_error, _outcomes) {
 						if (_error) {
@@ -71,18 +72,22 @@ function _onScavangeStep1 (_task) {
 }
 
 function _onScavangeStep2 (_task, _outcomes) {
-	transcript.traceInformation ("scavanging step 2 (sending fetch tasks)...");
+	transcript.traceDebugging ("scavanging step 2 (sending fetch tasks)...");
+	var _ignored = _outcomes.length;
+	var _pushed = 0;
 	if ((_task.context.fetchBatchPublisher !== undefined) && (_task.context.fetchBatchPublisher._ready)) {
 		for (var _outcomeIndex in _outcomes) {
 			var _outcome = _outcomes[_outcomeIndex];
 			if (_outcome.fetch) {
-				transcript.traceInformation ("sending fetch task for `%s` with `%s`...", _outcome.url, _outcome.fetchReason);
+				transcript.traceDebugging ("sending fetch task for `%s` with `%s`...", _outcome.url, _outcome.fetchReason);
 				_task.context.fetchBatchPublisher.publish ({url : _outcome.url});
+				_pushed++;
+				_ignored--;
 			} else
 				transcript.traceDebugging ("ignoring `%s`...", _outcome.url, _outcome.fetchReason);
 		}
 	}
-	transcript.traceInformation ("succeeded scavanging");
+	transcript.traceInformation ("succeeded scavanging (pushed %d, ignored %d)", _pushed, _ignored);
 	_task.callback (null);
 }
 
@@ -125,7 +130,7 @@ function _main () {
 	function _onScavange () {
 		_scavange (_context,
 				function () {
-					timers.setTimeout (_onScavange, configuration.scavangeInterval);
+					timers.setTimeout (_onScavange, configuration.scavangerInterval);
 				});
 	}
 	
