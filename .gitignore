@@ -5,6 +5,7 @@
 !.hgignore
 
 node_modules
+target
 
 *#
 *~
