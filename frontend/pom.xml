@@ -1,73 +1,106 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project
+		xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>eu.mcloud.demo</groupId>
-	<artifactId>MosaicTweet</artifactId>
+	<groupId>eu.mosaic_cloud</groupId>
+	<artifactId>examples-realtime-feeds-frontend</artifactId>
+	<version>0.1-SNAPSHOT</version>
 	<packaging>war</packaging>
-	<version>0.0.1-SNAPSHOT</version>
-	<name>MosaicTweet Maven Webapp</name>
-	<url>http://maven.apache.org</url>
 	<dependencies>
-
-
-
 		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>3.8.1</version>
-			<type>jar</type>
-			<scope>test</scope>
-			<optional>false</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.json</groupId>
-			<artifactId>json</artifactId>
-			<version>20090211</version>
-			<type>jar</type>
-			<optional>false</optional>
-		</dependency>
-		<dependency>
-			<groupId>rome</groupId>
-			<artifactId>rome</artifactId>
-			<version>0.9</version>
-			<type>jar</type>
-			<optional>false</optional>
+			<groupId>com.rabbitmq</groupId>
+			<artifactId>amqp-client</artifactId>
+			<version>2.5.0</version>
 		</dependency>
 		<dependency>
 			<groupId>com.basho.riak</groupId>
 			<artifactId>riak-client</artifactId>
 			<version>0.14.0</version>
-			<type>jar</type>
-			<optional>false</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20090211</version>
+		</dependency>
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>0.9.29</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>servlet-api</artifactId>
 			<version>2.5</version>
-			<type>jar</type>
-			<optional>false</optional>
 		</dependency>
 		<dependency>
-			<groupId>com.rabbitmq</groupId>
-			<artifactId>amqp-client</artifactId>
-			<version>2.5.0</version>
-			<type>jar</type>
-			<optional>false</optional>
+			<groupId>javax.servlet.jsp</groupId>
+			<artifactId>jsp-api</artifactId>
+			<version>2.1</version>
 		</dependency>
-  		<dependency>
-			<groupId>ch.qos.logback</groupId>
-			<artifactId>logback-classic</artifactId>
-			<version>0.9.29</version>
-		</dependency>	
+		<dependency>
+			<groupId>org.mortbay.jetty</groupId>
+			<artifactId>jsp-2.1-glassfish</artifactId>
+			<version>2.1.v20100127</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>org.mortbay.jetty</groupId>
-				<artifactId>maven-jetty-plugin</artifactId>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>2.1.1</version>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-eclipse-plugin</artifactId>
+				<version>2.8</version>
+				<configuration>
+					<wtpmanifest>true</wtpmanifest>
+					<wtpapplicationxml>true</wtpapplicationxml>
+					<wtpversion>1.5</wtpversion>
+					<manifest>${basedir}/src/main/webapp/META-INF/MANIFEST.MF</manifest>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>net.sf.alchim</groupId>
+				<artifactId>winstone-maven-plugin</artifactId>
+				<version>1.2</version>
+				<configuration>
+					<cmdLineOptions>
+						<property>
+							<name>httpPort</name>
+							<value>22981</value>
+						</property>
+						<property>
+							<name>ajp13Port</name>
+							<value>-1</value>
+						</property>
+						<property>
+							<name>controlPort</name>
+							<value>-1</value>
+						</property>
+						<property>
+							<name>directoryListings</name>
+							<value>false</value>
+						</property>
+						<property>
+							<name>useInvoker</name>
+							<value>false</value>
+						</property>
+					</cmdLineOptions>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>embed</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
-
-		<finalName>MosaicTweet</finalName>
 	</build>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
 </project>

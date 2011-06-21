@@ -14,7 +14,7 @@
    
 	   
 	    $.ajaxSetup({
-	    	url: '/MosaicTweet/json/feedWatcher'
+	    	url: 'data'
 		});
 	     
 	    function JSONCall(req) {
