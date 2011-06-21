@@ -1,4 +1,4 @@
-package eu.mcloud.demo.feedwatcher;
+package eu.mosaic_cloud.realtime_feeds.frontend;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -21,8 +21,8 @@ import org.slf4j.*;
 
 
 @SuppressWarnings("serial")
-public class FeedWatcher extends JSONServlet {
-	private Logger logger = LoggerFactory.getLogger (FeedWatcher.class);
+public class FeedsServlet extends JsonServlet {
+	private Logger logger = LoggerFactory.getLogger (FeedsServlet.class);
 	private HashMap<String, Date> timeStamps = new HashMap<String, Date>();
 	// global stuff 
 	String     riakAddr;
@@ -32,7 +32,7 @@ public class FeedWatcher extends JSONServlet {
 	Integer   feedLimit;
 	RiakClient     riak;
 	
-	public FeedWatcher() {
+	public FeedsServlet() {
 		this.riakAddr = new String("127.0.0.1");
 		this.riakPort = new Integer(22652);
 		this.feedBucket = new String("feed-metadata");
@@ -46,7 +46,7 @@ public class FeedWatcher extends JSONServlet {
 		}
 	}
 	
-	public FeedWatcher(String riakHost, Integer riakPort, String riakBucket, Integer feedLimit) {
+	public FeedsServlet(String riakHost, Integer riakPort, String riakBucket, Integer feedLimit) {
 		this.riakAddr = riakHost;  
 		this.riakPort = riakPort;
 		this.feedBucket = riakBucket;

@@ -3,10 +3,8 @@
 <html>
 <head>
 	
-	<link rel="stylesheet" type="text/css" href="style.css" />
-    <script src="jquery.min.js"></script>
-    
-    <link rel="stylesheet" type="text/css" href="style.css" />
+    <script src="static/jquery.min.js"></script>
+    <link href="static/style.css" type="text/css" rel="stylesheet" />
     
     
     
@@ -14,7 +12,7 @@
    
 	   
 	    $.ajaxSetup({
-	    	url: 'data'
+	    	url: 'feeds'
 		});
 	     
 	    function JSONCall(req) {

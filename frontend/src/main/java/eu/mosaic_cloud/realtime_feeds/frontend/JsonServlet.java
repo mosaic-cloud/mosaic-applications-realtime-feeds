@@ -1,4 +1,4 @@
-package eu.mcloud.demo.feedwatcher;
+package eu.mosaic_cloud.realtime_feeds.frontend;
 
 import java.io.IOException;
 
@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public abstract class JSONServlet extends HttpServlet {
+public abstract class JsonServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {

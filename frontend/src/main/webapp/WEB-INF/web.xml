@@ -9,8 +9,8 @@
 	</servlet>
 	
 	<servlet>
-		<servlet-name>data-service</servlet-name>
-		<servlet-class>eu.mcloud.demo.feedwatcher.FeedWatcher</servlet-class>
+		<servlet-name>feeds-servlet</servlet-name>
+		<servlet-class>eu.mosaic_cloud.realtime_feeds.frontend.FeedsServlet</servlet-class>
 	</servlet>
 	
 	<servlet-mapping>
@@ -19,8 +19,8 @@
 	</servlet-mapping>
 	
 	<servlet-mapping>
-		<servlet-name>data-service</servlet-name>
-		<url-pattern>/data</url-pattern>
+		<servlet-name>feeds-servlet</servlet-name>
+		<url-pattern>/feeds</url-pattern>
 	</servlet-mapping>
 	
 	<welcome-file-list>
