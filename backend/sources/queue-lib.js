@@ -9,7 +9,8 @@ var amqp = require ("amqp");
 var events = require ("events");
 var sys = require ("sys");
 
-var transcript = require ("./transcript") (module);
+var configuration = require ("./configuration");
+var transcript = require ("./transcript") (module, configuration.libTranscriptLevel);
 
 // ---------------------------------------
 

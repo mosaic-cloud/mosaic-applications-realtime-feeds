@@ -8,7 +8,7 @@ if (require.main === module)
 var configuration = require ("./configuration");
 var parser = require ("./parser-lib");
 var store = require ("./store-lib");
-var transcript = require ("./transcript") (module);
+var transcript = require ("./transcript") (module, configuration.libTranscriptLevel);
 
 // ---------------------------------------
 

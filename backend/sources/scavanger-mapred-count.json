@@ -1,0 +1,26 @@
+{
+	"inputs" : "feed-tasks",
+	"query" : [
+		{
+			"map" : {
+				"language" : "javascript",
+				"source" : "
+					function (_values, _key, _argument) {
+						var _object = Riak.mapValuesJson (_values) [0];
+						return ([(_object.type == \"fetch-data\") ? 1 : 0]);
+					}
+				",
+				"keep" : false,
+			},
+		},
+		{
+			"reduce" : {
+				"language" : "erlang",
+				"module" : "riak_kv_mapreduce",
+				"function" : "reduce_sum",
+				"keep" : true,
+			},
+		},
+	],
+	"timeout" : 360000,
+}

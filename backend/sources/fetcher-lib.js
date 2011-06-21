@@ -10,7 +10,7 @@ var url = require ("url");
 
 var configuration = require ("./configuration");
 var store = require ("./store-lib")
-var transcript = require ("./transcript") (module);
+var transcript = require ("./transcript") (module, configuration.libTranscriptLevel);
 
 // ---------------------------------------
 
@@ -64,8 +64,9 @@ function _doFetchStep2 (_task) {
 			function (_error, _outcome, _data) {
 				if (_error !== null) {
 					_task.error = _error;
-					_task.outcome = _outcome;
-					_onFetchError (_task);
+					_task.dataOutcome = null;
+					_task.data = null;
+					_onFetchStep3b (_task);
 				} else {
 					_task.dataOutcome = _outcome;
 					_task.data = _data;
@@ -96,7 +97,6 @@ function _onFetchStep3a (_task) {
 }
 
 function _onFetchStep3b (_task) {
-	transcript.traceDebugging ("fetching `%s` step 3b...", _task.url);
 	_task.dataKey = _task.previousTaskOutcome ? _task.previousTaskOutcome.currentData : null;
 	_task.dataRiakMetaData = null;
 	_onFetchStep4 (_task);

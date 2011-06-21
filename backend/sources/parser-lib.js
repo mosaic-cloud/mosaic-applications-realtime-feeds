@@ -7,7 +7,8 @@ if (require.main === module)
 
 var libxmljs = require ("libxmljs");
 
-var transcript = require ("./transcript") (module);
+var configuration = require ("./configuration");
+var transcript = require ("./transcript") (module, configuration.libTranscriptLevel);
 
 // ---------------------------------------
 
@@ -145,7 +146,7 @@ function _parse (_data, _contentType, _callback__) {
 							break;
 						case "title" :
 							var _titleType = _getAttribute (_attributes[0], "type", "text");
-							if ((_text.length > 0) && ((_titleType == "text") || (_textType == "html"))) {
+							if ((_text.length > 0) && ((_titleType == "text") || (_titleType == "html"))) {
 								_item["title"] = _text;
 								_item["title:type"] = _titleType;
 								return (_state);

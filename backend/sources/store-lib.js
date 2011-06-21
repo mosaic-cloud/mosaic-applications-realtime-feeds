@@ -10,7 +10,7 @@ var printf = require ("printf");
 var riak = require ("riak-js");
 
 var configuration = require ("./configuration")
-var transcript = require ("./transcript") (module);
+var transcript = require ("./transcript") (module, configuration.libTranscriptLevel);
 
 // ---------------------------------------
 

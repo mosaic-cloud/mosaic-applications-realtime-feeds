@@ -11,7 +11,7 @@ var configuration = require ("./configuration");
 var indexer = require ("./indexer-lib");
 var queue = require ("./queue-lib");
 var store = require ("./store-lib");
-var transcript = require ("./transcript") (module, configuration.mainTranscriptLevel);
+var transcript = require ("./transcript") (module, "debugging" || configuration.mainTranscriptLevel);
 
 // ---------------------------------------
 
@@ -40,10 +40,15 @@ function _onScavangeStep1 (_task) {
 						var _fetch = null;
 						if ((_fetch === null) && (_fetchAge <= _arguments[0]))
 							_fetch = [false, "fetchAge <=", _fetchAge];
-						if ((_fetch === null) && (_fetchAge >= _arguments[1]))
-							_fetch = [true, "fetchAge >="];
-						if ((_fetch === null) && (_staleAge <= (_fetchAge * _arguments[2])))
-							_fetch = [true, "updateAge <="];
+						if (_value.error === null) {
+							if ((_fetch === null) && (_fetchAge >= _arguments[1]))
+								_fetch = [true, "fetchAge >="];
+							if ((_fetch === null) && (_staleAge >= (_fetchAge * _arguments[2])))
+								_fetch = [true, "updateAge >="];
+						} else {
+							if ((_fetch === null) && (_fetchAge >= _arguments[3]))
+								_fetch = [true, "retryAge >="];
+						}
 						if (_fetch === null)
 							_fetch = [false, "default"];
 						if (_fetch && _fetch[0]) {
@@ -60,7 +65,11 @@ function _onScavangeStep1 (_task) {
 						} else
 							return ([]);
 					},
-					[configuration.scavangerMinFetchAge, configuration.scavangerMaxFetchAge, configuration.scavangerMaxStaleAgeMultiplier])
+					[
+							configuration.scavangerMinFetchAge,
+							configuration.scavangerMaxFetchAge,
+							configuration.scavangerMaxStaleAgeMultiplier,
+							configuration.scavangerMinRetryAge])
 			.run (
 					function (_error, _outcomes) {
 						if (_error) {
@@ -68,7 +77,8 @@ function _onScavangeStep1 (_task) {
 							_onScavangeError (_task);
 						} else
 							_onScavangeStep2 (_task, _outcomes);
-					});
+					},
+					{timeout : configuration.scavangerTimeout});
 }
 
 function _onScavangeStep2 (_task, _outcomes) {
@@ -115,8 +125,6 @@ function _main () {
 				
 				transcript.traceInformation ("scavanger initializing...");
 				
-				_context.fetchUrgentPublisher = _context.rabbit.createPublisher (
-						configuration.fetchTaskUrgentPublisher, configuration.fetchTaskExchange);
 				_context.fetchBatchPublisher = _context.rabbit.createPublisher (
 						configuration.fetchTaskBatchPublisher, configuration.fetchTaskExchange);
 			});
@@ -130,7 +138,7 @@ function _main () {
 	function _onScavange () {
 		_scavange (_context,
 				function () {
-					timers.setTimeout (_onScavange, configuration.scavangerInterval);
+					timers.setTimeout (_onScavange, configuration.scavangerLoopDelay);
 				});
 	}
 	

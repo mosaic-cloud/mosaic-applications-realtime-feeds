@@ -10,7 +10,7 @@ var timers = require ("timers");
 
 var configuration = require ("./configuration");
 var queue = require ("./queue-lib");
-var transcript = require ("./transcript") (module, configuration.mainTranscriptLevel);
+var transcript = require ("./transcript") (module, "debugging" || configuration.mainTranscriptLevel);
 
 // ---------------------------------------
 
@@ -37,7 +37,10 @@ function _main () {
 			function () {
 				_context.publisher = _context.rabbit.createPublisher (
 						configuration.fetchTaskPushPublisher, configuration.fetchTaskExchange);
-				_context.publisher.on ("ready", _onPush);
+				_context.publisher.on ("ready",
+						function () {
+							process.nextTick (_onPush);
+						});
 			});
 	
 	_context.loopUrls = [];
@@ -48,8 +51,9 @@ function _main () {
 		if (_url === undefined) {
 			_context.loopIndex += 1;
 			if (_context.loopIndex <= configuration.pusherLoopCount) {
-				_context.loopUrls = _context.urls;
-				if (configuration.pusherLoopDelay > 0)
+				transcript.traceInformation ("starting push loop...");
+				_context.loopUrls = _context.urls.slice ();
+				if ((configuration.pusherLoopDelay > 0) && (_context.loopIndex > 1))
 					timers.setTimeout (_onPush, configuration.pusherLoopDelay);
 				else
 					process.nextTick (_onPush);
@@ -58,14 +62,14 @@ function _main () {
 		} else {
 			_url = _url.trim ();
 			if (_url != "") {
-				transcript.traceInformation ("pushing `%s`...", _url);
+				transcript.traceDebugging ("pushing `%s`...", _url);
 				_context.publisher.publish ({url : _url});
 				if (configuration.pusherPushDelay > 0)
 					timers.setTimeout (_onPush, configuration.pusherPushDelay);
 				else
 					process.nextTick (_onPush);
 			} else
-				_onPush ();
+				process.nextTick (_onPush);
 		}
 	}
 }

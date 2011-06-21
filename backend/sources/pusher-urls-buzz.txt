@@ -1,0 +1,1 @@
+https://www.googleapis.com/buzz/v1/activities/search?key={__MOSAIC_FEEDS_GOOGLE_BUZZ_API_KEY__}&q=sql

@@ -81,6 +81,7 @@ function _main () {
 				process.exit (1);
 			});
 	
+	_component.on ("terminate", _onTerminate);
 	_component.on ("call", _onCall);
 	_component.on ("cast", _onCast);
 	

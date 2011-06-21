@@ -25,7 +25,8 @@
 				",
 				"keep" : false,
 			},
-		}, {
+		},
+		{
 			"reduce" : {
 				"language" : "erlang",
 				"module" : "riak_kv_mapreduce",
@@ -33,5 +34,6 @@
 				"keep" : true,
 			},
 		},
-	]
+	],
+	"timeout" : 360000,
 }

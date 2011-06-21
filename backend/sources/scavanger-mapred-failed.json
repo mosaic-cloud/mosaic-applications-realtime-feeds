@@ -1,0 +1,22 @@
+{
+	"inputs" : "feed-tasks",
+	"query" : [
+		{
+			"map" : {
+				"language" : "javascript",
+				"source" : "
+					function (_values, _key, _argument) {
+						var _object = Riak.mapValuesJson (_values) [0];
+						if (_object.type != \"fetch-data\")
+							return ([]);
+						if (_object.error === null)
+							return ([]);
+						return ([_object]);
+					}
+				",
+				"keep" : true,
+			},
+		},
+	],
+	"timeout" : 360000,
+}

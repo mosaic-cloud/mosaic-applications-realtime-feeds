@@ -5,7 +5,8 @@ if (require.main === module)
 
 // ---------------------------------------
 
-module.exports.mainTranscriptLevel = "information";
+module.exports.mainTranscriptLevel = "warning";
+module.exports.libTranscriptLevel = "information";
 
 // ---------------------------------------
 
@@ -33,31 +34,35 @@ module.exports.rabbit = _rabbit;
 // ---------------------------------------
 
 var _fetcherMinFetchAge = 12 * 1000;
-var _fetcherPushDelay = 0.1 * 1000;
-var _fetcher420MinAge = 1 * _fetcherMinFetchAge;
+var _fetcher420MinAge = 5 * _fetcherMinFetchAge;
 var _fetcher420MaxAge = 30 * _fetcherMinFetchAge;
 var _fetcher420AgeMultiplier = 2.0;
 var _fetcher420AgeDemultiplier = 2.5;
+var _fetcherPushDelay = 0.1 * 1000;
 
-var _scavangerInterval = 6 * _fetcherMinFetchAge;
-var _scavangerMinFetchAge = 6 * _fetcherMinFetchAge;
-var _scavangerMaxFetchAge = 600 * _fetcherMinFetchAge;
+var _scavangerMinFetchAge = 1 * _fetcher420MinAge;
+var _scavangerMaxFetchAge = 10 * _fetcher420MaxAge;
 var _scavangerMaxStaleAgeMultiplier = 1;
+var _scavangerMinRetryAge = 2 * _fetcher420MaxAge;
+var _scavangerLoopDelay = 1.25 * _scavangerMinFetchAge;
+var _scavangerTimeout = 360 * 1000;
 
-var _pusherPushDelay = 1 * 1000;
-var _pusherLoopDelay = _pusherPushDelay;
-var _pusherLoopCount = 1024 * 1024;
+var _pusherPushDelay = _fetcherPushDelay;
+var _pusherLoopDelay = _scavangerMaxFetchAge;
+var _pusherLoopCount = (_pusherPushDelay > 0) ? (1024 * 1024) : 1;
 
 module.exports.fetcherMinFetchAge = _fetcherMinFetchAge;
-module.exports.fetcherPushDelay = _fetcherPushDelay;
 module.exports.fetcher420MaxAge = _fetcher420MaxAge;
 module.exports.fetcher420MinAge = _fetcher420MinAge;
 module.exports.fetcher420AgeMultiplier = _fetcher420AgeMultiplier;
 module.exports.fetcher420AgeDemultiplier = _fetcher420AgeDemultiplier;
-module.exports.scavangerInterval = _scavangerInterval;
+module.exports.fetcherPushDelay = _fetcherPushDelay;
 module.exports.scavangerMinFetchAge = _scavangerMinFetchAge;
 module.exports.scavangerMaxFetchAge = _scavangerMaxFetchAge;
 module.exports.scavangerMaxStaleAgeMultiplier = 2;
+module.exports.scavangerMinRetryAge = _scavangerMinRetryAge;
+module.exports.scavangerLoopDelay = _scavangerLoopDelay;
+module.exports.scavangerTimeout = _scavangerTimeout;
 module.exports.pusherPushDelay = _pusherPushDelay;
 module.exports.pusherLoopDelay = _pusherLoopDelay;
 module.exports.pusherLoopCount = _pusherLoopCount;
@@ -66,7 +71,7 @@ module.exports.pusherLoopCount = _pusherLoopCount;
 
 var _taskUrgentPrefetchCount = 4;
 var _taskBatchPrefetchCount = 16;
-var _taskPushPrefetchCount = 1;
+var _taskPushPrefetchCount = 2;
 
 // ---------------------------------------
 
