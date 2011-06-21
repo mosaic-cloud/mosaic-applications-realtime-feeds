@@ -8,6 +8,11 @@
 	<packaging>war</packaging>
 	<dependencies>
 		<dependency>
+			<groupId>eu.mosaic_cloud</groupId>
+			<artifactId>components-jetty</artifactId>
+			<version>0.2-SNAPSHOT</version>
+		</dependency>
+		<dependency>
 			<groupId>com.rabbitmq</groupId>
 			<artifactId>amqp-client</artifactId>
 			<version>2.5.0</version>

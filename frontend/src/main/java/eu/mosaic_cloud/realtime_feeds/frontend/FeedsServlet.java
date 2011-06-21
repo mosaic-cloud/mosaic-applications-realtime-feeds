@@ -6,18 +6,23 @@ import java.security.MessageDigest;
 import java.sql.Date;
 import java.util.HashMap;
 import java.util.Map;
-
+import java.util.concurrent.TimeUnit;
 import javax.servlet.ServletException;
+
+import com.google.common.base.Preconditions;
+import com.basho.riak.pbc.RiakClient;
+import com.basho.riak.pbc.RiakObject;
+import com.rabbitmq.client.AMQP;
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.ConnectionFactory;
+import eu.mosaic_cloud.components.core.ComponentCallReply;
+import eu.mosaic_cloud.components.jetty.JettyComponent;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.basho.riak.pbc.*;
-import com.rabbitmq.client.AMQP;
-import com.rabbitmq.client.ConnectionFactory;
-import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.Channel;
-import org.slf4j.*;
 
 
 @SuppressWarnings("serial")
@@ -27,31 +32,55 @@ public class FeedsServlet extends JsonServlet {
 	// global stuff 
 	String     riakAddr;
 	Integer    riakPort;
+	String   rabbitAddr;
+	Integer  rabbitPort;
 	String   feedBucket;
 	Integer    sequence;
 	Integer   feedLimit;
-	RiakClient     riak;
+	//RiakClient     riak;
 	
 	public FeedsServlet() {
-		this.riakAddr = new String("127.0.0.1");
-		this.riakPort = new Integer(22652);
+		if (JettyComponent.component.isActive ()) {
+			try {
+				{
+					ComponentCallReply reply = JettyComponent.component.call (rabbitGroup, "mosaic-rabbitmq:get-broker-endpoint", null).get (12000, TimeUnit.MILLISECONDS);
+					Preconditions.checkState (reply.ok);
+					Map<?, ?> outputs = (Map) reply.outputsOrError;
+					rabbitAddr = (String) outputs.get ("ip");
+					rabbitPort = (Integer) outputs.get ("port");
+					logger.info ("resolved Rabbit on `{}:{}`", rabbitAddr, rabbitPort);
+				}
+				{
+					ComponentCallReply reply = JettyComponent.component.call (riakGroup, "mosaic-riak-kv:get-store-pb-endpoint", null).get (12000, TimeUnit.MILLISECONDS);
+					Preconditions.checkState (reply.ok);
+					Map<?, ?> outputs = (Map) reply.outputsOrError;
+					riakAddr = (String) outputs.get ("ip");
+					riakPort = (Integer) outputs.get ("port");
+					logger.info ("resolved Riak on `{}:{}`", riakAddr, riakPort);
+				}
+			} catch (Throwable e) {
+				logger.error ("failed resolving resources; terminating!", e);
+				JettyComponent.component.terminate ();
+				return;
+			}
+		} else {
+			this.riakAddr = new String("127.0.0.1");
+			this.riakPort = new Integer(22652);
+			this.rabbitAddr = new String("127.0.0.1");
+			this.rabbitPort = new Integer(21688);
+		}
 		this.feedBucket = new String("feed-metadata");
 		this.sequence = new Integer(0);
 		this.feedLimit = new Integer(10);
+		/*
 		try {
-			this.riak = new RiakClient(this.riakAddr, this.riakPort);
+			this.riak = new RiakClient(riakAddr, riakPort);
 		}
 		catch (Exception e) {
-			// TODO handle riak exception ...
+			logger.error ("failed resolving resources; terminating!", e);
+			JettyComponent.component.terminate ();
 		}
-	}
-	
-	public FeedsServlet(String riakHost, Integer riakPort, String riakBucket, Integer feedLimit) {
-		this.riakAddr = riakHost;  
-		this.riakPort = riakPort;
-		this.feedBucket = riakBucket;
-		this.sequence = new Integer(0);
-		this.feedLimit = feedLimit;
+		*/
 	}
 	
 	@Override
@@ -87,8 +116,8 @@ public class FeedsServlet extends JsonServlet {
 			// publish to rabbitMQ
 			String EXCHANGE_NAME = new String("feeds.fetch-data");
 			ConnectionFactory factory = new ConnectionFactory();
-	        factory.setHost("127.0.0.1");
-	        factory.setPort(21688);
+	        factory.setHost(rabbitAddr);
+	        factory.setPort(rabbitPort);
 	        Connection connection = factory.newConnection();
 	        Channel channel = connection.createChannel();
 	        JSONObject feedUrl = new JSONObject();
@@ -112,10 +141,10 @@ public class FeedsServlet extends JsonServlet {
 			ServletException, IOException {
 		// interogate riak for a refresh request ...
 		if(feedTimestamp(url, new Date(2011, 6, 20))) {
-			System.out.println("wtf");
+			logger.debug("wtf");
 		}
 		else {
-			System.out.println("it worked ...");
+			logger.debug("it worked ...");
 		}
 		Integer seq = Integer.parseInt(seque);
 		publishNewFeedRequest(md5, url);
@@ -124,7 +153,7 @@ public class FeedsServlet extends JsonServlet {
 		JSONArray  jsonArr  = new JSONArray();
 		
 		try {
-			//RiakClient riak = new RiakClient(riakAddr, riakPort);
+			RiakClient riak = new RiakClient(riakAddr, riakPort);
 			RiakObject[] feeds = riak.fetch(feedBucket, md5); // I should be only one bucket for a url ...			
 			
 			if(feeds.length <= 0) {
@@ -173,7 +202,8 @@ public class FeedsServlet extends JsonServlet {
 			return result;
 		}		
 		catch (Exception e) {
-			logger.error("Failed to interogate riak\triak addr: {} riak port: ", riakAddr, riakPort.toString());
+			logger.error("Failed to interogate riak\triak addr: {} riak port: {}", riakAddr, riakPort.toString());
+			logger.error ("error", e);
 			return errorJson(e.getMessage());
 		}
 	}
@@ -208,4 +238,7 @@ public class FeedsServlet extends JsonServlet {
 		// TODO: check / update hashmap with url: timestamp instead of interrogating riak ... 
 		return false;
 	}
+	
+	static String riakGroup = "9cdce23e78027ef6a52636da7db820c47e695d11";
+	static String rabbitGroup = "8cd74b5e4ecd322fd7bbfc762ed6cf7d601eede8";
 }
