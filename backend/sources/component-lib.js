@@ -81,6 +81,18 @@ Component.prototype.callReturn = function (_correlation, _ok, _outputsOrError, _
 		this.emit ("error", new Error ("invalid arguments"));
 };
 
+Component.prototype.register = function (_group, _correlation) {
+	if ((typeof (_group) === "string") && (typeof (_correlation) === "string")) {
+		var _exchangeMetaData = {
+			"action" : "register",
+			"group" : _group,
+			"correlation" : _correlation
+		};
+		this.exchange (_exchangeMetaData, new Buffer (0));
+	} else
+		this.emit ("error", new Error ("invalid arguments"));
+}
+
 Component.prototype.exchange = function (_metaData, _data) {
 	transcript.traceDebuggingObject ("sending packet", _metaData);
 	if (typeof (_metaData) === "object") {
@@ -129,6 +141,22 @@ Component.prototype._onInput = function (_metaData, _data) {
 						this.emit ("error", new Error ("invalid call return meta-data `" + _metaData + "`"));
 				} else
 					this.emit ("error", new Error ("invalid call return meta-data `" + _metaData + "`"));
+			} else if (_action === "register-return") {
+				var _correlation = _metaData["correlation"];
+				var _ok = _metaData["ok"];
+				if (_ok === true) {
+					if (typeof (_correlation) === "string")
+						this.emit ("registerReturn", _correlation, true, null);
+					else
+						this.emit ("error", new Error ("invalid register return meta-data `" + _metaData + "`"));
+				} else if (_ok === false) {
+					var _error = _metaData["error"];
+					if ((typeof (_correlation) === "string") && (_error !== undefined))
+						this.emit ("registerReturn", _correlation, false, _error);
+					else
+						this.emit ("error", new Error ("invalid register return meta-data `" + _metaData + "`"));
+				} else
+					this.emit ("error", new Error ("invalid register return meta-data `" + _metaData + "`"));
 			} else
 				this.emit ("exchange", _metaData, _data);
 		} else
@@ -240,15 +268,19 @@ PacketInputer.prototype._onStreamData = function (_data) {
 	}
 	_data.copy (this._buffer, this._bufferOffset);
 	this._bufferOffset += _data.length;
-	if ((this._pendingSize === null) && (this._bufferOffset >= 4))
-		this._pendingSize = (this._buffer[0] << 24) | (this._buffer[1] << 16) | (this._buffer[2] << 8) | (this._buffer[3] << 0);
-	if ((this._pendingSize !== null) && (this._bufferOffset >= (this._pendingSize + 4))) {
-		var _packet = new Buffer (this._pendingSize);
-		this._buffer.copy (_packet, 0, 4, this._pendingSize + 4);
-		this._buffer.copy (this._buffer, 0, this._pendingSize + 4, this._bufferOffset);
-		this._bufferOffset = 0;
-		this._pendingSize = null;
-		this._onPacket (_packet);
+	while (true) {
+		if ((this._pendingSize === null) && (this._bufferOffset >= 4))
+			this._pendingSize = (this._buffer[0] << 24) | (this._buffer[1] << 16) | (this._buffer[2] << 8) | (this._buffer[3] << 0);
+		if ((this._pendingSize !== null) && (this._bufferOffset >= (this._pendingSize + 4))) {
+			var _packet = new Buffer (this._pendingSize);
+			this._buffer.copy (_packet, 0, 4, this._pendingSize + 4);
+			this._buffer.copy (this._buffer, 0, this._pendingSize + 4, this._bufferOffset);
+			this._bufferOffset -= this._pendingSize + 4;
+			this._pendingSize = null;
+			this._onPacket (_packet);
+		}
+		if ((this._bufferOffset < 4) || ((this._pendingSize != null) && (this._pendingSize > this._bufferOffset)))
+			break;
 	}
 };
 

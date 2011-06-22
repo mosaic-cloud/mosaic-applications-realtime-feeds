@@ -45,16 +45,17 @@ function _main () {
 		process.exit (1);
 		return;
 	}
-	var _module = process.argv[2];
+	var _moduleName = process.argv[2];
 	process.argv = [process.argv[0], process.argv[1]];
 	
-	switch (_module) {
+	var _module = undefined;
+	switch (_moduleName) {
 		case "fetcher" :
 		case "indexer" :
 		case "scavanger" :
 		case "leacher" :
 		case "pusher" :
-			_module = "./" + _module + "-main";
+			_module = "./" + _moduleName + "-main";
 			break;
 		default :
 			_module = undefined;
@@ -70,10 +71,16 @@ function _main () {
 		return;
 	}
 	
+	function _maybeMain () {
+		if ((_rabbitResolveCorrelation == null) && (_riakResolveCorrelation == null) && (_registerCorrelation == null))
+			process.nextTick (_module.main);
+	}
+	
 	_component = component.initialize ();
 	
 	var _rabbitResolveCorrelation = component.generateCorrelation ();
 	var _riakResolveCorrelation = component.generateCorrelation ();
+	var _registerCorrelation = component.generateCorrelation ();
 	
 	_component.on ("error",
 			function (_error) {
@@ -109,20 +116,34 @@ function _main () {
 					_riakResolveCorrelation = null;
 				} else
 					throw (new Error ());
-				if ((_rabbitResolveCorrelation == null) && (_riakResolveCorrelation == null))
-					process.nextTick (_module.main);
+				_maybeMain ();
+			});
+	
+	_component.on ("registerReturn",
+			function (_correlation, _ok, _error) {
+				if (_correlation != _registerCorrelation)
+					throw (new Error ());
+				if (!_ok) {
+					transcript.traceErrorObject ("failed registering (error); aborting!", _error);
+					process.exit (1);
+					return;
+				}
+				transcript.traceInformation ("registered");
+				_registerCorrelation = null;
+				_maybeMain ();
 			});
 	
 	_component.call (configuration.rabbitGroup, "mosaic-rabbitmq:get-broker-endpoint", _rabbitResolveCorrelation, null, "");
 	_component.call (configuration.riakGroup, "mosaic-riak-kv:get-store-http-endpoint", _riakResolveCorrelation, null, "");
+	_component.register (configuration[_moduleName + "Group"], _registerCorrelation);
 	
 	timers.setTimeout (
 			function () {
-				if ((_rabbitResolveCorrelation !== null) || (_riakResolveCorrelation !== null)) {
+				if ((_rabbitResolveCorrelation !== null) || (_riakResolveCorrelation !== null) || (_registerCorrelation !== null)) {
 					transcript.traceError ("failed resolving required resources (timeout); aborting!");
 					process.exit (1);
 				}
-			}, 120 * 1000);
+			}, configuration.componentTimeout);
 }
 
 _main ();

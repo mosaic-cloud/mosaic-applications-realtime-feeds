@@ -10,29 +10,6 @@ module.exports.libTranscriptLevel = "information";
 
 // ---------------------------------------
 
-var _riakGroup = "9cdce23e78027ef6a52636da7db820c47e695d11";
-var _rabbitGroup = "8cd74b5e4ecd322fd7bbfc762ed6cf7d601eede8";
-
-module.exports.riakGroup = _riakGroup;
-module.exports.rabbitGroup = _rabbitGroup;
-
-// ---------------------------------------
-
-var _riak = {
-		host : "127.0.0.1",
-		port : 24637,
-};
-
-var _rabbit = {
-		host : "127.0.0.1",
-		port : 21688,
-};
-
-module.exports.riak = _riak;
-module.exports.rabbit = _rabbit;
-
-// ---------------------------------------
-
 var _fetcherMinFetchAge = 12 * 1000;
 var _fetcher420MinAge = 5 * _fetcherMinFetchAge;
 var _fetcher420MaxAge = 30 * _fetcherMinFetchAge;
@@ -272,5 +249,42 @@ module.exports.feedDataBucket = _feedDataBucket;
 module.exports.feedTimelineBucket = _feedTimelineBucket;
 module.exports.feedItemBucket = _feedItemBucket;
 module.exports.feedTaskBucket = _feedTaskBucket;
+
+// ---------------------------------------
+
+var _riak = {
+		host : "127.0.0.1",
+		port : 24637,
+};
+
+var _rabbit = {
+		host : "127.0.0.1",
+		port : 21688,
+};
+
+module.exports.riak = _riak;
+module.exports.rabbit = _rabbit;
+
+// ---------------------------------------
+
+var _fetcherGroup = "4cb6ba9f09150c29b590b82b02a5a295ffc742d2";
+var _indexerGroup = "d4a751daa35f3661797b3fff37eb12dd4c9a8ce8";
+var _scavangerGroup = "1f0818a9870f401b3795097be1806a8b9c2c2240";
+var _leacherGroup = "cdb21a6acac6f9a798d5dab03b9309f92bd15c9d";
+var _pusherGroup = "b3310a2ea81b7ccfc03e38d1fc32fcc634b92735";
+
+var _riakGroup = "9cdce23e78027ef6a52636da7db820c47e695d11";
+var _rabbitGroup = "8cd74b5e4ecd322fd7bbfc762ed6cf7d601eede8";
+
+var _componentTimeout = 12 * 1000;
+
+module.exports.fetcherGroup = _fetcherGroup;
+module.exports.indexerGroup = _indexerGroup;
+module.exports.scavangerGroup = _scavangerGroup;
+module.exports.leacherGroup = _leacherGroup;
+module.exports.pusherGroup = _pusherGroup;
+module.exports.riakGroup = _riakGroup;
+module.exports.rabbitGroup = _rabbitGroup;
+module.exports.componentTimeout = _componentTimeout;
 
 // ---------------------------------------
