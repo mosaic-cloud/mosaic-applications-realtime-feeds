@@ -43,19 +43,20 @@ img {
 
 
 #welcome {
-    width: 1025px;
+    width: 1031px;
     height: 100px;
-    border: 1px solid #d7d7d7;
     margin: auto;
-    margin-left: 39px;
+    margin-left: 40px;
     margin-top: 10px;
-    background: #f9f9f9;
+    background: url("images/welcome.png") no-repeat;
 }
 
 #welcome p {
     margin-left: 30px;
     margin-top: 14px;
     font-size: 20px;
+    position: relative;
+    top: 13px;
 }
 
 #left, #right {
@@ -80,7 +81,7 @@ button {
     margin-right: -2px;
     float: right;
     position: relative;
-    top: 10px;
+    top: 11px;
 }
 
 input {
@@ -93,6 +94,12 @@ input {
     margin-bottom: 15px;
     position: relative;
     top: 10px;
+}
+
+.readonly {
+    background: #ddd;
+    color: #777;
+    border: 1px solid #A36D7B;
 }
 
 .tweet {
@@ -144,12 +151,19 @@ input {
     display: none;
 }
 
-#spinner {
+#popup{
     display: none;
     height: 50px;
-    width: 90px;
-    background: red;
+    width: 150px;
+    background: url("images/popup.png") no-repeat;
     position: absolute;
-    top: 40px;
+    top: -35px;
+    left: 10px;
     z-index: 10;
+}
+
+#popup p {
+    position: absolute;
+    top: -10px;
+    left: 12px;
 }
