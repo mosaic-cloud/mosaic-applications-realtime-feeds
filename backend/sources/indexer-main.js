@@ -26,7 +26,7 @@ function _onIndexTaskMessage (_context, _message, _callback) {
 }
 
 function _onIndexTask (_context, _url, _urlClass, _data, _callback) {
-	transcript.traceInformation ("indexing `%s` (`%s`)...", _url, _urlClass);
+	transcript.traceDebugging ("indexing `%s` (`%s`)...", _url, _urlClass);
 	indexer.indexData (_url, _data, _context,
 			function (_error, _outcome) {
 				if (_error !== null)

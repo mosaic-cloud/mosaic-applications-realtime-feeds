@@ -10,22 +10,22 @@ module.exports.libTranscriptLevel = "information";
 
 // ---------------------------------------
 
-var _fetcherMinFetchAge = 12 * 1000;
-var _fetcher420MinAge = 5 * _fetcherMinFetchAge;
-var _fetcher420MaxAge = 30 * _fetcherMinFetchAge;
+var _fetcherMinFetchAge = 2 * 1000;
+var _fetcher420MinAge = 60 * 1000;
+var _fetcher420MaxAge = 30 * _fetcher420MinAge;
 var _fetcher420AgeMultiplier = 2.0;
 var _fetcher420AgeDemultiplier = 2.5;
-var _fetcherPushDelay = 0.1 * 1000;
+var _fetcherPushDelay = 1 * _fetcherMinFetchAge;
 
 var _scavangerMinFetchAge = 1 * _fetcher420MinAge;
-var _scavangerMaxFetchAge = 10 * _fetcher420MaxAge;
+var _scavangerMaxFetchAge = 1 * _fetcher420MaxAge;
 var _scavangerMaxStaleAgeMultiplier = 1;
-var _scavangerMinRetryAge = 2 * _fetcher420MaxAge;
-var _scavangerLoopDelay = 1.25 * _scavangerMinFetchAge;
+var _scavangerMinRetryAge = 1 * _fetcher420MaxAge;
+var _scavangerLoopDelay = 1.1 * _scavangerMinFetchAge;
 var _scavangerTimeout = 360 * 1000;
 
-var _pusherPushDelay = _fetcherPushDelay;
-var _pusherLoopDelay = _scavangerMaxFetchAge;
+var _pusherPushDelay = 2 * _fetcherMinFetchAge;
+var _pusherLoopDelay = 2 * _fetcherMinFetchAge;
 var _pusherLoopCount = (_pusherPushDelay > 0) ? (1024 * 1024) : 1;
 
 module.exports.fetcherMinFetchAge = _fetcherMinFetchAge;

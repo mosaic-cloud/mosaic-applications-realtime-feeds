@@ -27,7 +27,7 @@ function _onFetchTaskMessage (_context, _message, _callback) {
 }
 
 function _onFetchTask (_context, _url, _urlClass, _callback) {
-	transcript.traceInformation ("fetching `%s` (`%s`)...", _url, _urlClass);
+	transcript.traceDebugging ("fetching `%s` (`%s`)...", _url, _urlClass);
 	fetcher.fetch (_url, _context,
 			function (_error, _outcome) {
 				if (_error !== null)
@@ -35,9 +35,9 @@ function _onFetchTask (_context, _url, _urlClass, _callback) {
 						if (_error.statusCode != 420)
 							transcript.traceWarning ("failed fetching `%s` (status code: %d); ignoring!", _url, _error.statusCode);
 						else
-							transcript.traceInformation ("failed fetching `%s` (status code: %d); ignoring!", _url, _error.statusCode);
+							transcript.traceDebugging ("failed fetching `%s` (status code: %d); ignoring!", _url, _error.statusCode);
 					else if (_error.reason == "rejected")
-						transcript.traceWarning ("failed fetching `%s` (rejected: %s); ignoring!", _url, _error.cause);
+						transcript.traceDebugging ("failed fetching `%s` (rejected: %s); ignoring!", _url, _error.cause);
 					else
 						transcript.traceWarningObject ("failed fetching `%s`; ignoring!", _url, _error);
 				else

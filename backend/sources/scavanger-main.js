@@ -11,7 +11,7 @@ var configuration = require ("./configuration");
 var indexer = require ("./indexer-lib");
 var queue = require ("./queue-lib");
 var store = require ("./store-lib");
-var transcript = require ("./transcript") (module, "debugging" || configuration.mainTranscriptLevel);
+var transcript = require ("./transcript") (module, configuration.mainTranscriptLevel);
 
 // ---------------------------------------
 

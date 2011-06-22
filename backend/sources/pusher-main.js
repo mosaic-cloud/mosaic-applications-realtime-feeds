@@ -10,7 +10,7 @@ var timers = require ("timers");
 
 var configuration = require ("./configuration");
 var queue = require ("./queue-lib");
-var transcript = require ("./transcript") (module, "debugging" || configuration.mainTranscriptLevel);
+var transcript = require ("./transcript") (module, configuration.mainTranscriptLevel);
 
 // ---------------------------------------
 
@@ -62,7 +62,7 @@ function _main () {
 		} else {
 			_url = _url.trim ();
 			if (_url != "") {
-				transcript.traceDebugging ("pushing `%s`...", _url);
+				transcript.traceInformation ("pushing `%s`...", _url);
 				_context.publisher.publish ({url : _url});
 				if (configuration.pusherPushDelay > 0)
 					timers.setTimeout (_onPush, configuration.pusherPushDelay);
