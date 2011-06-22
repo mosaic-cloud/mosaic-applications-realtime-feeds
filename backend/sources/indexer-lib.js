@@ -161,11 +161,12 @@ function _doIndexFeedStep2 (_task) {
 			_task.currentTimeline.items.push (_item.key);
 		}
 		
-		if (_task.previousMetaData)
-			_task.currentMetaData.timelines = _task.previousMetaData.timelines.concat ([_task.currentTimeline.key]);
-		else
+		//if (_task.previousMetaData)
+		//	_task.currentMetaData.timelines = _task.previousMetaData.timelines.concat ([_task.currentTimeline.key]);
+		//else
 			_task.currentMetaData.timelines = [_task.currentTimeline.key];
-		
+		transcript.traceOutputObject (_task.currentMetaData);
+    
 		_doIndexFeedStep3a1 (_task);
 		
 	} else {
