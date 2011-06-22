@@ -93,9 +93,10 @@
                         $(this).html("Submit");
                         $("#left #url").html("No url");
                         $("#left #sequence").html("0");
+                        $("#left_input").attr("disabled", false).removeClass("readonly");
                         return false;
                     }
-                    $("#welcome").hide();
+                    $("#welcome").fadeOut(600);//.hide();
                     var updateTimeout = (function () {
                         var myInterval = interval;
                         return (function () {
@@ -110,7 +111,8 @@
                         });
                     })();
                     var feed_keyword = $("#left_input").val();
-                    //$("#left #spinner").fadeIn(1500).fadeOut(500);
+                    $("#left_input").attr("disabled", true).addClass("readonly");
+                    $(this).parent().find("#popup").stop().fadeIn(900).fadeOut(300);
                     // simple regex to check if user entered a keyword of a full link ...
                     if(feed_keyword.match("http://search.twitter.com/search.atom\.")) {
                         register_feed(feed_keyword, $("#left"), 0, updateTimeout);
@@ -133,9 +135,10 @@
                         $(this).html("Submit");
                         $("#right #url").html("No url");
                         $("#right #sequence").html("0");
+                        $("#right_input").attr("disabled", false).removeClass("readonly");
                         return false;
                     }
-                    $("#welcome").hide();
+                    $("#welcome").fadeOut(600);//.hide();
                     var updateTimeout = (function () {
                         var myInterval = interval;
                         return (function () {
@@ -150,7 +153,8 @@
                         });
                     })();
                     var feed_keyword = $("#right_input").val();
-                    //$(this).parent().find("#spinner").fadeIn(1000).fadeOut(500);
+                    $("#right_input").attr("disabled", true).addClass("readonly");
+                    $(this).parent().find("#popup").stop().fadeIn(900).fadeOut(300);
                     // simple regex to check if user entered a keyword of a full link ...
                     if(feed_keyword.match("http://search.twitter.com/search.atom\.")) {
                         register_feed(feed_keyword, $("#right"), 0, updateTimeout);
@@ -178,7 +182,7 @@
 		</div>
 		<div id="content">
 			<div id="welcome">
-                <p>Welcome to mOSAIC web 2.0 demo application :)</p>
+                <p>Welcome to mOSAIC demo web application :)</p>
                 <p>To start off just enter a keyword in the input box below :)</p>
             </div>
             
@@ -186,10 +190,10 @@
                 <span id="url"></span>
                 <span id="sequence">0</span>
                 <span id="feedNumber">0</span>
-                
+
 				<input id = "left_input" type="text" value="cloud" /> 
 				<button id = "left_btn" >Submit</button>
-                <div id = "spinner">Query submited</div>
+                <div id = "popup"><p>Query submited</p></div>
 
 			</div>
 			
@@ -200,7 +204,7 @@
                 
                 <input id = "right_input" type="text" value="cloud" /> 
                 <button id = "right_btn" >Submit</button>
-                <div id = "spinner"></div>
+                <div id = "popup"><p>Query submited</p></div>
 			</div>
 		
 		<div style="clear:both;"></div>
