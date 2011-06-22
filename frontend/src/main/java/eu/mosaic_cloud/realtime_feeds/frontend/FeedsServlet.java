@@ -30,16 +30,16 @@ public class FeedsServlet extends JsonServlet {
 	private Logger logger = LoggerFactory.getLogger (FeedsServlet.class);
 	private HashMap<String, Date> timeStamps = new HashMap<String, Date>();
 	// global stuff 
-	String     riakAddr;
-	Integer    riakPort;
-	String   rabbitAddr;
-	Integer  rabbitPort;
-	String   feedBucket;
-	Integer    sequence;
-	Integer   feedLimit;
-	//RiakClient     riak;
+	final String     riakAddr;
+	final Integer    riakPort;
+	final String   rabbitAddr;
+	final Integer  rabbitPort;
+	final String   feedBucket;
+	final Integer   feedLimit;
 	
 	public FeedsServlet() {
+		this.feedBucket = new String("feed-metadata");
+		this.feedLimit = new Integer(10);
 		if (JettyComponent.component.isActive ()) {
 			try {
 				{
@@ -61,7 +61,7 @@ public class FeedsServlet extends JsonServlet {
 			} catch (Throwable e) {
 				logger.error ("failed resolving resources; terminating!", e);
 				JettyComponent.component.terminate ();
-				return;
+				throw new IllegalStateException();
 			}
 		} else {
 			this.riakAddr = new String("127.0.0.1");
@@ -69,9 +69,6 @@ public class FeedsServlet extends JsonServlet {
 			this.rabbitAddr = new String("127.0.0.1");
 			this.rabbitPort = new Integer(21688);
 		}
-		this.feedBucket = new String("feed-metadata");
-		this.sequence = new Integer(0);
-		this.feedLimit = new Integer(10);
 		/*
 		try {
 			this.riak = new RiakClient(riakAddr, riakPort);
@@ -86,14 +83,13 @@ public class FeedsServlet extends JsonServlet {
 	@Override
 	JSONObject handleRequest(JSONObject jsonRequest) throws JSONException,
 			ServletException, IOException {
-		logger.info("new request");
+		logger.debug("handling request...");
 		try {
 			String action  = jsonRequest.getString("action");
 			String feedUrl = jsonRequest.getJSONObject("arguments").getString("url");
 			if(action.equals("register") || action.equals("refresh")) {
 				String url = jsonRequest.getJSONObject("arguments").getString("url");
 				String seq = jsonRequest.getJSONObject("arguments").getString("sequence");
-				logger.info("feed request sequence");
 				return interrogateRiak(checkSum(url), url, seq);
 			}
 			else {
@@ -103,7 +99,7 @@ public class FeedsServlet extends JsonServlet {
 			}
 		}
 		catch (Exception e) {
-			logger.error(e.getMessage());
+			logger.error("error encountered while handling request...", e.getMessage());
 			return errorJson(e.getMessage());
 		}
 	}
@@ -124,28 +120,19 @@ public class FeedsServlet extends JsonServlet {
 	        feedUrl.put("url", url);
 	        AMQP.BasicProperties prop = new AMQP.BasicProperties.Builder ().contentType("application/json").build();
 	        channel.basicPublish(EXCHANGE_NAME, "urgent", prop, feedUrl.toString().getBytes());
-	        logger.debug("JSON : {}", feedUrl.toString(2));
 	        channel.close();
 	        connection.close();
 	        published.put("error", "published");
-			logger.debug("Published new feed request {}", url);
 			return published;
 		}
 		catch (Exception e) {
-			logger.error("Failed to publish feed request\turl: {} md5 {} ", url, md5);
+			logger.error("error encountered while publishing url: {} ({}) ", url, md5);
 			return errorJson(e.getCause().toString());
 		}
 	}
 	
 	JSONObject interrogateRiak(String md5, String url, String seque) throws JSONException,
 			ServletException, IOException {
-		// interogate riak for a refresh request ...
-		if(feedTimestamp(url, new Date(2011, 6, 20))) {
-			logger.debug("wtf");
-		}
-		else {
-			logger.debug("it worked ...");
-		}
 		Integer seq = Integer.parseInt(seque);
 		publishNewFeedRequest(md5, url);
 		JSONObject feed     = new JSONObject();
@@ -156,54 +143,52 @@ public class FeedsServlet extends JsonServlet {
 			RiakClient riak = new RiakClient(riakAddr, riakPort);
 			RiakObject[] feeds = riak.fetch(feedBucket, md5); // I should be only one bucket for a url ...			
 			
-			if(feeds.length <= 0) {
-				return publishNewFeedRequest(md5, url);
-			}
-			else {
+			Integer sequence = null;
+			if(feeds.length >= 0) {
 				feed = new JSONObject(feeds[0].getValue().toStringUtf8());
+				sequence = feed.getInt("sequence");
 			}
-			sequence = feed.getInt("sequence");
+			if (sequence == null)
+				sequence = 0;
+			result.put("sequence", sequence.toString());
 			
-			if(sequence <= seq) {
-				return publishNewFeedRequest(md5, url);
-			}
-			else {
-				result.put("sequence", sequence.toString());
-				for( ; feedLimit >= 1; sequence--) {
-					
-					if(sequence <= seq) {
-						break;
-					}
-					String hexa = String.format("#%08x", sequence);
-					String timeLineKey = checkSum(url + hexa);
-					RiakObject[] feedTimeLine = riak.fetch("feed-timelines", timeLineKey);
-					if(feedTimeLine.length <= 0) {
-						continue;
-					}
-					JSONObject feedItem = new JSONObject(feedTimeLine[0].getValue().toStringUtf8());
-					JSONArray feedItems = feedItem.getJSONArray("items");					
-					for(int index = 0; feedItems.length() - 1 >= index; index++) {
-						JSONObject tempObj = new JSONObject();
-						String itemKey = feedItems.getString(index);
-						RiakObject riakFeedJson = riak.fetch("feed-items", itemKey)[0];
-						JSONObject feedJson = new JSONObject(riakFeedJson.getValue().toStringUtf8());
-						tempObj.put("img", feedJson.getJSONArray("links:image").getString(0));
-						tempObj.put("title", feedJson.getString("title"));
-						tempObj.put("link", feedJson.getString("author:uri"));
-						jsonArr.put(tempObj);
-						feedLimit -= 1;
-						if(feedLimit <= 0) break;
-						tempObj = null;
-					}
-					result.put("entry", jsonArr);
+			int count = 0;
+			out: while(true) {
+				if(sequence <= seq) {
+					break;
 				}
-				feedLimit = 100;
+				String hexa = String.format("#%08x", sequence);
+				String timeLineKey = checkSum(url + hexa);
+				logger.debug("timeline: {} ({})", sequence, timeLineKey);
+				RiakObject[] feedTimeLine = riak.fetch("feed-timelines", timeLineKey);
+				if(feedTimeLine.length == 0) {
+					continue out;
+				}
+				JSONObject feedItem = new JSONObject(feedTimeLine[0].getValue().toStringUtf8());
+				JSONArray feedItems = feedItem.getJSONArray("items");
+				for(int index = 0; index < feedItems.length(); index++) {
+					JSONObject tempObj = new JSONObject();
+					String itemKey = feedItems.getString(index);
+					RiakObject riakFeedJson = riak.fetch("feed-items", itemKey)[0];
+					JSONObject feedJson = new JSONObject(riakFeedJson.getValue().toStringUtf8());
+					tempObj.put("img", feedJson.getJSONArray("links:image").getString(0));
+					tempObj.put("title", feedJson.getString("title"));
+					tempObj.put("link", feedJson.getString("author:uri"));
+					jsonArr.put(tempObj);
+					logger.debug("item: {}", tempObj.toString());
+					count++;
+					if(count >= feedLimit) {
+						break out;
+					}
+					tempObj = null;
+				}
+				sequence--;
 			}
+			result.put("entry", jsonArr);
 			return result;
 		}		
 		catch (Exception e) {
-			logger.error("Failed to interogate riak\triak addr: {} riak port: {}", riakAddr, riakPort.toString());
-			logger.error ("error", e);
+			logger.error("error encountered while interogating riak", e);
 			return errorJson(e.getMessage());
 		}
 	}
@@ -222,21 +207,14 @@ public class FeedsServlet extends JsonServlet {
 	}
 
 	JSONObject errorJson(String error) {
-
 		JSONObject err = new JSONObject();
+		
 		try {
 			err.put("error", error);
-			return err;
+		} catch (JSONException e) {
+			throw (new RuntimeException(e));
 		}
-		catch (Exception e) {
-			logger.error("Failed to create json object from an error\t * error: ", error);
-			return err;
-		}
-	}
-	
-	public synchronized boolean feedTimestamp(String feed, Date time) {
-		// TODO: check / update hashmap with url: timestamp instead of interrogating riak ... 
-		return false;
+		return err;
 	}
 	
 	static String riakGroup = "9cdce23e78027ef6a52636da7db820c47e695d11";

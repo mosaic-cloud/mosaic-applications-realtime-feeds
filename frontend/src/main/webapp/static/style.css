@@ -14,7 +14,7 @@ img {
 	margin: auto;
 	position: relative;
 	width: 1200px;
-	min-height: 500px;
+	min-height: 200px;
 	height: auto;
 }
 
@@ -33,13 +33,11 @@ img {
 
 #content {
 	width: 1100px;
-	min-height: 400px;
 	height: auto;
 	margin: auto;
 	margin-top: 30px;
+    padding-bottom: 5px;
 	border: 1px solid #d7d7d7;
-	padding-bottom: 20px;
-    margin-bottom: 30px;
 	background: #f5f5f5;
 }
 
@@ -60,62 +58,41 @@ img {
     font-size: 20px;
 }
 
-#left {
+#left, #right {
 	width: 500px;
 	height: auto;
 	float: left;
 	position: relative;
-	margin-bottom: 30px;
-	margin-left: 40px;
-	top: 10px;
 }
 
+#left {
+	margin-left: 40px;
+}
 
-#left input {
-	width: 400px;
-	height: 22pt;
-	background: #eee;
-	text-indent: 10px;
-	font-size: 15pt;
-	border: 1px solid #aaa;
-    margin-bottom: 15px;
+#right {
+    margin-left: 25px;
 }
 
 button {
 	width: 90px;
 	height: 26pt;
 	font-size: 13pt;
-}
-
-#left button {
-    float: right;
     margin-right: -2px;
+    float: right;
+    position: relative;
+    top: 10px;
 }
 
-#right {
-	width: 500px;
-	height: auto;
-	float: left;
-	position: relative;
-	margin-bottom: 30px;
-	top: 8px;
-    margin-left: 25px;
-}
-
-#right input {
-	width: 400px;
+input {
+    width: 400px;
 	min-height: 22pt;
 	background: #eee;
 	text-indent: 10px;
 	font-size: 15pt;
 	border: 1px solid #aaa;
     margin-bottom: 15px;
-}
-
-#right button {
-    float: right;
-    margin-right: -2px;
-    margin-top: 1px;
+    position: relative;
+    top: 10px;
 }
 
 .tweet {
@@ -127,7 +104,9 @@ button {
 	border-bottom: 1px solid #c4c4c4;
 	border-right:  1px solid #c4c4c4;
 	margin: auto;
-	margin-top: 8px;
+    position: relative;
+    top: -5px;
+	margin-top: 10px;
     font-size: 10pt;
 }
 
@@ -165,8 +144,12 @@ button {
     display: none;
 }
 
-
-
-
-
-
+#spinner {
+    display: none;
+    height: 50px;
+    width: 90px;
+    background: red;
+    position: absolute;
+    top: 40px;
+    z-index: 10;
+}
