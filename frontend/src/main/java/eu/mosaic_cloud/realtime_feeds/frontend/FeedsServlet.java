@@ -27,9 +27,8 @@ import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("serial")
 public class FeedsServlet extends JsonServlet {
-	private Logger logger = LoggerFactory.getLogger (FeedsServlet.class);
-	private HashMap<String, Date> timeStamps = new HashMap<String, Date>();
-	// global stuff 
+	
+	final Logger       logger = LoggerFactory.getLogger (FeedsServlet.class);
 	final String     riakAddr;
 	final Integer    riakPort;
 	final String   rabbitAddr;
