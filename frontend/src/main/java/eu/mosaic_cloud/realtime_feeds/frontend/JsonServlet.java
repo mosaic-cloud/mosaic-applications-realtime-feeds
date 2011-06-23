@@ -1,4 +1,6 @@
+
 package eu.mosaic_cloud.realtime_feeds.frontend;
+
 
 import java.io.IOException;
 
@@ -7,45 +9,60 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.common.base.Preconditions;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public abstract class JsonServlet extends HttpServlet {
+
+public abstract class JsonServlet
+		extends HttpServlet
+{
 	@Override
-	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-			throws ServletException, IOException {
+	protected void doGet (final HttpServletRequest req, final HttpServletResponse resp)
+			throws ServletException,
+				IOException
+	{
 		try {
-			_handleRequest(req, resp);
-		} catch (JSONException e) {
-			throw new IOException(e);
+			this.handleRequest (req, resp);
+		} catch (final JSONException e) {
+			throw new IOException (e);
 		}
 	}
 	
 	@Override
-	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
-			throws ServletException, IOException {
+	protected void doPost (final HttpServletRequest req, final HttpServletResponse resp)
+			throws ServletException,
+				IOException
+	{
 		try {
-			_handleRequest(req, resp);
-		} catch (JSONException e) {
-			throw new IOException(e);
+			this.handleRequest (req, resp);
+		} catch (final JSONException e) {
+			throw new IOException (e);
 		}
 	}
 	
-	protected void _handleRequest(HttpServletRequest req, HttpServletResponse resp) throws JSONException, IOException, ServletException {
-		String[] requestFields = req.getParameterValues("request");
-		if (requestFields == null || requestFields.length == 0) {
-			// TODO: Handle this
-			return;
-		}
-		String request = requestFields[0];
-		JSONObject jsonRequest = new JSONObject(request);
-		JSONObject jsonResponse = handleRequest(jsonRequest);
+	protected abstract JSONObject handleRequest (JSONObject jsonRequest)
+			throws JSONException,
+				ServletException,
+				IOException;
+	
+	private final void handleRequest (final HttpServletRequest req, final HttpServletResponse resp)
+			throws JSONException,
+				IOException,
+				ServletException
+	{
+		final String[] requestFields = req.getParameterValues ("request");
+		Preconditions.checkNotNull (requestFields);
+		Preconditions.checkArgument (requestFields.length > 0);
+		final String request = requestFields[0];
+		final JSONObject jsonRequest = new JSONObject (request);
+		final JSONObject jsonResponse = this.handleRequest (jsonRequest);
 		if (jsonResponse != null) {
-			String response = jsonResponse.toString();
-			resp.setContentType("application/json");
-			resp.getWriter().write(response);
+			final String response = jsonResponse.toString ();
+			resp.setContentType ("application/json");
+			resp.getWriter ().write (response);
 		}
 	}
 	
-	abstract JSONObject handleRequest(JSONObject jsonRequest) throws JSONException, ServletException, IOException;
+	private static final long serialVersionUID = 1L;
 }
