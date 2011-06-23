@@ -23,7 +23,7 @@ case "$( basename "${0}" .bash )" in
 	( run-pusher )
 		_component=pusher
 		_node_env+=(
-				_mosaic_feeds_pusher_urls="${MOSAIC_FEEDS_URLS:-./sources/pusher-urls-tests.txt}"
+				_mosaic_feeds_pusher_urls="${MOSAIC_FEEDS_URLS:-${_node_sources}/pusher-urls-tests.txt}"
 		)
 	;;
 	( * )
@@ -32,10 +32,7 @@ case "$( basename "${0}" .bash )" in
 esac
 
 _node_args+=(
-		"${_sources}/component-main.js" "${_component}"
-)
-_node_env+=(
-		NODE_PATH="${_node_path}"
+		"${_node_sources}/component-main.js" "${_component}"
 )
 
 if test "${_identifier}" != 0000000000000000000000000000000000000000 ; then

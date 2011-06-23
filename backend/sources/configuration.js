@@ -24,8 +24,9 @@ var _scavangerMinRetryAge = 1 * _fetcher420MaxAge;
 var _scavangerLoopDelay = 1.1 * _scavangerMinFetchAge;
 var _scavangerTimeout = 360 * 1000;
 
-var _pusherPushDelay = 2 * _fetcherMinFetchAge;
-var _pusherLoopDelay = 2 * _fetcherMinFetchAge;
+var _pusherPushDelay = _fetcherMinFetchAge / 5;
+var _pusherPushFanout = 5;
+var _pusherLoopDelay = _pusherPushDelay;
 var _pusherLoopCount = (_pusherPushDelay > 0) ? (1024 * 1024) : 1;
 
 module.exports.fetcherMinFetchAge = _fetcherMinFetchAge;
@@ -41,6 +42,7 @@ module.exports.scavangerMinRetryAge = _scavangerMinRetryAge;
 module.exports.scavangerLoopDelay = _scavangerLoopDelay;
 module.exports.scavangerTimeout = _scavangerTimeout;
 module.exports.pusherPushDelay = _pusherPushDelay;
+module.exports.pusherPushFanout = _pusherPushFanout;
 module.exports.pusherLoopDelay = _pusherLoopDelay;
 module.exports.pusherLoopCount = _pusherLoopCount;
 

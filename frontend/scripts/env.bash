@@ -1,7 +1,8 @@
 #!/dev/null
 
-_scripts="$( readlink -e -- ./scripts || true )"
-_tools="$( readlink -f -- ./.tools || true )"
+_workbench="$( readlink -e -- . )"
+_scripts="${_workbench}/scripts"
+_tools="${_workbench}/.tools"
 
 _PATH="${_tools}/bin:${PATH}"
 

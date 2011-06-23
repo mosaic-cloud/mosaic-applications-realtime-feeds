@@ -1,9 +1,10 @@
 #!/dev/null
 
-_scripts="$( readlink -e -- ./scripts || true )"
-_tools="$( readlink -f -- ./.tools || true )"
-_sources="$( readlink -f -- ./sources || true )"
-_npm_prefix="$( readlink -f -- ./.npm || true )"
+_workbench="$( readlink -e -- . )"
+_sources="${_workbench}/sources"
+_scripts="${_workbench}/scripts"
+_tools="${_workbench}/.tools"
+_npm_prefix="${_workbench}/.npm"
 
 _PATH="${_tools}/bin:${PATH}"
 
@@ -19,11 +20,11 @@ if test -z "${_npm}" ; then
 	_npm=npm
 fi
 
-_node_path="${_npm_prefix}/node_modules"
+_node_sources="${_sources}"
 _node_args=()
 _node_env=(
 	PATH="${_PATH}"
-	NODE_PATH="${_sources}:${_node_path}"
+	NODE_PATH="${_sources}:${_npm_prefix}/node_modules"
 )
 
 _npm_args=( --prefix "${_npm_prefix}" )

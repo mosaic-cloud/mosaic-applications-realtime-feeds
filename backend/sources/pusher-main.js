@@ -63,7 +63,8 @@ function _main () {
 			_url = _url.trim ();
 			if (_url != "") {
 				transcript.traceInformation ("pushing `%s`...", _url);
-				_context.publisher.publish ({url : _url});
+				for (var _pushIndex = 0; _pushIndex <= configuration.pusherPushFanout; _pushIndex++)
+					_context.publisher.publish ({url : _url});
 				if (configuration.pusherPushDelay > 0)
 					timers.setTimeout (_onPush, configuration.pusherPushDelay);
 				else
