@@ -18,6 +18,8 @@
 	    // register feed function ... 
 	    // 
 	    function register_feed(feedUrl, element, seq, loop) {
+	       if (seq === undefined)
+	           seq = 0;
            var req = {'action': 'register',
 	    				'arguments': {
 	    					'url': feedUrl,

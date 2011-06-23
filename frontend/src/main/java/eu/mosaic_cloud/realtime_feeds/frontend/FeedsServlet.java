@@ -143,7 +143,7 @@ public class FeedsServlet extends JsonServlet {
 			RiakObject[] feeds = riak.fetch(feedBucket, md5); // I should be only one bucket for a url ...			
 			
 			Integer sequence = null;
-			if(feeds.length >= 0) {
+			if(feeds.length > 0) {
 				feed = new JSONObject(feeds[0].getValue().toStringUtf8());
 				sequence = feed.getInt("sequence");
 			}
