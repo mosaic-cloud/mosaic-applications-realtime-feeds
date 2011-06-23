@@ -50,10 +50,17 @@
 	    				var newdiv  = document.createElement('div'),
                             para    = document.createElement('p'),
 							title   = document.createTextNode(entry['title']),
-							imgNode = new Image();
+							imgNode = new Image(),
+							imgNodeReal = new Image();
                         para.appendChild(title);
                         para.setAttribute("class", "tweet_text");
-						imgNode.src = entry['img'];
+						imgNode.src = 'static/images/loading.gif';
+						imgNodeReal.src = entry['img'];
+						(function () {
+							var myImgNode = imgNode;
+							var myImgNodeReal = imgNodeReal;
+							$(imgNodeReal).load (function () {myImgNode.src = myImgNodeReal.src; });
+						})();
 						newdiv.setAttribute('class', 'tweet');
 						newdiv.appendChild(imgNode);
 						newdiv.appendChild(para);
@@ -108,7 +115,7 @@
                                     function () {
                                         refresh_feeds("left", updateTimeout);
                                     },
-                                    3000);
+                                    1000);
                             interval = myInterval;
                         });
                     })();
@@ -150,7 +157,7 @@
                                     function () {
                                         refresh_feeds("right", updateTimeout);
                                     },
-                                    3000);
+                                    1000);
                             interval = myInterval;
                         });
                     })();
