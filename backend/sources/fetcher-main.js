@@ -20,11 +20,23 @@ function _onFetchTaskMessage (_context, _message, _callback) {
 	var _urlClass = _message.urlClass;
 	if ((_url === undefined) || (_urlClass === undefined)) {
 		transcript.traceWarningObject ("received invalid fetch message; ignoring!", _message);
-		_callback ();
+		_callback (true);
 		return;
 	}
-	_onFetchTask (_context, _url, _urlClass, _callback);
+	if (_pendingTasks[_url] !== undefined) {
+		transcript.traceDebugging ("failed fetching `%s` (rejected: %s); ignoring!", _url, "duplicate");
+		_callback (true);
+		return;
+	}
+	_pendingTasks[_url] = true;
+	_onFetchTask (_context, _url, _urlClass,
+			function () {
+				delete _pendingTasks[_url];
+				_callback (false);
+			});
 }
+
+var _pendingTasks = {};
 
 function _onFetchTask (_context, _url, _urlClass, _callback) {
 	transcript.traceDebugging ("fetching `%s` (`%s`)...", _url, _urlClass);
@@ -139,8 +151,8 @@ function _main () {
 								if (_message.urlClass === undefined)
 									_message.urlClass = "push";
 								_onFetchTaskMessage (_context, _message,
-										function () {
-											if (configuration.fetcherPushDelay > 0)
+										function (_rejected) {
+											if (!_rejected && (configuration.fetcherPushDelay > 0))
 												timers.setTimeout (_acknowledge, configuration.fetcherPushDelay);
 											else
 												_acknowledge ();

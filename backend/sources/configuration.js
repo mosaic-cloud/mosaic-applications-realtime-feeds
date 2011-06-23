@@ -24,8 +24,8 @@ var _scavangerMinRetryAge = 1 * _fetcher420MaxAge;
 var _scavangerLoopDelay = 1.1 * _scavangerMinFetchAge;
 var _scavangerTimeout = 360 * 1000;
 
-var _pusherPushDelay = _fetcherMinFetchAge / 5;
-var _pusherPushFanout = 5;
+var _pusherPushDelay = _fetcherMinFetchAge / 4;
+var _pusherPushFanout = 4;
 var _pusherLoopDelay = _pusherPushDelay;
 var _pusherLoopCount = (_pusherPushDelay > 0) ? (1024 * 1024) : 1;
 
