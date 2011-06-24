@@ -129,8 +129,11 @@ function _onFetchStep4 (_task) {
 					_onFetchError (_task);
 				} else {
 					_task.taskRiakMetaData = _riakMetaData;
-					transcript.traceDebugging ("succeeded fetching `%s`", _task.url);
-					_task.callback (null, _task.currentTaskOutcome);
+					if (_task.error !== undefined) {
+						transcript.traceDebugging ("succeeded fetching `%s`", _task.url);
+						_task.callback (null, _task.currentTaskOutcome);
+					} else
+						_onFetchError (_task);
 				}
 			});
 }
