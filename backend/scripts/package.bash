@@ -5,6 +5,8 @@ if ! test "${#}" -eq 0 ; then
 	exit 1
 fi
 
+echo "[ii] packaging ${_package_name}..." >&2
+
 cd ..
 
 _outputs="$( readlink -f -- ./.outputs )"
@@ -12,16 +14,13 @@ if ! test -e "${_outputs}" ; then
 	mkdir "${_outputs}"
 fi
 
-_package_name=mosaic-examples-realtime-feeds
-_package_version=0.1.alpha
-_package_afs=/afs/olympus.volution.ro/people/ciprian/web/data/5e069b1ba84ae3ab9c0eb0d8cbcb0a57
-
 if test -e "${_outputs}/package" ; then
 	rm -R "${_outputs}/package"
 fi
 if test -e "${_outputs}/package.tar.gz" ; then
 	rm "${_outputs}/package.tar.gz"
 fi
+
 mkdir "${_outputs}/package"
 mkdir "${_outputs}/package/bin"
 mkdir "${_outputs}/package/lib"
@@ -110,21 +109,18 @@ done
 cat >"${_outputs}/package/pkg.json" <<EOS
 {
 	"package" : "${_package_name}",
-	"version" : "${_package_version}",
+	"version" : "${_package_version}.$( date '+%Y%m%d.%H%M%S' )",
 	"maintainer" : "mosaic-developers@lists.info.uvt.ro",
-	"directories" : [ "bin", "lib"],
+	"description" : "mOSAIC Examples: Realtime Feeds",
+	"directories" : [ "bin", "lib" ],
 	"depends" : [
 		"mosaic-node",
-		"mosaic-sun-jre"
-	],
-	"description" : "mOSAIC Examples: Realtime Feeds"
+		"mosaic-sun-jre",
+		"libxml2"
+	]
 }
 EOS
 
-tar -czf "${_outputs}/${_package_name}.tar.gz" -C "${_outputs}/package" .
-
-if test -e "${_package_afs}" ; then
-	cp -t "${_package_afs}" "${_outputs}/${_package_name}.tar.gz"
-fi
+tar -czf "${_outputs}/package.tar.gz" -C "${_outputs}/package" .
 
 exit 0

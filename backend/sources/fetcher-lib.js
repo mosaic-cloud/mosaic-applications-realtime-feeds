@@ -129,7 +129,7 @@ function _onFetchStep4 (_task) {
 					_onFetchError (_task);
 				} else {
 					_task.taskRiakMetaData = _riakMetaData;
-					if (_task.error !== undefined) {
+					if (_task.error === undefined) {
 						transcript.traceDebugging ("succeeded fetching `%s`", _task.url);
 						_task.callback (null, _task.currentTaskOutcome);
 					} else
@@ -322,7 +322,7 @@ function _fetchUrl (_url, _contentType, _etag, _timestamp, _callback) {
 	};
 	
 	function _onError (_error) {
-		_callback ({reason : "unexpected-error", error : _error}, undefined, undefined);
+		_callback ({reason : "unexpected-error", cause : _error}, undefined, undefined);
 	};
 	
 	if (_hosts420Last[_operation.urlHost] !== undefined) {

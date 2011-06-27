@@ -31,3 +31,7 @@ _npm_args=( --prefix "${_npm_prefix}" )
 _npm_env=(
 	PATH="${_PATH}"
 )
+
+_package_name=mosaic-examples-realtime-feeds
+_package_version=0.1.alpha
+_package_afs=/afs/olympus.volution.ro/people/ciprian/web/data/5e069b1ba84ae3ab9c0eb0d8cbcb0a57
