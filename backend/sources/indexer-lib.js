@@ -162,7 +162,7 @@ function _doIndexFeedStep2 (_task) {
 		}
 		
 		if (_task.previousMetaData)
-			_task.currentMetaData.timelines = _task.previousMetaData.timelines.concat ([_task.currentTimeline.key]) .slice (0, 10);
+			_task.currentMetaData.timelines = _task.previousMetaData.timelines.concat ([_task.currentTimeline.key]) .slice (-10);
 		else
 			_task.currentMetaData.timelines = [_task.currentTimeline.key];
 		
