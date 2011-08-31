@@ -5,7 +5,15 @@ if ! test "${#}" -le 1 ; then
 	exit 1
 fi
 
-_identifier="${1:-0000000000000000000000000000000000000000}"
+_identifier="${1:-00000000071d84820b074866a9f56dcf5b863cb4}"
+
+if test -n "${mosaic_component_temporary:-}" ; then
+	_tmp="${mosaic_component_temporary:-}"
+elif test -n "${mosaic_node_temporary:-}" ; then
+	_tmp="${mosaic_node_temporary}/components/${_identifier}"
+else
+	_tmp="/tmp/mosaic/components/${_identifier}"
+fi
 
 case "$( basename "${0}" .bash )" in
 	( run-fetcher )
@@ -35,10 +43,14 @@ _node_args+=(
 		"${_node_sources}/component-main.js" "${_component}"
 )
 
-if test "${_identifier}" != 0000000000000000000000000000000000000000 ; then
+if test "${_identifier}" != 00000000071d84820b074866a9f56dcf5b863cb4 ; then
 	_node_env+=(
 			mosaic_component_identifier="${_identifier}"
+			mosaic_component_temporary="${_tmp}"
 	)
 fi
+
+mkdir -p "${_tmp}"
+cd "${_tmp}"
 
 exec env "${_node_env[@]}" "${_node}" "${_node_args[@]}"
