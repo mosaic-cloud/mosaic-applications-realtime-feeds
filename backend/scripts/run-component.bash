@@ -9,8 +9,8 @@ _identifier="${1:-00000000071d84820b074866a9f56dcf5b863cb4}"
 
 if test -n "${mosaic_component_temporary:-}" ; then
 	_tmp="${mosaic_component_temporary:-}"
-elif test -n "${mosaic_node_temporary:-}" ; then
-	_tmp="${mosaic_node_temporary}/components/${_identifier}"
+elif test -n "${mosaic_temporary:-}" ; then
+	_tmp="${mosaic_temporary}/components/${_identifier}"
 else
 	_tmp="/tmp/mosaic/components/${_identifier}"
 fi
