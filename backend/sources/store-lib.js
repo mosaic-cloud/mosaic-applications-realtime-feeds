@@ -51,12 +51,12 @@ function _createFeedMetaData (_riak, _key, _callback) {
 function _fetchFeedMetaData (_riak, _key, _callback) {
 	_fetch (_riak, configuration.feedMetaDataBucket, _key, null,
 			function (_error, _feedMetaData, _riakMetaData) {
-				if (_error !== null)
+				if (_error !== null) {
 					if (_feedMetaData === null)
 						_createFeedMetaData (_riak, _key, _callback);
 					else
 						_callback (_error, undefined, undefined);
-				else
+				} else
 					_callback (null, _feedMetaData, _riakMetaData);
 			});
 }
@@ -111,7 +111,7 @@ function _fetch (_riak, _bucket, _key, _riakMetaData, _callback) {
 	transcript.traceDebugging ("fetching `%s/%s`...", _bucket, _key);
 	_riak.get (_bucket, _key, _riakMetaData,
 			function (_error, _value, _riakMetaData) {
-				if (_error)
+				if (_error) {
 					if ((_riakMetaData !== undefined) && (_riakMetaData.statusCode == 404)) {
 						_riakMetaData.contentType = undefined;
 						_riakMetaData.contentEncoding = undefined;
@@ -122,7 +122,7 @@ function _fetch (_riak, _bucket, _key, _riakMetaData, _callback) {
 						transcript.traceWarning ("failed fetching `%s/%s`: %s...", _bucket, _key, _error.toString ());
 						_callback ({reason : "unexpected-reak-error", message : _error.toString (), bucket : _bucket, key : _key, riakMetaData : _riakMetaData});
 					}
-				else {
+				} else {
 					transcript.traceDebugging ("succeeded fetching `%s/%s`", _bucket, _key);
 					_callback (null, _value, _riakMetaData);
 				}

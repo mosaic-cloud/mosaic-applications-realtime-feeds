@@ -28,13 +28,14 @@ function _doIndexUrlStep1 (_task) {
 				if (_error !== null) {
 					_task.error = _error;
 					_onIndexError (_task);
-				} else
+				} else {
 					if ((_dataTask !== null) && (_dataTask.currentData !== undefined))
 						_indexData (_task.url, _dataTask.currentData, _task.context, _task.callback);
 					else {
-						_task.error = {reason : "invalid-data-task"};
+						_task.error = {reason : "invalid-fetch-task"};
 						_onIndexError (_task);
 					}
+				}
 			});
 }
 
@@ -57,10 +58,15 @@ function _doIndexDataStep1 (_task) {
 					_task.error = _error;
 					_onIndexError (_task);
 				} else {
-					_task.data = _data;
-					_task.dataContentType = _riakMetaData.contentType;
-					_task.dataRiakMetaData = _riakMetaData;
-					_doIndexDataStep2 (_task);
+					if (_data !== null) {
+						_task.data = _data;
+						_task.dataContentType = _riakMetaData.contentType;
+						_task.dataRiakMetaData = _riakMetaData;
+						_doIndexDataStep2 (_task);
+					} else {
+						_task.error = {reason : "missing-data"};
+						_onIndexError (_task);
+					}
 				}
 			});
 }
