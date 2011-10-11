@@ -51,11 +51,20 @@ public abstract class JsonServlet
 				IOException,
 				ServletException
 	{
-		final String[] requestFields = req.getParameterValues ("request");
-		Preconditions.checkNotNull (requestFields);
-		Preconditions.checkArgument (requestFields.length > 0);
-		final String request = requestFields[0];
-		final JSONObject jsonRequest = new JSONObject (request);
+		final JSONObject jsonRequest;
+		if (req.getParameter ("url") != null && req.getParameter ("sequence") != null) {
+			final JSONObject jsonRequestArguments = new JSONObject ();
+			jsonRequestArguments.put ("url", req.getParameter ("url"));
+			jsonRequestArguments.put ("sequence", Integer.parseInt (req.getParameter ("sequence")));
+			jsonRequest = new JSONObject ();
+			jsonRequest.put ("action", "refresh");
+			jsonRequest.put ("arguments", jsonRequestArguments);
+		} else if (req.getParameter ("request") != null) {
+			jsonRequest = new JSONObject (req.getParameter ("request"));
+		} else {
+			Preconditions.checkArgument (false, "invalid arguments");
+			jsonRequest = null;
+		}
 		final JSONObject jsonResponse = this.handleRequest (jsonRequest);
 		if (jsonResponse != null) {
 			final String response = jsonResponse.toString ();
