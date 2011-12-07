@@ -10,7 +10,7 @@
 		<dependency>
 			<groupId>eu.mosaic_cloud</groupId>
 			<artifactId>components-jetty</artifactId>
-			<version>0.2-SNAPSHOT</version>
+			<version>0.4-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.rabbitmq</groupId>

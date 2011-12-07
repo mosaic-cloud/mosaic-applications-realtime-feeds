@@ -11,9 +11,7 @@
 	<modules>
 		<module>./mosaic-components-jetty</module>
 		<module>./mosaic-examples-realtime-feeds-frontend</module>
-		<module>./mosaic-java-components</module>
-		<module>./mosaic-java-tools</module>
-		<module>./mosaic-jetty-httpg-connector</module>
+		<module>./mosaic-java-platform</module>
 	</modules>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
