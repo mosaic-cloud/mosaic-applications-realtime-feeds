@@ -5,8 +5,6 @@ if ! test "${#}" -eq 0 ; then
 	exit 1
 fi
 
-echo "[ii] packaging ${_package_name}..." >&2
-
 cd ..
 
 _outputs="$( readlink -f -- ./.outputs )"
@@ -109,7 +107,7 @@ done
 cat >"${_outputs}/package/pkg.json" <<EOS
 {
 	"package" : "${_package_name}",
-	"version" : "${_package_version}.$( date '+%Y%m%d.%H%M%S' )",
+	"version" : "${_package_version}",
 	"maintainer" : "mosaic-developers@lists.info.uvt.ro",
 	"description" : "mOSAIC Examples: Realtime Feeds",
 	"directories" : [ "bin", "lib" ],
