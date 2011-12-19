@@ -7,7 +7,6 @@ fi
 
 cd ..
 
-_outputs="$( readlink -f -- ./.outputs )"
 if ! test -e "${_outputs}" ; then
 	mkdir "${_outputs}"
 fi

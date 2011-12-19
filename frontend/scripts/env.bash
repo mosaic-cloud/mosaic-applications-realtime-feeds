@@ -3,6 +3,7 @@
 _workbench="$( readlink -e -- . )"
 _scripts="${_workbench}/scripts"
 _tools="${_workbench}/.tools"
+_outputs="${_workbench}/../.outputs"
 
 _PATH="${_tools}/bin:${PATH}"
 
