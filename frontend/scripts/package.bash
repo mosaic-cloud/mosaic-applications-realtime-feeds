@@ -22,17 +22,15 @@ if test -e "${_outputs}/package.mvn" ; then
 	rm -R -- "${_outputs}/package.mvn"
 fi
 
+env "${_mvn_env[@]}" "${_mvn_bin}" "${_mvn_args[@]}" package -DskipTests=true
+
 mkdir -- "${_outputs}/package"
 mkdir -- "${_outputs}/package/bin"
 mkdir -- "${_outputs}/package/lib"
 
-mkdir -- "${_outputs}/package/lib/node"
-find "${_sources}" -type f \( -name "*.js" -o -name "*.txt" \) -print \
-| while read _source_path ; do
-	cp -t "${_outputs}/package/lib/node" -- "${_source_path}"
-done
-
-cp -R -T -- "${_npm_prefix}" "${_outputs}/package/lib/npm"
+mkdir -- "${_outputs}/package/lib/java"
+cp -t "${_outputs}/package/lib/java" "${_workbench}/target/${_package_jar_name}"
+cp -t "${_outputs}/package/lib/java" "${_workbench}/target/${_package_war_name}"
 
 mkdir -- "${_outputs}/package/lib/scripts"
 
@@ -49,20 +47,24 @@ _package="$( readlink -e -- . )"
 cmp -s -- "${_package}/lib/scripts/_do.sh" "${_self_realpath}"
 test -e "${_package}/lib/scripts/${_self_basename}.bash"
 
-_PATH="${_package}/bin:${_package}/lib/applications-elf:${PATH}"
+_PATH="${_package}/bin:${PATH}"
 
-_node_bin="$( PATH="${_PATH}" type -P -- node || true )"
-if test -z "${_node_bin}" ; then
-	echo "[ee] missing \`node\` (Node.JS interpreter) executable in path: \`${_PATH}\`; ignoring!" >&2
+_java_bin="$( PATH="${_PATH}" type -P -- java || true )"
+if test -z "${_java_bin}" ; then
+	echo "[ee] missing \`java\` (Java interpreter) executable in path: \`${_PATH}\`; ignoring!" >&2
 	exit 1
 fi
 
-_node_sources="${_package}/lib/node"
-_node_args=()
-_node_env=(
-		PATH="${_PATH}"
-		NODE_PATH="${_package}/lib/node:${_package}/lib/npm/node_modules"
+_java_jars="${_package}/lib/java"
+_java_args=(
+		-server
 )
+_java_env=(
+		PATH="${_PATH}"
+)
+
+_package_jar_name='@package_jar_name@'
+_package_war_name='@package_war_name@'
 
 if test "${#}" -eq 0 ; then
 	. "${_package}/lib/scripts/${_self_basename}.bash"
@@ -74,6 +76,9 @@ echo "[ee] script \`${_self_main}\` should have exited..." >&2
 exit 1
 EOS
 
+sed -r -e 's|@package_jar_name@|'"${_package_jar_name}"'|g' -i -- "${_outputs}/package/lib/scripts/_do.sh"
+sed -r -e 's|@package_war_name@|'"${_package_war_name}"'|g' -i -- "${_outputs}/package/lib/scripts/_do.sh"
+
 chmod +x -- "${_outputs}/package/lib/scripts/_do.sh"
 
 for _script_name in "${_package_scripts[@]}" ; do
@@ -84,7 +89,7 @@ for _script_name in "${_package_scripts[@]}" ; do
 		_script_path="$( dirname -- "$( readlink -e -- "${_scripts}/${_script_name}" )" )/${_script_name}.bash"
 	fi
 	cp -T -- "${_script_path}" "${_outputs}/package/lib/scripts/${_script_name}.bash"
-	ln -s -T ./_do.sh "${_outputs}/package/lib/scripts/${_script_name}"
+	ln -s -T -- ./_do.sh "${_outputs}/package/lib/scripts/${_script_name}"
 	cat >"${_outputs}/package/bin/${_package_name}--${_script_name}" <<EOS
 #!/bin/bash
 if test "\${#}" -eq 0 ; then
@@ -104,8 +109,7 @@ cat >"${_outputs}/package/pkg.json" <<EOS
 	"description" : "mOSAIC Examples: Realtime Feeds",
 	"directories" : [ "bin", "lib" ],
 	"depends" : [
-		"mosaic-nodejs-${_package_version}",
-		"libxml2"
+		"mosaic-sun-jre"
 	]
 }
 EOS

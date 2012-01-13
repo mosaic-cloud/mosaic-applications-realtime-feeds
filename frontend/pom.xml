@@ -1,16 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
 <project
-		xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+			xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>eu.mosaic_cloud</groupId>
-	<artifactId>examples-realtime-feeds-frontend</artifactId>
-	<version>0.1-SNAPSHOT</version>
+	
+	<groupId>eu.mosaic_cloud.examples</groupId>
+	<artifactId>realtime-feeds-frontend</artifactId>
+	<version>0.4.1_mosaic_dev-SNAPSHOT</version>
 	<packaging>war</packaging>
+	<name>mosaic-examples-realtime-feeds-frontend</name>
+	
 	<dependencies>
 		<dependency>
-			<groupId>eu.mosaic_cloud</groupId>
-			<artifactId>components-jetty</artifactId>
-			<version>0.4-SNAPSHOT</version>
+			<groupId>eu.mosaic_cloud.components</groupId>
+			<artifactId>jetty</artifactId>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.rabbitmq</groupId>
@@ -48,6 +54,7 @@
 			<version>2.1.v20100127</version>
 		</dependency>
 	</dependencies>
+	
 	<build>
 		<plugins>
 			<plugin>
@@ -74,6 +81,31 @@
 					<wtpversion>1.5</wtpversion>
 					<manifest>${basedir}/src/main/webapp/META-INF/MANIFEST.MF</manifest>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>2.4</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>copy</goal>
+						</goals>
+						<configuration>
+							<artifactItems>
+								<artifactItem>
+									<groupId>eu.mosaic_cloud.components</groupId>
+									<artifactId>jetty</artifactId>
+									<version>0.4.1_mosaic_dev-SNAPSHOT</version>
+									<classifier>jar-with-dependencies</classifier>
+									<outputDirectory>${project.build.directory}</outputDirectory>
+									<destFileName>${project.artifactId}-${project.version}-jar-with-dependencies.jar</destFileName>
+								</artifactItem>
+							</artifactItems>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 			<plugin>
 				<groupId>net.sf.alchim</groupId>
@@ -112,9 +144,33 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.7</version>
+				<executions>
+					<execution>
+						<phase>${_maven_pom_phase}</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<target>
+								<echo message="_maven_pom_group=${project.groupId}${line.separator}" file="/dev/stdout" />
+								<echo message="_maven_pom_artifact=${project.artifactId}${line.separator}" file="/dev/stdout" />
+								<echo message="_maven_pom_version=${project.version}${line.separator}" file="/dev/stdout" />
+								<echo message="_maven_pom_package=${_maven_pom_package}${line.separator}" file="/dev/stdout" />
+							</target>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
+	
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<_maven_pom_package>mosaic-examples-realtime-feeds-frontend-java</_maven_pom_package>
 	</properties>
+	
 </project>
