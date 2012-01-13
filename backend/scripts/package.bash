@@ -104,7 +104,7 @@ cat >"${_outputs}/package/pkg.json" <<EOS
 	"description" : "mOSAIC Examples: Realtime Feeds",
 	"directories" : [ "bin", "lib" ],
 	"depends" : [
-		"mosaic-nodejs-${_package_version}",
+		"mosaic-nodejs",
 		"libxml2"
 	]
 }
