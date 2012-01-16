@@ -8,14 +8,14 @@
 	
 	<groupId>eu.mosaic_cloud.examples</groupId>
 	<artifactId>realtime-feeds-frontend</artifactId>
-	<version>0.4.1_mosaic_dev-SNAPSHOT</version>
+	<version>0.4.2_mosaic_dev-SNAPSHOT</version>
 	<packaging>war</packaging>
 	<name>mosaic-examples-realtime-feeds-frontend</name>
 	
 	<dependencies>
 		<dependency>
 			<groupId>eu.mosaic_cloud.components</groupId>
-			<artifactId>jetty</artifactId>
+			<artifactId>components-httpg-jetty-container</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
