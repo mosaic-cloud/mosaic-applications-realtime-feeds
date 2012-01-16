@@ -96,7 +96,7 @@
 							<artifactItems>
 								<artifactItem>
 									<groupId>eu.mosaic_cloud.components</groupId>
-									<artifactId>jetty</artifactId>
+									<artifactId>components-httpg-jetty-container</artifactId>
 									<version>${project.version}</version>
 									<classifier>jar-with-dependencies</classifier>
 									<outputDirectory>${project.build.directory}</outputDirectory>
