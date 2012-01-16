@@ -97,7 +97,7 @@
 								<artifactItem>
 									<groupId>eu.mosaic_cloud.components</groupId>
 									<artifactId>jetty</artifactId>
-									<version>0.4.1_mosaic_dev-SNAPSHOT</version>
+									<version>${project.version}</version>
 									<classifier>jar-with-dependencies</classifier>
 									<outputDirectory>${project.build.directory}</outputDirectory>
 									<destFileName>${project.artifactId}-${project.version}-jar-with-dependencies.jar</destFileName>
