@@ -52,7 +52,7 @@ public abstract class JsonServlet
 				ServletException
 	{
 		final JSONObject jsonRequest;
-		if (req.getParameter ("url") != null && req.getParameter ("sequence") != null) {
+		if ((req.getParameter ("url") != null) && (req.getParameter ("sequence") != null)) {
 			final JSONObject jsonRequestArguments = new JSONObject ();
 			jsonRequestArguments.put ("url", req.getParameter ("url"));
 			jsonRequestArguments.put ("sequence", Integer.parseInt (req.getParameter ("sequence")));

@@ -18,7 +18,7 @@ import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.ShutdownListener;
 import com.rabbitmq.client.ShutdownSignalException;
 import eu.mosaic_cloud.components.core.ComponentCallReply;
-import eu.mosaic_cloud.components.jetty.JettyComponent;
+import eu.mosaic_cloud.components.httpg.jetty.container.JettyComponent;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
