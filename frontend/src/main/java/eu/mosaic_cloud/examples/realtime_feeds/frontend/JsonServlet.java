@@ -1,5 +1,5 @@
 
-package eu.mosaic_cloud.realtime_feeds.frontend;
+package eu.mosaic_cloud.examples.realtime_feeds.frontend;
 
 
 import java.io.IOException;

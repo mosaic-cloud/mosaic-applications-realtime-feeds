@@ -10,7 +10,7 @@
 	
 	<servlet>
 		<servlet-name>feeds-servlet</servlet-name>
-		<servlet-class>eu.mosaic_cloud.realtime_feeds.frontend.FeedsServlet</servlet-class>
+		<servlet-class>eu.mosaic_cloud.examples.realtime_feeds.frontend.FeedsServlet</servlet-class>
 		<load-on-startup>0</load-on-startup>
 	</servlet>
 	
