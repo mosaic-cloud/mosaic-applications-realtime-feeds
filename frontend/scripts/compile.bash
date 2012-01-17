@@ -6,6 +6,6 @@ else
 	_mvn_args+=( clean compile )
 fi
 
-exec env "${_mvn_env[@]}" "${_mvn_bin}" -f "${_mvn_pom}" "${_mvn_args[@]}"
+exec env "${_mvn_env[@]}" "${_mvn_bin}" -f "${_mvn_pom}" "${_mvn_args[@]}" compile test-compile
 
 exit 1

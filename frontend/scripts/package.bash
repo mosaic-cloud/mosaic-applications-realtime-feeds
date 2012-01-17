@@ -22,7 +22,7 @@ if test -e "${_outputs}/package.mvn" ; then
 	rm -R -- "${_outputs}/package.mvn"
 fi
 
-env "${_mvn_env[@]}" "${_mvn_bin}" "${_mvn_args[@]}" package -DskipTests=true
+env "${_mvn_env[@]}" "${_mvn_bin}" -f "${_mvn_pom}" "${_mvn_args[@]}" package -DskipTests=true
 
 mkdir -- "${_outputs}/package"
 mkdir -- "${_outputs}/package/bin"
