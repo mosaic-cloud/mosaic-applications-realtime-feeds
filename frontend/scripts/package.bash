@@ -22,7 +22,7 @@ if test -e "${_outputs}/package.mvn" ; then
 	rm -R -- "${_outputs}/package.mvn"
 fi
 
-env "${_mvn_env[@]}" "${_mvn_bin}" -f "${_mvn_pom}" "${_mvn_args[@]}" package -DskipTests=true
+env "${_mvn_env[@]}" "${_mvn_bin}" -f "${_mvn_pom}" --projects "${_maven_pom_group}:${_maven_pom_artifact}" --also-make "${_mvn_args[@]}" --offline package -DskipTests=true
 
 mkdir -- "${_outputs}/package"
 mkdir -- "${_outputs}/package/bin"
@@ -47,7 +47,8 @@ _package="$( readlink -e -- . )"
 cmp -s -- "${_package}/lib/scripts/_do.sh" "${_self_realpath}"
 test -e "${_package}/lib/scripts/${_self_basename}.bash"
 
-_PATH="${_package}/bin:${PATH}"
+_PATH="${_package}/bin:${PATH:-}"
+_LD_LIBRARY_PATH="${_package}/lib/java:${LD_LIBRARY_PATH:-}"
 
 _java_bin="$( PATH="${_PATH}" type -P -- java || true )"
 if test -z "${_java_bin}" ; then
@@ -58,9 +59,11 @@ fi
 _java_jars="${_package}/lib/java"
 _java_args=(
 		-server
+		"-Djava.library.path=${_LD_LIBRARY_PATH}"
 )
 _java_env=(
 		PATH="${_PATH}"
+		LD_LIBRARY_PATH="${_LD_LIBRARY_PATH}"
 )
 
 _package_jar_name='@package_jar_name@'
