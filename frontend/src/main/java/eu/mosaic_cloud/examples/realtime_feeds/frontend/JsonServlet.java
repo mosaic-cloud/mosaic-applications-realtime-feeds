@@ -25,7 +25,7 @@ public abstract class JsonServlet
 		try {
 			this.handleRequest (req, resp);
 		} catch (final JSONException e) {
-			throw new IOException (e);
+			throw (new IOException (e));
 		}
 	}
 	
@@ -37,7 +37,7 @@ public abstract class JsonServlet
 		try {
 			this.handleRequest (req, resp);
 		} catch (final JSONException e) {
-			throw new IOException (e);
+			throw (new IOException (e));
 		}
 	}
 	

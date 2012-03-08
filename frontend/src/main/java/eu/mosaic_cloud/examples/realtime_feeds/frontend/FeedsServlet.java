@@ -36,10 +36,11 @@ public final class FeedsServlet
 		this.feedExchange = "feeds.fetch-data";
 		this.feedRoutingKey = "urgent";
 		this.feedLimit = 10;
-		if (JettyComponent.component.isActive ()) {
+		final JettyComponent component = JettyComponent.get ();
+		if (component.isActive ()) {
 			try {
 				{
-					final ComponentCallReply reply = JettyComponent.component.call (FeedsServlet.rabbitGroup, "mosaic-rabbitmq:get-broker-endpoint", null).get (12000, TimeUnit.MILLISECONDS);
+					final ComponentCallReply reply = component.call (FeedsServlet.defaultRabbitGroup, "mosaic-rabbitmq:get-broker-endpoint", null).get (12000, TimeUnit.MILLISECONDS);
 					Preconditions.checkState (reply.ok);
 					final Map<?, ?> outputs = (Map<?, ?>) reply.outputsOrError;
 					this.rabbitAddr = (String) outputs.get ("ip");
@@ -47,7 +48,7 @@ public final class FeedsServlet
 					FeedsServlet.logger.info ("resolved Rabbit on `{}:{}`", this.rabbitAddr, Integer.valueOf (this.rabbitPort));
 				}
 				{
-					final ComponentCallReply reply = JettyComponent.component.call (FeedsServlet.riakGroup, "mosaic-riak-kv:get-store-pb-endpoint", null).get (12000, TimeUnit.MILLISECONDS);
+					final ComponentCallReply reply = component.call (FeedsServlet.defaultRiakGroup, "mosaic-riak-kv:get-store-pb-endpoint", null).get (12000, TimeUnit.MILLISECONDS);
 					Preconditions.checkState (reply.ok);
 					final Map<?, ?> outputs = (Map<?, ?>) reply.outputsOrError;
 					this.riakAddr = (String) outputs.get ("ip");
@@ -56,8 +57,8 @@ public final class FeedsServlet
 				}
 			} catch (final Throwable e) {
 				FeedsServlet.logger.error ("failed resolving resources; terminating!", e);
-				JettyComponent.component.terminate ();
-				throw new IllegalStateException ();
+				component.terminate ();
+				throw (new IllegalStateException ());
 			}
 		} else {
 			this.riakAddr = "127.0.0.1";
@@ -80,14 +81,14 @@ public final class FeedsServlet
 					public void shutdownCompleted (final ShutdownSignalException e)
 					{
 						FeedsServlet.logger.error ("Rabbit failed; terminating!", e);
-						JettyComponent.component.terminate ();
+						component.terminate ();
 					}
 				});
 			}
 		} catch (final Exception e) {
 			FeedsServlet.logger.error ("failed resolving resources; terminating!", e);
-			JettyComponent.component.terminate ();
-			throw new IllegalStateException ();
+			component.terminate ();
+			throw (new IllegalStateException ());
 		}
 	}
 	
@@ -166,7 +167,7 @@ public final class FeedsServlet
 			final String timelineKey = String.format ("%1$032X", i).toLowerCase ();
 			return timelineKey;
 		} catch (final Exception e) {
-			throw new IllegalStateException ();
+			throw (new IllegalStateException ());
 		}
 	}
 	
@@ -177,23 +178,23 @@ public final class FeedsServlet
 		final JSONObject request = new JSONObject ();
 		request.put ("url", url);
 		final AMQP.BasicProperties prop = new AMQP.BasicProperties.Builder ().contentType ("application/json").build ();
-		synchronized (this) {
+		synchronized (this.rabbitChannel) {
 			this.rabbitChannel.basicPublish (this.feedExchange, this.feedRoutingKey, prop, request.toString ().getBytes ());
 		}
 	}
 	
-	final String feedBucket;
-	final String feedExchange;
-	final int feedLimit;
-	final String feedRoutingKey;
-	final String rabbitAddr;
-	final Channel rabbitChannel;
-	final Connection rabbitConnection;
-	final int rabbitPort;
-	final String riakAddr;
-	final RiakClient riakClient;
-	final int riakPort;
-	static final Logger logger = LoggerFactory.getLogger (FeedsServlet.class);
-	static final String rabbitGroup = "8cd74b5e4ecd322fd7bbfc762ed6cf7d601eede8";
-	static final String riakGroup = "9cdce23e78027ef6a52636da7db820c47e695d11";
+	private final String feedBucket;
+	private final String feedExchange;
+	private final int feedLimit;
+	private final String feedRoutingKey;
+	private final String rabbitAddr;
+	private final Channel rabbitChannel;
+	private final Connection rabbitConnection;
+	private final int rabbitPort;
+	private final String riakAddr;
+	private final RiakClient riakClient;
+	private final int riakPort;
+	public static final String defaultRabbitGroup = "8cd74b5e4ecd322fd7bbfc762ed6cf7d601eede8";
+	public static final String defaultRiakGroup = "9cdce23e78027ef6a52636da7db820c47e695d11";
+	private static final Logger logger = LoggerFactory.getLogger (FeedsServlet.class);
 }
