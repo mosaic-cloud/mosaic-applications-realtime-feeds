@@ -5,11 +5,11 @@
 	"files" : ["./sources"],
 	"main" : "./sources/component-main.js",
 	"dependencies" : {
-		"amqp" : "https://nodeload.github.com/cipriancraciun/node-amqp/tarball/patches/master",
-		"crypto" : "0.0.1",
-		"libxmljs" : "0.4.2",
-		"printf" : "0.0.2",
-		"rbytes" : "0.0.2",
-		"riak-js" : "0.4.0rc3"
+		"amqp" : "0.1.2",
+		"crypto" : "0.0.3",
+		"libxmljs" : "0.5.4",
+		"printf" : "0.0.4",
+		"rbytes" : "https://nodeload.github.com/peritus/rbytes/tarball/a26c1a9044cb22fbcbb2826a27cbc2cddab112dc",
+		"riak-js" : "0.4.1"
 	}
 }
