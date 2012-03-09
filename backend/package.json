@@ -1,0 +1,15 @@
+{
+	"name" : "mosaic-examples-realtime-feeds-backend",
+	"version" : "0.1.0",
+	"scripts" : {},
+	"files" : ["./sources"],
+	"main" : "./sources/component-main.js",
+	"dependencies" : {
+		"amqp" : "https://nodeload.github.com/cipriancraciun/node-amqp/tarball/patches/master",
+		"crypto" : "0.0.1",
+		"libxmljs" : "0.4.2",
+		"printf" : "0.0.2",
+		"rbytes" : "0.0.2",
+		"riak-js" : "0.4.0rc3"
+	}
+}
