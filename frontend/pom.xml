@@ -38,19 +38,14 @@
 			<version>${versions.dependencies.riak}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.mortbay.jetty</groupId>
-			<artifactId>servlet-api</artifactId>
-			<version>${versions.dependencies.servlet-mortbay}</version>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-servlet</artifactId>
+			<version>${versions.dependencies.jetty-eclipse}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
 			<version>${versions.dependencies.json}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.google.protobuf</groupId>
-			<artifactId>protobuf-java</artifactId>
-			<version>${versions.dependencies.protobuf}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.guava</groupId>
