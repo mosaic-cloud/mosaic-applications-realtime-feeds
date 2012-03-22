@@ -24,20 +24,10 @@
 <web-app>
 	
 	<servlet>
-		<servlet-name>index</servlet-name>
-		<jsp-file>/index.jsp</jsp-file>
-	</servlet>
-	
-	<servlet>
 		<servlet-name>feeds-servlet</servlet-name>
 		<servlet-class>eu.mosaic_cloud.examples.realtime_feeds.frontend.FeedsServlet</servlet-class>
 		<load-on-startup>0</load-on-startup>
 	</servlet>
-	
-	<servlet-mapping>
-		<servlet-name>index</servlet-name>
-		<url-pattern>/wui</url-pattern>
-	</servlet-mapping>
 	
 	<servlet-mapping>
 		<servlet-name>feeds-servlet</servlet-name>
@@ -45,8 +35,7 @@
 	</servlet-mapping>
 	
 	<welcome-file-list>
-		<welcome-file>/wui</welcome-file>
-		<welcome-file>/index.jsp</welcome-file>
+		<welcome-file>/index.html</welcome-file>
 	</welcome-file-list>
 	
 </web-app>
