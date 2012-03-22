@@ -7,7 +7,7 @@ if (require.main === module)
 
 var amqp = require ("amqp");
 var events = require ("events");
-var sys = require ("sys");
+var util = require ("util");
 
 var configuration = require ("./configuration");
 var transcript = require ("./transcript") (module, configuration.libTranscriptLevel);
@@ -24,7 +24,7 @@ var Connector = function (_configuration) {
 	this._ready = false;
 };
 
-sys.inherits (Connector, events.EventEmitter);
+util.inherits (Connector, events.EventEmitter);
 
 Connector.prototype.createConsumer = function (_consumerConfiguration, _queueConfiguration, _bindingConfiguration, _exchangeConfiguration) {
 	var _this = this;

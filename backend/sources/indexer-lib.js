@@ -186,11 +186,29 @@ function _doIndexFeedStep2 (_task) {
 
 function _doIndexFeedStep3a1 (_task) {
 	transcript.traceDebugging ("indexing `%s` step 3a1 (updating timeline and items)...", _task.url);
+	_doIndexFeedStep3a1a (_task, 0);
+}
+
+function _doIndexFeedStep3a1a (_task, _currentItemIndex) {
+	transcript.traceDebugging ("indexing `%s` step 3a1a (updating item `%d`)...", _task.url, _currentItemIndex);
 	
-	for (var _itemIndex in _task.currentItems) {
-		var _item = _task.currentItems[_itemIndex];
-		store.createFeedItem (_task.context.riak, _item.key, _item, function () {});
-	}
+	if (_currentItemIndex < _task.currentItems.length) {
+		var _item = _task.currentItems[_currentItemIndex];
+		store.createFeedItem (_task.context.riak, _item.key, _item,
+				function (_error, _riakMetaData) {
+					if (_error !== null) {
+						_task.error = _error;
+						_onIndexError (_task);
+					} else {
+						_doIndexFeedStep3a1a (_task, _currentItemIndex + 1);
+					}
+				});
+	} else
+		_doIndexFeedStep3a1b (_task);
+}
+
+function _doIndexFeedStep3a1b (_task) {
+	transcript.traceDebugging ("indexing `%s` step 3a1b (updating timeline)...", _task.url);
 	
 	store.createFeedTimeline (_task.context.riak, _task.currentTimeline.key, _task.currentTimeline,
 			function (_error, _riakMetaData) {

@@ -7,7 +7,7 @@ if (require.main === module)
 
 var events = require ("events");
 var rbytes = require ("rbytes");
-var sys = require ("sys");
+var util = require ("util");
 
 var configuration = require ("./configuration");
 var transcript = require ("./transcript") (module, configuration.libTranscriptLevel);
@@ -22,7 +22,7 @@ var Component = function (_harness) {
 	this._harness.on ("error", _boundedMethod (this, this._onError));
 };
 
-sys.inherits (Component, events.EventEmitter);
+util.inherits (Component, events.EventEmitter);
 
 Component.prototype.call = function (_component, _operation, _correlation, _inputs, _data) {
 	if (typeof (_data) === "string")
@@ -189,7 +189,7 @@ var Harness = function (_inputStream, _outputStream) {
 	this._terminateEmitted = false;
 };
 
-sys.inherits (Harness, events.EventEmitter);
+util.inherits (Harness, events.EventEmitter);
 
 Harness.prototype.output = function (_metaData, _data) {
 	this._outputer.output (_metaData, _data)
@@ -250,7 +250,7 @@ var PacketInputer = function (_stream) {
 	this.opened = true;
 };
 
-sys.inherits (PacketInputer, events.EventEmitter);
+util.inherits (PacketInputer, events.EventEmitter);
 
 PacketInputer.prototype.close = function () {
 	this._stream.destroy ();
@@ -317,7 +317,7 @@ var PacketOutputer = function (_stream) {
 	this.opened = true;
 };
 
-sys.inherits (PacketOutputer, events.EventEmitter);
+util.inherits (PacketOutputer, events.EventEmitter);
 
 PacketOutputer.prototype.output = function (_metaData, _data) {
 	_metaData = JSON.stringify (_metaData);

@@ -7,7 +7,7 @@
 	"dependencies" : {
 		"amqp" : "0.1.2",
 		"crypto" : "0.0.3",
-		"libxmljs" : "0.5.4",
+		"libxmljs" : "0.4.3",
 		"printf" : "0.0.4",
 		"rbytes" : "https://nodeload.github.com/peritus/rbytes/tarball/a26c1a9044cb22fbcbb2826a27cbc2cddab112dc",
 		"riak-js" : "0.4.1"
