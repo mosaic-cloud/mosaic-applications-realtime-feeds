@@ -54,6 +54,5 @@ test -n "${_maven_pom_package}"
 _package_name="${_maven_pom_package}"
 _package_version=0.2.0_mosaic_dev
 _package_jar_name="${_maven_pom_artifact}-${_maven_pom_version}-jar-with-dependencies.jar"
-_package_war_name="${_maven_pom_artifact}-${_maven_pom_version}.war"
 _package_scripts=( run-component )
 _package_cook=cook@agent1.builder.mosaic.ieat.ro.

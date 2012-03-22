@@ -38,9 +38,9 @@
 			<version>${versions.dependencies.riak}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-servlet</artifactId>
-			<version>${versions.dependencies.jetty-eclipse}</version>
+			<groupId>org.mortbay.jetty</groupId>
+			<artifactId>servlet-api</artifactId>
+			<version>${versions.dependencies.servlet-mortbay}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.json</groupId>
@@ -84,25 +84,41 @@
 				<executions>
 					<execution>
 						<phase>package</phase>
-						<goals>
-							<goal>copy</goal>
-							<goal>analyze-only</goal>
-						</goals>
 						<configuration>
-							<artifactItems>
-								<artifactItem>
-									<groupId>eu.mosaic_cloud.components</groupId>
-									<artifactId>components-httpg-jetty-container</artifactId>
-									<version>${project.version}</version>
-									<classifier>jar-with-dependencies</classifier>
-									<outputDirectory>${project.build.directory}</outputDirectory>
-									<destFileName>${project.artifactId}-${project.version}-jar-with-dependencies.jar</destFileName>
-								</artifactItem>
-							</artifactItems>
 							<failOnWarning>false</failOnWarning>
 						</configuration>
 					</execution>
 				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>${versions.plugins.assembly}</version>
+				<executions>
+					<!-- it silences complaints about protobuf ??? -->
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<descriptorRefs>
+						<descriptorRef>jar-with-dependencies</descriptorRef>
+					</descriptorRefs>
+					<fileSets>
+						<fileSet>
+							<directory>${project.baseDir}/src/main/webapp</directory>
+							<useDefaultExcludes>true</useDefaultExcludes>
+						</fileSet>
+					</fileSets>
+					<archive>
+						<manifest>
+							<mainClass>eu.mosaic_cloud.components.httpg.jetty.container.JettyComponentPreMain</mainClass>
+						</manifest>
+					</archive>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>

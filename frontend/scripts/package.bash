@@ -29,8 +29,7 @@ mkdir -- "${_outputs}/package/bin"
 mkdir -- "${_outputs}/package/lib"
 
 mkdir -- "${_outputs}/package/lib/java"
-cp -t "${_outputs}/package/lib/java" "${_workbench}/target/${_package_jar_name}"
-cp -t "${_outputs}/package/lib/java" "${_workbench}/target/${_package_war_name}"
+find "${_workbench}/target/" -type f -name "${_package_jar_name}" -exec cp -t "${_outputs}/package/lib/java" -- {} \;
 
 mkdir -- "${_outputs}/package/lib/scripts"
 
@@ -67,7 +66,6 @@ _java_env=(
 )
 
 _package_jar_name='@package_jar_name@'
-_package_war_name='@package_war_name@'
 
 if test "${#}" -eq 0 ; then
 	. "${_package}/lib/scripts/${_self_basename}.bash"
@@ -80,7 +78,6 @@ exit 1
 EOS
 
 sed -r -e 's|@package_jar_name@|'"${_package_jar_name}"'|g' -i -- "${_outputs}/package/lib/scripts/_do.sh"
-sed -r -e 's|@package_war_name@|'"${_package_war_name}"'|g' -i -- "${_outputs}/package/lib/scripts/_do.sh"
 
 chmod +x -- "${_outputs}/package/lib/scripts/_do.sh"
 
@@ -109,7 +106,7 @@ cat >"${_outputs}/package/pkg.json" <<EOS
 	"package" : "${_package_name}",
 	"version" : "${_package_version}",
 	"maintainer" : "mosaic-developers@lists.info.uvt.ro",
-	"description" : "mOSAIC Examples: Realtime Feeds",
+	"description" : "mOSAIC Components",
 	"directories" : [ "bin", "lib" ],
 	"depends" : [
 		"mosaic-sun-jre"

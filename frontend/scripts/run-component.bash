@@ -28,11 +28,10 @@ if test -n "${mosaic_component_debug:-}" ; then
 fi
 
 _jar="${_java_jars:-${_workbench}/target}/${_package_jar_name}"
-_war="${_java_jars:-${_workbench}/target}/${_package_war_name}"
 
 _java_args+=(
 		-jar "${_jar}"
-		"${_war}"
+		embedded
 		"${@}"
 )
 
