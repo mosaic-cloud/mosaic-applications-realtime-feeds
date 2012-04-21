@@ -22,7 +22,7 @@ function _fetch (_url, _context, _callback) {
 	_task.type = configuration.fetchTaskType;
 	_task.feedKey = store.generateFeedKey (_task.url);
 	_task.taskKey = store.generateFeedTaskKey (_task.url, _task.type);
-	_task.contentType = "application/atom+xml; charset=utf-8";
+	_task.acceptContentType = "application/atom+xml; charset=utf-8; q=1, application/rss+xml; charset=utf-8; q=0.5";
 	_doFetchStep1 (_task);
 }
 
@@ -58,7 +58,7 @@ function _doFetchStep1 (_task) {
 
 function _doFetchStep2 (_task) {
 	transcript.traceDebugging ("fetching `%s` step 2 (fetching latest data)...", _task.url);
-	_fetchUrl (_task.url, _task.contentType,
+	_fetchUrl (_task.url, _task.acceptContentType,
 			_task.previousTaskOutcome ? _task.previousTaskOutcome.previousEtag : null,
 			_task.previousTaskOutcome ? _task.previousTaskOutcome.previousTimestamp : null,
 			function (_error, _outcome, _data) {
@@ -167,7 +167,7 @@ function _fetchUrl (_url, _contentType, _etag, _timestamp, _callback) {
 	_url = url.parse (_url, false);
 	_operation.urlHost = _url.host;
 	_operation.urlPort = _url.port ? _url.port : 80;
-	_operation.urlPath = _url.pathname + _url.search;
+	_operation.urlPath = _url.pathname + (_url.search ? _url.search : "");
 	
 	var _requestOptions = {
 		host : _operation.urlHost,
