@@ -15,8 +15,8 @@ else
 	_tmp="/tmp/mosaic/components/${_identifier}"
 fi
 
-_jar="${_java_jars:-${_workbench}/../../mosaic-components-jetty/target}/components-jetty-0.2-SNAPSHOT-jar-with-dependencies.jar"
-_war="${_java_jars:-${_workbench}/target}/examples-realtime-feeds-frontend-0.1-SNAPSHOT.war"
+_jar="${_java_jars:-${_workbench}/../../mosaic-components-jetty/target}/components-jetty-0.4.0-jar-with-dependencies.jar"
+_war="${_java_jars:-${_workbench}/target}/examples-realtime-feeds-frontend-0.4.0.war"
 
 _java_args+=(
 		-jar "${_jar}"

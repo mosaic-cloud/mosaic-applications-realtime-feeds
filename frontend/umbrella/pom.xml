@@ -6,7 +6,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>eu.mosaic_cloud</groupId>
 	<artifactId>umbrella-parent</artifactId>
-	<version>0.2-SNAPSHOT</version>
+	<version>0.4.0</version>
 	<packaging>pom</packaging>
 	<modules>
 		<module>./mosaic-components-jetty</module>

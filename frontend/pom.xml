@@ -4,13 +4,13 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>eu.mosaic_cloud</groupId>
 	<artifactId>examples-realtime-feeds-frontend</artifactId>
-	<version>0.1-SNAPSHOT</version>
+	<version>0.4.0</version>
 	<packaging>war</packaging>
 	<dependencies>
 		<dependency>
 			<groupId>eu.mosaic_cloud</groupId>
 			<artifactId>components-jetty</artifactId>
-			<version>0.4-SNAPSHOT</version>
+			<version>0.4.0</version>
 		</dependency>
 		<dependency>
 			<groupId>com.rabbitmq</groupId>

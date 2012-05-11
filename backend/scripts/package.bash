@@ -31,8 +31,8 @@ done
 cp -RT "${_npm_prefix}" "${_outputs}/package/lib/npm"
 
 mkdir "${_outputs}/package/lib/java"
-cp -t "${_outputs}/package/lib/java" ./frontend/target/examples-realtime-feeds-frontend-0.1-SNAPSHOT.war
-cp -t "${_outputs}/package/lib/java" ../mosaic-components-jetty/target/components-jetty-0.2-SNAPSHOT-jar-with-dependencies.jar
+cp -t "${_outputs}/package/lib/java" ./frontend/target/examples-realtime-feeds-frontend-0.4.0.war
+cp -t "${_outputs}/package/lib/java" ../mosaic-components-jetty/target/components-jetty-0.4.0-jar-with-dependencies.jar
 
 mkdir "${_outputs}/package/lib/scripts"
 
