@@ -48,6 +48,6 @@ _mvn_env=(
 )
 
 _package_name="$( basename -- "$( readlink -e -- .. )" )-$( basename -- "$( readlink -e -- . )" )"
-_package_version=0.2.0_mosaic_dev
 _package_scripts=( run-{fetcher,indexer,scavanger,leacher,pusher} node )
-_package_cook=cook@agent1.builder.mosaic.ieat.ro.
+_package_version="${mosaic_distribution_version:-0.2.0_mosaic_dev}"
+_package_cook="${mosaic_distribution_cook:-cook@agent1.builder.mosaic.ieat.ro}"
