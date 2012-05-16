@@ -17,10 +17,6 @@ if test -e "${_outputs}/package.tar.gz" ; then
 	chmod +w -- "${_outputs}/package.tar.gz"
 	rm -- "${_outputs}/package.tar.gz"
 fi
-if test -e "${_outputs}/package.mvn" ; then
-	chmod -R a+w -- "${_outputs}/package.mvn"
-	rm -R -- "${_outputs}/package.mvn"
-fi
 
 mkdir -- "${_outputs}/package"
 mkdir -- "${_outputs}/package/bin"
@@ -113,92 +109,5 @@ EOS
 chmod -R a+rX-w -- "${_outputs}/package"
 
 tar -czf "${_outputs}/package.tar.gz" -C "${_outputs}/package" .
-
-mkdir -- "${_outputs}/package.mvn"
-
-cat >"${_outputs}/package.mvn/pom.xml" <<EOS
-<?xml version="1.0" encoding="UTF-8"?>
-
-<project
-			xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-			xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	
-	<groupId>eu.mosaic_cloud.packages</groupId>
-	<artifactId>${_package_name}</artifactId>
-	<version>${_package_version}</version>
-	<packaging>pom</packaging>
-	
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-assembly-plugin</artifactId>
-				<version>\${versions.plugins.assembly}</version>
-				<configuration>
-					<descriptors>
-						<descriptor>./assembly.xml</descriptor>
-					</descriptors>
-					<formats>
-						<format>tar.bz2</format>
-					</formats>
-					<tarLongFileMode>gnu</tarLongFileMode>
-				</configuration>
-				<executions>
-					<execution>
-						<phase>package</phase>
-						<goals>
-							<goal>single</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-	</build>
-	
-	<distributionManagement>
-		<repository>
-			<id>developers.mosaic-cloud.eu-releases</id>
-			<url>http://developers.mosaic-cloud.eu/artifactory/mosaic</url>
-		</repository>
-		<snapshotRepository>
-			<id>developers.mosaic-cloud.eu-snapshots</id>
-			<url>http://developers.mosaic-cloud.eu/artifactory/mosaic</url>
-			<uniqueVersion>false</uniqueVersion>
-		</snapshotRepository>
-	</distributionManagement>
-	
-	<properties>
-		<versions.plugins.assembly>2.2.2</versions.plugins.assembly>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	</properties>
-	
-</project>
-EOS
-
-cat >"${_outputs}/package.mvn/assembly.xml" <<EOS
-<?xml version="1.0" encoding="UTF-8"?>
-
-<assembly
-			xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-			xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd">
-	
-	<id>\${os.name}-\${os.arch}</id>
-	
-	<fileSets>
-		<fileSet>
-			<directory>\${project.basedir}/../package</directory>
-			<outputDirectory>/</outputDirectory>
-			<excludes>
-				<exclude>pkg.json</exclude>
-			</excludes>
-			<useDefaultExcludes>false</useDefaultExcludes>
-		</fileSet>
-	</fileSets>
-	
-</assembly>
-EOS
-
-env "${_mvn_env[@]}" "${_mvn_bin}" -f "${_mvn_pkg_pom}" "${_mvn_args[@]}" assembly:single
 
 exit 0

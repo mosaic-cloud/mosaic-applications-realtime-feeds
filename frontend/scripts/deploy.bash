@@ -9,8 +9,4 @@ if test "${_mosaic_deploy_cook:-true}" == true ; then
 	ssh -T "${_package_cook}" <"${_outputs}/package.tar.gz"
 fi
 
-if test "${_mosaic_deploy_maven:-true}" == true ; then
-	env "${_mvn_env[@]}" "${_mvn_bin}" -f "${_mvn_pkg_pom}" "${_mvn_args[@]}" deploy
-fi
-
 exit 0

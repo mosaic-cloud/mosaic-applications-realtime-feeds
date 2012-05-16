@@ -28,9 +28,9 @@ _java_env=(
 
 _mvn_this_pom="${_workbench}/pom.xml"
 _mvn_umbrella_pom="${_workbench}/pom-umbrella.xml"
-_mvn_pkg_pom="${_outputs}/package.mvn/pom.xml"
 _mvn_args=(
-		--errors --quiet
+		--errors
+		--quiet
 )
 _mvn_env=(
 		PATH="${_PATH}"
@@ -40,7 +40,13 @@ while read _maven_pom_variable ; do
 	test -n "${_maven_pom_variable}" || continue
 	declare "${_maven_pom_variable}"
 done <<<"$(
-		env "${_mvn_env[@]}" "${_mvn_bin}" -f "${_mvn_this_pom}" "${_mvn_args[@]}" help:effective-pom -Doutput=/dev/stderr 3>&1 1>&2 2>&3 \
+		env "${_mvn_env[@]}" "${_mvn_bin}" \
+				-f "${_mvn_this_pom}" \
+				--offline \
+				"${_mvn_args[@]}" \
+				help:effective-pom \
+				-Doutput=/dev/stderr \
+			3>&1 1>&2 2>&3 \
 		| grep -o -E -e '<echo message="_maven_pom_[a-z]+=.+&#xA;" file="/dev/stdout" />' \
 		| sed -r -e 's!^<echo message="(_maven_pom_[a-z]+=.+)&#xA;" file="/dev/stdout" />$!\1!'
 )"
