@@ -10,6 +10,7 @@ exec env "${_mvn_env[@]}" "${_mvn_bin}" \
 		--projects "${_maven_pom_group}:${_maven_pom_artifact}" \
 		--also-make \
 		--update-snapshots \
+		--fail-never \
 		"${_mvn_args[@]}" \
 		dependency:go-offline
 

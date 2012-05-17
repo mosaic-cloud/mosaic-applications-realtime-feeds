@@ -10,9 +10,11 @@ _npm_args+=(
 )
 
 if test "${#_npm_args[@]}" -eq 0 ; then
-	exec env "${_npm_env[@]}" "${_npm_bin}"
+	env "${_npm_env[@]}" "${_npm_bin}" 2>&1 \
+	| sed -u -r -e 's!^.*$![  ] &!g' >&2
 else
-	exec env "${_npm_env[@]}" "${_npm_bin}" "${_npm_args[@]}"
+	env "${_npm_env[@]}" "${_npm_bin}" "${_npm_args[@]}" 2>&1 \
+	| sed -u -r -e 's!^.*$![  ] &!g' >&2
 fi
 
 exit 0
