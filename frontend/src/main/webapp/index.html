@@ -481,7 +481,7 @@ $(document).ready(function(){
     $("#submit").click(function () {
       //
       if($("#url").val().length == 0)
-        return;
+        $("#url").val("cloud");
       //
       if($("#submit").hasClass("x-active")) {
         $("#submit").removeClass("x-active");
