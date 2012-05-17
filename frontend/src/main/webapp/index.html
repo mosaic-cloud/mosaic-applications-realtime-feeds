@@ -1,229 +1,537 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-	<link href="static/style.css" type="text/css" rel="stylesheet" />
-    <script src="static/jquery.min.js"></script>
-    <script type="text/javascript" >
-	    
-        
-        $.ajaxSetup({
-	    	url: 'feeds'
-		});
-        
-	    function JSONCall(req) {
-	    	alert(JSON.stringify(req));
-	    }
-	    // 
-	    // register feed function ... 
-	    // 
-	    function register_feed(feedUrl, element, seq, loop) {
-	       if (seq === undefined)
-	           seq = 0;
-           var req = {'action': 'register',
-	    				'arguments': {
-	    					'url': feedUrl,
-	    					'sequence': seq
-	    				}
-	    			  }
-			$.ajax({
-	    		data: {'request': JSON.stringify(req)},
-	    		dataType: 'json',
-	    		success: function(result){
-	    			if(result['action'] == "not supported") {
-	    				// TODO: show user smth went wrong ...
-                        loop();
-                        return false;
-	    			}
-	    			if(result["error"] !== undefined) {
-	    				//alert(result["error"]);
-                        loop();
-                        return false;
-	    			}
-	    			
-	    			var sequence = result['sequence'];
-                    element.find("#url").html(feedUrl).end();
-                    element.find("#sequence").html(sequence).end();
+<meta charset="utf-8">
+<title>mOSAIC Feeds</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="">
+<meta name="author" content="">
 
-	    			for(var entry in result['entry']) {
-                        entry = result['entry'][result['entry'].length - entry - 1];
-	    				var newdiv  = document.createElement('div'),
-                            para    = document.createElement('p'),
-							title   = document.createTextNode(entry['title']),
-							imgNode = new Image(),
-							imgNodeReal = new Image();
-                        para.appendChild(title);
-                        para.setAttribute("class", "tweet_text");
-						imgNode.src = 'static/images/loading.gif';
-						imgNodeReal.src = entry['img'];
-						(function () {
-							var myImgNode = imgNode;
-							var myImgNodeReal = imgNodeReal;
-							$(imgNodeReal).load (function () {myImgNode.src = myImgNodeReal.src; });
-						})();
-						newdiv.setAttribute('class', 'tweet');
-						newdiv.appendChild(imgNode);
-						newdiv.appendChild(para);
-                        console.log(entry['title']);
-                        if(element.find("div.tweet").length != 0) {
-                            element.find("div.tweet:first").before(newdiv);
-                        }
-                        else {
-                            element.append(newdiv);
-                        }
-	    			}
-                    element.find("div.tweet").filter(':gt(' + 7 + ')').remove();
-                    loop();
-	    		}
-			});
-	    };
-	    
-		function refresh_feeds(side, loop) {
-            var left_url = $("#left #url").html(),
-                left_seq = $("#left #sequence").html(),
-                right_url = $("#right #url").html(),
-                right_seq = $("#right #sequence").html();
-                
-            if(side == "left" && left_url.length >= 37) {
-                register_feed(left_url, $("#left"), left_seq, loop);
-            }
-            if(side == "right" && right_url.length >= 37) {
-                register_feed(right_url, $("#right"), right_seq, loop);
-            }
+<!-- Le styles -->
+<link href="http://194.102.63.56:15000/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+<style>
+#feed, #sequence { display: none; }
+body { 
+  background: url('https://twitter.com/images/themes/theme1/bg.png') no-repeat #C0DEED !important;
+  padding-top: 60px;
+  
+}
+
+.btn-hax { 
+  margin-left: -1px !important;
+}
+
+.feed-module { 
+  position: relative;
+  top: -4px;
+  left: -0px;
+  min-height: 100px; 
+  height: auto;
+  border-color: #BCE8F1 !important;
+  width: 457px !important;
+  padding-left: 15px; 
+  padding-right: 15px; 
+  padding-top: 10px; 
+  padding-bottom: 10px;
+  background: rgb(247,247,247); /* Old browsers */
+  background: -moz-linear-gradient(top,  rgba(247,247,247,1) 0%, rgba(249,249,249,1) 53%, rgba(237,237,237,1) 100%); /* FF3.6+ */
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(247,247,247,1)), color-stop(53%,rgba(249,249,249,1)), color-stop(100%,rgba(237,237,237,1))); /* Chrome,Safari4+ */
+  background: -webkit-linear-gradient(top,  rgba(247,247,247,1) 0%,rgba(249,249,249,1) 53%,rgba(237,237,237,1) 100%); /* Chrome10+,Safari5.1+ */
+  background: -o-linear-gradient(top,  rgba(247,247,247,1) 0%,rgba(249,249,249,1) 53%,rgba(237,237,237,1) 100%); /* Opera 11.10+ */
+  background: -ms-linear-gradient(top,  rgba(247,247,247,1) 0%,rgba(249,249,249,1) 53%,rgba(237,237,237,1) 100%); /* IE10+ */
+  background: linear-gradient(top,  rgba(247,247,247,1) 0%,rgba(249,249,249,1) 53%,rgba(237,237,237,1) 100%); /* W3C */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f7f7f7', endColorstr='#ededed',GradientType=0 ); /* IE6-9 */
+  border: 1px solid #ddd !important;
+  border-bottom: 0px !important;
+}
+
+.feed-module:first-child {
+  border-top: 0px !important;
+}
+
+.feed-module:last-child {
+  border-bottom: 1px solid #ddd !important;
+  border-bottom-right-radius: 5px;
+  border-bottom-left-radius: 5px;
+}
+
+.feed-round-bottom {
+  border-bottom: 1px solid #ddd !important;
+  border-bottom-right-radius: 5px;
+  border-bottom-left-radius: 5px;
+}
+
+.feed-user-img {
+  width: 60px;
+  height: 60px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  float: left;
+}
+
+.feed-user-name {
+  margin-left: 10px;
+  border-bottom: 1px solid #ddd;
+  width: 200px;
+  height: 20px;
+  float: left;
+}
+
+.feed-user-name p {
+  font-size: 16px !important;
+  text-shadow: 1px 1px #aaa;
+}
+
+.feed-content {
+  text-indent: 6px;
+  position: relative;
+  top: 5px;
+  float: right;
+  width: 390px;
+  overflow: hidden;
+  height: 75px;
+  text-shadow: 1px 1px #ddd;
+}
+
+.new-feed {
+  background: #E3F2FA !important;
+}
+
+.mobile-input { 
+  width: 399px;
+}
+
+.streaming {
+  background-color: #ddd;
+  border-color: #ddd;
+}
+
+img { 
+  width: 60px; 
+  height: 60px; 
+  float: left; 
+}
+ 
+.feed-module p { 
+  float: left;
+}
+ 
+.container { 
+  width: 480px !important; 
+} 
+
+.feeds {
+  width: 100%;
+  height: 30px;
+  background: #fff;
+  padding: 5px 5px 5px 4px;
+  border-top-right-radius: 5px;
+  border-top-left-radius: 5px;
+  text-indent: 10px;
+}
+
+.feeds-text {
+  font-size: 24px;
+  line-height: 30px;
+  text-shadow: 1px 2px #ccc;
+}
+
+#msg {
+  width: 260px;
+  height: 30px;
+  position: absolute;
+  left: 50%;
+  top: 62px;
+  margin-left: -130px;
+  z-index: 10000;
+  zoom: 1;
+  display: none;
+}
+
+.alert {
+  padding-right: 8px !important;
+}
+
+.btn-hax {
+  max-width: 81px;
+}
+
+</style>
+<link href="http://194.102.63.56:15000/bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">
+
+<!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+<!--[if lt IE 9]>
+<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+<style type="text/css">
+
+@media (max-width: 980px) {
+  .mobile-input { 
+    margin-left: 0px; 
+    width: 399px !important;
+  } 
+  .feed-module { 
+    position: relative; 
+    left: -10 !important; 
+    width: 457px !important;
+  }
+}
+
+@media (max-width: 767px) {
+  .mobile-input {
+    height: 30px !important;
+  }
+  .btn-hax {
+    height: 40px;
+    margin-top: 5px !important;
+  }
+}
+
+@media (max-width: 580px) {
+  body {
+    background: #333 !important;
+  }
+  .mobile-input { margin-left: 0px; 
+    width: 399px !important; 
+    height: 30px; 
+    margin-top: -5px !important;
+    font-size: 20px;
+  } 
+  .feed-module { 
+    position: relative; 
+    left: 0 !important; 
+    width: 457px !important;
+  }
+  .feed-content {
+    width: 380px !important;
+  }
+  .btn-hax {
+    height: 40px;
+    margin-top: 1px !important;
+  }
+  .feeds {
+    padding-right: 0px;
+    padding-left: 0px;
+    width: 489px;
+  }
+}
+
+@media (max-width: 480px) {
+  .feeds {
+    width: 449px;
+    margin-left: 5px;
+  }
+  .mobile-input { 
+    margin-left: 0px; 
+    width: 360px !important;
+  }
+  .feed-module { 
+    width: 417px !important; 
+    margin-left: 5px;
+  }
+  #wrapper .container { 
+    position: relative; 
+    left: -14px !important; 
+    width: 450px !important; 
+  }
+  .navbar-inner .container { 
+    width: 450px !important; 
+  }
+  .feed-content {
+    width: 340px !important;
+  }
+  .feed-module.active .feed-module-inner {
+    height: 140px;
+  }
+  .feed-module.active .feed-content {
+    height: 120px;
+  }
+}
+
+@media (max-width: 320px) {
+  feed-user-name p {
+    max-width: 200px !important;
+    overflow: hidden;
+  }
+  .feeds {
+    width: 289px;
+    margin-left: 6px;
+  }
+  .mobile-input { 
+    margin-left: 0px; 
+    width: 199px !important; 
+  }
+  .feed-module { 
+    width: 257px !important; 
+    margin-left: 6px;
+  }
+  #wrapper .container { 
+    position: relative; 
+    left: -15px !important; 
+    width: 290px !important; 
+  }
+  .navbar-inner .container { 
+    width: 290px !important; 
+  }
+  .feed-user-img {
+    width: 30px;
+    height: 30px;
+    margin-left: -6px;
+  }
+  .feed-user-img img {
+    height: 30px;
+    width: 30px;
+  }
+  .feed-user-name p {
+    max-width: 190px;
+    overflow: hidden;
+  }
+  .feed-content {
+    -o-text-overflow: ellipsis;   /* Opera */
+    text-overflow:    ellipsis;   /* IE, Safari (WebKit) */
+    overflow:hidden;              /* don't show excess chars */
+    width: 220px !important;
+    height: 70px;
+  }
+  .feed-module.active .feed-user-img {
+    display: none;
+  }
+  .feed-module.active .feed-user-name {
+    display: none;
+  }
+  .feed-module.active .feed-content {
+    float: left;
+    text-indent: 0;
+    width: 245px;
+    height: 130px;
+  }
+  .feed-module.active .feed-module-inner {
+    height: 140px;
+  }
+}
+</style>
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="../assets/ico/favicon.ico">
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">
+  </head>
+
+  <body>
+    <span id="sequence">0</span>
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <form class="navbar-form pull-left form-inline">
+            <div class="input-append">
+              <input type="text" id="url" class="mobile-input" placeholder="Search for... e.g. cloud"><button id="submit" class="btn btn-hax" type="submit"><span id="btn-text">Submit</span> <i class="icon-comment"></i></button>
+            </div> <!-- input-append -->
+          </form> 
+        </div> <!-- ./container-fluid -->
+      </div> <!-- ./navbar-inner -->
+    </div> <!-- ./navbar -->
+
+    <div id="msg">
+      <div id="err" class="alert alert-error">
+        <strong> Connection lost trying to reconnect... </strong>
+      </div>
+      <div id="succ" class="alert alert-success">
+        <strong> Successfully reconnected... </strong>
+      </div>
+    </div>
+
+    <div id="wrapper">
+    <div class="container">
+    <div class="feeds">
+      <p class="feeds-text"> mOSAIC Feeds </p>
+    </div>
+      <div id="feed" class="new-feed">
+        <button class="close" data-dismiss="alert">x</button>
+        <div class="feed-module-inner">
+          <div class="feed-user-img">
+            <img id="x-img" src="">
+          </div>
+          <div class="feed-user-name">
+            <p id="x-user"> </p>
+          </div>
+          <div class="feed-content">
+            <p id="x-content"> </p>
+          </div>
+        </div>
+      </div> <!-- feed-module -->
+    </div> <!-- /container -->
+    </div>
+    <script src="http://194.102.63.56:15000/jquery-1.7.1.min.js"></script>
+    <script src="http://194.102.63.56:15000/bootstrap/js/bootstrap.min.js"></script>
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster
+    <script src="../assets/js/jquery.js"></script>
+    <script src="../assets/js/bootstrap-transition.js"></script>
+    <script src="../assets/js/bootstrap-alert.js"></script>
+    <script src="../assets/js/bootstrap-modal.js"></script>
+    <script src="../assets/js/bootstrap-dropdown.js"></script>
+    <script src="../assets/js/bootstrap-scrollspy.js"></script>
+    <script src="../assets/js/bootstrap-tab.js"></script>
+    <script src="../assets/js/bootstrap-tooltip.js"></script>
+    <script src="../assets/js/bootstrap-popover.js"></script>
+    <script src="../assets/js/bootstrap-button.js"></script>
+    <script src="../assets/js/bootstrap-collapse.js"></script>
+    <script src="../assets/js/bootstrap-carousel.js"></script>
+    <script src="../assets/js/bootstrap-typeahead.js"></script>
+    -->
+<script type="text/javascript">
+// GLOBALS 
+var ELEMENT = $("#feed");
+var LIMIT = 5;
+var TIMEOUT = 4000;
+var ERRORS = false;
+//
+//
+$.ajaxSetup({
+  url: 'feeds'
+});
+//
+//
+function getFeeds(feedUrl, seq, loop) {
+  if (seq === undefined) {
+    seq = 0;
+  }              
+  var req =   {'action': 'register', 'arguments': { 'url': feedUrl, 'sequence': seq }};
+  //
+  //
+  $.ajax({
+    data: {'request': JSON.stringify(req)},
+    dataType: 'json',
+    success: function(result){
+      //
+      if(ERRORS) {
+        $("#succ").show();
+        $("#err").hide();
+        $("#msg").fadeIn().delay(TIMEOUT - (TIMEOUT / 4)).fadeOut();
+        ERRORS = false;
+      }
+      //
+      if(result['action'] == "not supported") {
+        // + TODO: show user smth went wrong ...
+        loop();
+        return false;
+      }
+      //
+      if(result["error"] !== undefined) {
+        // + TODO: show user smth went wrong ...
+        loop();
+        return false;
+      }
+      //
+      var sequence = result['sequence'];
+      $("#sequence").html(sequence);
+      var feeds = result['entry'].reverse();
+      //
+      $(feeds).each(function(index, feed){
+        //console.log(feed);
+        //add(feed['link'], feed['title'], feed['img']);
+        if($(".feed-module").length > LIMIT) {
+          $("#feed").prev().remove();
+          $("#feed").prev().addClass("feed-round-bottom");
         }
+        $("#feed").prev().addClass("feed-round-bottom");
+        var el = $("#feed");
+        var clonedEl = el.clone(true, true);
+        clonedEl.removeAttr("id");
+        clonedEl.addClass("feed-module");
 
-		$(document).ready(function() {
-            (function () {
-                var interval = undefined;
-                $("#left_btn").click(function () {                
-                    if($(this).html() == "Remove") {
-                        clearTimeout(interval);
-                        $("#left .tweet").remove();
-                        $(this).html("Submit");
-                        $("#left #url").html("No url");
-                        $("#left #sequence").html("0");
-                        $("#left_input").attr("disabled", false).removeClass("readonly");
-                        return false;
-                    }
-                    $("#welcome").fadeOut(600);//.hide();
-                    var updateTimeout = (function () {
-                        var myInterval = interval;
-                        return (function () {
-                            if (myInterval !== interval)
-                                return;
-                            myInterval = setTimeout (
-                                    function () {
-                                        refresh_feeds("left", updateTimeout);
-                                    },
-                                    1000);
-                            interval = myInterval;
-                        });
-                    })();
-                    var feed_keyword = $("#left_input").val();
-                    $("#left_input").attr("disabled", true).addClass("readonly");
-                    $(this).parent().find("#popup").stop().fadeIn(900).fadeOut(300);
-                    // simple regex to check if user entered a keyword of a full link ...
-                    if(feed_keyword.match("http://search.twitter.com/search.atom\.")) {
-                        register_feed(feed_keyword, $("#left"), 0, updateTimeout);
-                    }
-                    else {
-                        feed_keyword = "http://search.twitter.com/search.atom?q=%23" + feed_keyword;
-                        register_feed(feed_keyword, $("#left"), 0, updateTimeout);
-                    }
-                    $(this).text("Remove");
-                    return false;
-                });
-            })();
-            
-            (function () {
-                var interval = undefined;
-                $("#right_btn").click(function () {
-                    if($(this).html() == "Remove") {
-                        clearTimeout(interval);
-                        $("#right .tweet").remove();
-                        $(this).html("Submit");
-                        $("#right #url").html("No url");
-                        $("#right #sequence").html("0");
-                        $("#right_input").attr("disabled", false).removeClass("readonly");
-                        return false;
-                    }
-                    $("#welcome").fadeOut(600);//.hide();
-                    var updateTimeout = (function () {
-                        var myInterval = interval;
-                        return (function () {
-                            if (myInterval !== interval)
-                                return;
-                            myInterval = setTimeout (
-                                    function () {
-                                        refresh_feeds("right", updateTimeout);
-                                    },
-                                    1000);
-                            interval = myInterval;
-                        });
-                    })();
-                    var feed_keyword = $("#right_input").val();
-                    $("#right_input").attr("disabled", true).addClass("readonly");
-                    $(this).parent().find("#popup").stop().fadeIn(900).fadeOut(300);
-                    // simple regex to check if user entered a keyword of a full link ...
-                    if(feed_keyword.match("http://search.twitter.com/search.atom\.")) {
-                        register_feed(feed_keyword, $("#right"), 0, updateTimeout);
-                    }
-                    else {
-                        feed_keyword = "http://search.twitter.com/search.atom?q=%23" + feed_keyword;
-                        register_feed(feed_keyword, $("#right"), 0, updateTimeout);
-                    }
-                    $(this).text("Remove");
-                    return false;
-                });
-            })();
-		});
-	</script>
+        clonedEl.find("#x-user").html(feed['link']);
+        clonedEl.find("#x-content").html(feed['title']);
+        clonedEl.find("#x-img").attr("src", feed['img']);
+        $(clonedEl).insertAfter(".feeds").fadeIn('fast').delay(500).removeClass("new-feed");
+      });
+      loop();
+    }, // end success callback
+    error: function(jqXHR, status) {
+      ERRORS = true;
+      $("#succ").hide();
+      $("#err").show();  
+      $("#msg").fadeIn().delay(TIMEOUT - (TIMEOUT / 4)).fadeOut();
+      loop();
+    } // end error callback
+  }); // end ajax setup
+} // end register_feed function
+//
+//
+function refresh_feeds(loop) {
+  var url = $("#url").val();
+  var seq = $("#sequence").html();
+  getFeeds("http://search.twitter.com/search.atom?q=%23" + url, seq, loop);
+}
+//
+//
+$(document).ready(function(){
+  //
+  $("#url").focus();
+  //
+  //
+  (function () {
+    //
+    var interval = undefined;
+    //
+    //
+    $("#submit").click(function () {
+      //
+      if($("#url").val().length == 0)
+        return;
+      //
+      if($("#submit").hasClass("x-active")) {
+        $("#submit").removeClass("x-active");
+        $("#submit").removeClass("streaming");
+        $("#btn-text").text("Submit");
+        $("#url").removeClass("disabled");
+        $("#url").removeAttr("readonly");
+        $(".feed-module").remove();
+        $("#url").val("");
+        $("#sequence").html("0");
+        clearTimeout(interval);
+        $("#msg").hide().stop(true, true);
+        return false;
+      }
+      else {
+        $("#submit").addClass("x-active");
+        $("#submit").addClass("streaming");
+        $("#url").attr("readonly", "readonly");
+        $("#btn-text").text("Remove");
+      }
 
-</head>
-<body>
+      var updateTimeout = (function () {
+        var myInterval = interval;
 
-	<div id="wrapper">
-		<div id="top">
-			<div class="cls"></div>	
-			<div id="logo">
-				
-			</div>
-		</div>
-		<div id="content">
-			<div id="welcome">
-                <p>Welcome to mOSAIC demo web application :)</p>
-                <p>To start off just enter a keyword in the input box below :)</p>
-            </div>
-            
-			<div id="left">
-                <span id="url"></span>
-                <span id="sequence">0</span>
-                <span id="feedNumber">0</span>
+        return (function () {
+          if (myInterval !== interval)
+            return;
+          myInterval = setTimeout (
+            function () {
+              refresh_feeds(updateTimeout);
+            },
+          TIMEOUT);
+          interval = myInterval;
+        });
+      })();
+      var keyword = $("#url").val();
+      feed_keyword = "http://search.twitter.com/search.atom?q=%23" + keyword;
+      getFeeds(feed_keyword, 0, updateTimeout);
+      return false;
+    });
+  })();
+  //
+  //
+  $(".feed-module").click(function(){
+    $(this).toggleClass("active");    
+  });
+  //
+  //
+});
 
-				<input id = "left_input" type="text" value="cloud" /> 
-				<button id = "left_btn" >Submit</button>
-                <div id = "popup"><p>Query submited</p></div>
-
-			</div>
-			
-			<div id="right">
-                <span id="url"></span>
-                <span id="sequence">0</span>
-                <span id="feedNumber">0</span>
-                
-                <input id = "right_input" type="text" value="cloud" /> 
-                <button id = "right_btn" >Submit</button>
-                <div id = "popup"><p>Query submited</p></div>
-			</div>
-		
-		<div style="clear:both;"></div>
-		</div>
-		
-	<div style="clear:both;"></div>
-	</div>
-<div style="clear:both;"></div>
-	
-
-    
+</script>
   </body>
 </html>
