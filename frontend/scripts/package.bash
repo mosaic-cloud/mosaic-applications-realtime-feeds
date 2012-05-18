@@ -25,7 +25,10 @@ env "${_mvn_env[@]}" "${_mvn_bin}" \
 		--offline \
 		"${_mvn_args[@]}" \
 		package \
-		-DskipTests=true
+		-DskipTests=true \
+		-D_maven_skip_analyze=true \
+		-D_maven_skip_licenses=true \
+		-D_maven_skip_formatter=true
 
 mkdir -- "${_outputs}/package"
 mkdir -- "${_outputs}/package/bin"

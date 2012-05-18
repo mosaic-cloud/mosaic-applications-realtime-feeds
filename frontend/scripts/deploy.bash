@@ -16,7 +16,10 @@ if test "${_mosaic_deploy_artifactory:-true}" == true ; then
 			--also-make \
 			"${_mvn_args[@]}" \
 			deploy \
-			-DskipTests=true
+			-DskipTests=true \
+			-D_maven_skip_analyze=true \
+			-D_maven_skip_licenses=true \
+			-D_maven_skip_formatter=true
 fi
 
 exit 0
