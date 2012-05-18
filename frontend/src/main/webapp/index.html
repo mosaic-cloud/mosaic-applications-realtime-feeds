@@ -72,7 +72,7 @@ body {
 .feed-user-name {
   margin-left: 10px;
   border-bottom: 1px solid #ddd;
-  width: 200px;
+  width: 250px;
   height: 20px;
   float: left;
 }
@@ -383,6 +383,10 @@ img {
     <script src="../assets/js/bootstrap-typeahead.js"></script>
     -->
 <script type="text/javascript">
+// firefox fix
+if($.browser.mozilla){
+  $("#submit").css({"marginTop": "6px"});
+} 
 // GLOBALS 
 var ELEMENT = $("#feed");
 var LIMIT = 5;
