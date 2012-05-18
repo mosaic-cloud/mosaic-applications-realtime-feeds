@@ -21,11 +21,13 @@
 			<groupId>eu.mosaic_cloud.components</groupId>
 			<artifactId>components-httpg-jetty-container</artifactId>
 			<version>${project.version}</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>eu.mosaic_cloud.components</groupId>
 			<artifactId>components-core</artifactId>
 			<version>${project.version}</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.rabbitmq</groupId>
@@ -36,11 +38,6 @@
 			<groupId>com.basho.riak</groupId>
 			<artifactId>riak-client</artifactId>
 			<version>${versions.dependencies.riak}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.mortbay.jetty</groupId>
-			<artifactId>servlet-api</artifactId>
-			<version>${versions.dependencies.servlet-mortbay}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.json</groupId>
@@ -56,16 +53,12 @@
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
 			<version>${versions.dependencies.slf4j}</version>
+			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 	
 	<build>
 		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-war-plugin</artifactId>
-				<version>${versions.plugins.war}</version>
-			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-eclipse-plugin</artifactId>
@@ -79,28 +72,40 @@
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>${versions.plugins.war}</version>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<version>${versions.plugins.assembly}</version>
+				<dependencies>
+					<dependency>
+						<groupId>eu.mosaic_cloud.components</groupId>
+						<artifactId>components-httpg-jetty-container</artifactId>
+						<version>${project.version}</version>
+					</dependency>
+				</dependencies>
 				<executions>
 					<execution>
 						<phase>package</phase>
 						<goals>
-							<goal>single</goal>
+							<goal>assembly</goal>
 						</goals>
+						<configuration>
+							<descriptorRefs>
+								<descriptorRef>jetty-container-component</descriptorRef>
+							</descriptorRefs>
+							<archive>
+								<manifest>
+									<mainClass>eu.mosaic_cloud.components.httpg.jetty.container.JettyComponentPreMain</mainClass>
+								</manifest>
+							</archive>
+						</configuration>
 					</execution>
 				</executions>
-				<configuration>
-					<descriptorRefs>
-						<descriptorRef>jar-with-dependencies</descriptorRef>
-					</descriptorRefs>
-					<archive>
-						<manifest>
-							<mainClass>eu.mosaic_cloud.components.httpg.jetty.container.JettyComponentPreMain</mainClass>
-						</manifest>
-					</archive>
-				</configuration>
 			</plugin>
-			<!-- it silences complaints about protobuf and json ??? -->
+			<!-- FIXME: It silences complaints about `org.json` and `com.google.protobuf`... -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
@@ -118,7 +123,6 @@
 	</build>
 	
 	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<_maven_pom_package>mosaic-examples-realtime-feeds-frontend-java</_maven_pom_package>
 	</properties>
 	
