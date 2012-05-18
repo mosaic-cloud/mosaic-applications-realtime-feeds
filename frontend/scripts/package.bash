@@ -26,9 +26,9 @@ env "${_mvn_env[@]}" "${_mvn_bin}" \
 		"${_mvn_args[@]}" \
 		package \
 		-DskipTests=true \
-		-D_maven_skip_analyze=true \
-		-D_maven_skip_licenses=true \
-		-D_maven_skip_formatter=true
+		-D_maven_pom_skip_analyze=true \
+		-D_maven_pom_skip_licenses=true \
+		-D_maven_pom_skip_formatter=true
 
 mkdir -- "${_outputs}/package"
 mkdir -- "${_outputs}/package/bin"
