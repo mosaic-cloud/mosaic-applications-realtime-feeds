@@ -30,6 +30,18 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
+			<groupId>org.eclipse.jetty.orbit</groupId>
+			<artifactId>javax.servlet</artifactId>
+			<version>${versions.dependencies.servlet-orbit}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>${versions.dependencies.servlet-javax}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
 			<groupId>com.rabbitmq</groupId>
 			<artifactId>amqp-client</artifactId>
 			<version>${versions.dependencies.amqp}</version>
@@ -90,11 +102,11 @@
 					<execution>
 						<phase>package</phase>
 						<goals>
-							<goal>assembly</goal>
+							<goal>single</goal>
 						</goals>
 						<configuration>
 							<descriptorRefs>
-								<descriptorRef>jetty-container-component</descriptorRef>
+								<descriptorRef>jetty-component</descriptorRef>
 							</descriptorRefs>
 							<archive>
 								<manifest>
@@ -124,6 +136,7 @@
 	
 	<properties>
 		<_maven_pom_package>mosaic-examples-realtime-feeds-frontend-java</_maven_pom_package>
+		<_maven_pom_classifier>jetty-component</_maven_pom_classifier>
 	</properties>
 	
 </project>
