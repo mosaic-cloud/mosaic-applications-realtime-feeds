@@ -117,4 +117,16 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
+	<distributionManagement>
+		<repository>
+			<id>developers.mosaic-cloud.eu-releases</id>
+			<name>developers.mosaic-cloud.eu-releases</name>
+			<url>http://developers.mosaic-cloud.eu/artifactory/mosaic</url>
+		</repository>
+		<snapshotRepository>
+			<id>developers.mosaic-cloud.eu-snapshots</id>
+			<name>developers.mosaic-cloud.eu-snapshots</name>
+			<url>http://developers.mosaic-cloud.eu/artifactory/mosaic</url>
+		</snapshotRepository>
+	</distributionManagement>
 </project>
