@@ -12,7 +12,7 @@
 	
 	<modules>
 		<module>.</module>
-		<module>../.repositories/mosaic-java-platform</module>
+		<module>../../mosaic-java-platform</module>
 	</modules>
 	
 	<properties>

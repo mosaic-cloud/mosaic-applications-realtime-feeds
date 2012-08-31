@@ -9,7 +9,7 @@
 		<groupId>eu.mosaic_cloud.examples</groupId>
 		<artifactId>examples-parent</artifactId>
 		<version>0.5.1_mosaic_dev-SNAPSHOT</version>
-		<relativePath>../.repositories/mosaic-java-platform/examples/parent</relativePath>
+		<relativePath>../../mosaic-java-platform/examples/parent</relativePath>
 	</parent>
 	
 	<artifactId>examples-realtime-feeds-frontend</artifactId>
