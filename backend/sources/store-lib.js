@@ -120,7 +120,7 @@ function _fetch (_riak, _bucket, _key, _riakMetaData, _callback) {
 						_callback (null, null, _riakMetaData);
 					} else {
 						transcript.traceWarning ("failed fetching `%s/%s`: %s...", _bucket, _key, _error.toString ());
-						_callback ({reason : "unexpected-reak-error", message : _error.toString (), bucket : _bucket, key : _key, riakMetaData : _riakMetaData});
+						_callback ({reason : "unexpected-riak-error", message : _error.toString (), bucket : _bucket, key : _key, riakMetaData : _riakMetaData});
 					}
 				} else {
 					transcript.traceDebugging ("succeeded fetching `%s/%s`", _bucket, _key);
@@ -140,7 +140,7 @@ function _update (_riak, _bucket, _key, _value, _riakMetaData, _callback) {
 			function (_error, _riakMetaData) {
 				if (_error) {
 					transcript.traceWarning ("failed updating `%s/%s`: %s", _bucket, _key, _error.toString ());
-					_callback ({reason : "unexpected-reak-error", message : _error.toString (), bucket : _bucket, key : _key, riakMetaData : _riakMetaData});
+					_callback ({reason : "unexpected-riak-error", message : _error.toString (), bucket : _bucket, key : _key, riakMetaData : _riakMetaData});
 				} else {
 					transcript.traceDebugging ("succeeded updating `%s/%s`", _bucket, _key);
 					_callback (null, _value, _riakMetaData);
