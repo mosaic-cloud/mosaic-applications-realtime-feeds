@@ -220,90 +220,89 @@ function _parse (_data, _contentType, _callback__) {
 		return (_default);
 	};
 	
-	var _parser = new libxmljs.SaxParser (function (_parser) {
-		
-		var _state = undefined;
-		var _elementStack = null;
-		var _attributesStack = null;
-		var _prefixStack = null;
-		var _uriStack = null;
-		var _namespacesStack = null;
-		var _text = null;
-		
-		_parser.onStartDocument (function () {
-			_elementStack = []; _attributesStack = []; _prefixStack = []; _uriStack = []; _namespacesStack = [];
-			_state = _handleDocumentStart ();
-		});
-		
-		_parser.onEndDocument (function () {
-			// if (_state === undefined)
-			//	return;
-			// _handleDocumentEnd (_state);
-		});
-		
-		_parser.onStartElementNS (function (_element, _attributes, _prefix, _uri, _namespaces) {
-			if (_state === undefined)
-				return;
-			if (_text !== null) {
-				if (_text.length > 0)
-					_state = _handleElementText (_state, _elementStack, _attributesStack, _prefixStack, _uriStack, _namespacesStack, _text.join (''));
-				_text = null;
-			}
-			if (_state === undefined)
-				return;
-			_elementStack.unshift (_element);
-			_attributesStack.unshift (_attributes);
-			_prefixStack.unshift (_prefix);
-			_uriStack.unshift (_uri);
-			_namespacesStack.unshift (_namespaces);
-			_state = _handleElementStart (_state, _elementStack, _attributesStack, _prefixStack, _uriStack, _namespacesStack);
-		});
-		
-		_parser.onEndElementNS (function (_element, _prefix, _uri) {
-			if (_state === undefined)
-				return;
-			if (_text !== null) {
-				if (_text.length > 0)
-					_state = _handleElementText (_state, _elementStack, _attributesStack, _prefixStack, _uriStack, _namespacesStack, _text.join (''));
-				_text = null;
-			}
-			if (_state === undefined)
-				return;
-			_state = _handleElementEnd (_state, _elementStack, _attributesStack, _prefixStack, _uriStack, _namespacesStack);
-			_elementStack.shift ();
-			_attributesStack.shift ();
-			_prefixStack.shift ();
-			_uriStack.shift ();
-			_namespacesStack.shift ();
-			if (_elementStack.length == 0)
-				_state = _handleDocumentEnd (_state);
-		});
-		
-		_parser.onCharacters (function (_data) {
-			if (_state === undefined)
-				return;
-			if (_text === null)
-				_text = [];
-			_text.push (_data);
-		});
-		
-		_parser.onCdata (function (_data) {
-			if (_state === undefined)
-				return;
-			if (_text === null)
-				_text = [];
-			_text.push (_data);
-		});
-		
-		_parser.onComment (function (_data) {});
-		
-		_parser.onWarning (function (_message) {
-			_callback ({reason : "unexpected-xml-parsing-error", message : _message});
-		});
-		
-		_parser.onError (function (_message) {
-			_callback ({reason : "unexpected-xml-parsing-error", message : _message});
-		});
+	var _parser = new libxmljs.SaxParser ();
+	
+	var _state = undefined;
+	var _elementStack = null;
+	var _attributesStack = null;
+	var _prefixStack = null;
+	var _uriStack = null;
+	var _namespacesStack = null;
+	var _text = null;
+	
+	_parser.on ("startDocument", function () {
+		_elementStack = []; _attributesStack = []; _prefixStack = []; _uriStack = []; _namespacesStack = [];
+		_state = _handleDocumentStart ();
+	});
+	
+	_parser.on ("endDocument", function () {
+		if (_state === undefined)
+			return;
+		_handleDocumentEnd (_state);
+	});
+	
+	_parser.on ("startElementNS", function (_element, _attributes, _prefix, _uri, _namespaces) {
+		if (_state === undefined)
+			return;
+		if (_text !== null) {
+			if (_text.length > 0)
+				_state = _handleElementText (_state, _elementStack, _attributesStack, _prefixStack, _uriStack, _namespacesStack, _text.join (''));
+			_text = null;
+		}
+		if (_state === undefined)
+			return;
+		_elementStack.unshift (_element);
+		_attributesStack.unshift (_attributes);
+		_prefixStack.unshift (_prefix);
+		_uriStack.unshift (_uri);
+		_namespacesStack.unshift (_namespaces);
+		_state = _handleElementStart (_state, _elementStack, _attributesStack, _prefixStack, _uriStack, _namespacesStack);
+	});
+	
+	_parser.on ("endElementNS", function (_element, _prefix, _uri) {
+		if (_state === undefined)
+			return;
+		if (_text !== null) {
+			if (_text.length > 0)
+				_state = _handleElementText (_state, _elementStack, _attributesStack, _prefixStack, _uriStack, _namespacesStack, _text.join (''));
+			_text = null;
+		}
+		if (_state === undefined)
+			return;
+		_state = _handleElementEnd (_state, _elementStack, _attributesStack, _prefixStack, _uriStack, _namespacesStack);
+		_elementStack.shift ();
+		_attributesStack.shift ();
+		_prefixStack.shift ();
+		_uriStack.shift ();
+		_namespacesStack.shift ();
+		if (_elementStack.length == 0)
+			_state = _handleDocumentEnd (_state);
+	});
+	
+	_parser.on ("characters", function (_data) {
+		if (_state === undefined)
+			return;
+		if (_text === null)
+			_text = [];
+		_text.push (_data);
+	});
+	
+	_parser.on ("cdata", function (_data) {
+		if (_state === undefined)
+			return;
+		if (_text === null)
+			_text = [];
+		_text.push (_data);
+	});
+	
+	_parser.on ("comment", function (_data) {});
+	
+	_parser.on ("warning", function (_message) {
+		_callback ({reason : "unexpected-xml-parsing-error", message : _message});
+	});
+	
+	_parser.on ("error", function (_message) {
+		_callback ({reason : "unexpected-xml-parsing-error", message : _message});
 	});
 	
 	_parser.parseString (_data.toString ());
