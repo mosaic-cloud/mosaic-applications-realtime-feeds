@@ -20,11 +20,12 @@ fi
 if test ! -e ./node_modules ; then
 	if test -L ./node_modules ; then
 		_node_modules_store="$( readlink -- ./node_modules )"
-		mkdir -- "${_node_modules_store}"
 	else
 		_node_modules_store="${_outputs}/node_modules"
-		mkdir -- "${_node_modules_store}"
 		ln -s -T -- "${_node_modules_store}" ./node_modules
+	fi
+	if test ! -e "${_node_modules_store}" ; then
+		mkdir -- "${_node_modules_store}"
 	fi
 fi
 
