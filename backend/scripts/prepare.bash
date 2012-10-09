@@ -8,11 +8,12 @@ fi
 if test ! -e "${_outputs}" ; then
 	if test -L "${_outputs}" ; then
 		_outputs_store="$( readlink -- "${_outputs}" )"
-		mkdir -- "${_outputs_store}"
 	else
 		_outputs_store="${_temporary}/$( basename -- "${_workbench}" )--$( readlink -m -- "${_outputs}" | tr -d '\n' | md5sum -t | tr -d ' \n-' )"
-		mkdir -- "${_outputs_store}"
 		ln -s -T -- "${_outputs_store}" "${_outputs}"
+	fi
+	if test ! -e "${_outputs_store}" ; then
+		mkdir -- "${_outputs_store}"
 	fi
 fi
 
