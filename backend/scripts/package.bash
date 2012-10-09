@@ -5,10 +5,6 @@ if ! test "${#}" -eq 0 ; then
 	exit 1
 fi
 
-if ! test -e "${_outputs}" ; then
-	mkdir -- "${_outputs}"
-fi
-
 if test -e "${_outputs}/package" ; then
 	chmod -R +w -- "${_outputs}/package"
 	rm -R -- "${_outputs}/package"
