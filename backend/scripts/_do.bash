@@ -1,6 +1,7 @@
 #!/bin/bash
 
-set -e -E -u -o pipefail || exit 1
+set -e -E -u -o pipefail -o noclobber -o noglob +o braceexpand || exit 1
+trap 'printf "[ee] failed: %s\n" "${BASH_COMMAND}" >&2' ERR || exit 1
 
 _self="${0}"
 _self_basename="$( basename -- "${_self}" )"
