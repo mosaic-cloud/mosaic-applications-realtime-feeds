@@ -19,12 +19,12 @@ mkdir -- "${_outputs}/package/bin"
 mkdir -- "${_outputs}/package/lib"
 
 mkdir -- "${_outputs}/package/lib/node"
-find "${_sources}" -type f \( -name "*.js" -o -name "*.txt" \) -print \
+find "${_sources}" -type f \( -name "*.js" -o -name "*.json" -o -name "*.txt" \) -print \
 | while read _source_path ; do
 	cp -t "${_outputs}/package/lib/node" -- "${_source_path}"
 done
 
-cp -R -T -- "${_workbench}/node_modules" "${_outputs}/package/lib/node_modules"
+cp -H -R -T -- "${_workbench}/node_modules" "${_outputs}/package/lib/node_modules"
 
 mkdir -- "${_outputs}/package/lib/scripts"
 
