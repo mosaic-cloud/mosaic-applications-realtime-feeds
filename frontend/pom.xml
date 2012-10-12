@@ -57,6 +57,11 @@
 			<version>${versions.dependencies.json}</version>
 		</dependency>
 		<dependency>
+			<groupId>com.google.protobuf</groupId>
+			<artifactId>protobuf-java</artifactId>
+			<version>${versions.dependencies.protobuf}</version>
+		</dependency>
+		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
 			<version>${versions.dependencies.guava}</version>
@@ -113,20 +118,6 @@
 									<mainClass>eu.mosaic_cloud.components.httpg.jetty.container.JettyComponentPreMain</mainClass>
 								</manifest>
 							</archive>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<!-- FIXME: It silences complaints about `org.json` and `com.google.protobuf`... -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-dependency-plugin</artifactId>
-				<version>${versions.plugins.dependency}</version>
-				<executions>
-					<execution>
-						<phase>package</phase>
-						<configuration>
-							<failOnWarning>false</failOnWarning>
 						</configuration>
 					</execution>
 				</executions>
