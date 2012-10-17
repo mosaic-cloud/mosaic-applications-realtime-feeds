@@ -15,7 +15,7 @@ else
 	_tmp="/tmp/mosaic/components/${_identifier}"
 fi
 
-case "$( basename "${0}" .bash )" in
+case "$( basename -- "${0}" .bash )" in
 	( run-fetcher )
 		_component=fetcher
 	;;

@@ -29,16 +29,6 @@ if test ! -e ./node_modules ; then
 	fi
 fi
 
-_npm_args+=(
-		install .
-)
-
-if test "${#_npm_args[@]}" -eq 0 ; then
-	env "${_npm_env[@]}" "${_npm_bin}" 2>&1 \
-	| sed -u -r -e 's!^.*$![  ] &!g' >&2
-else
-	env "${_npm_env[@]}" "${_npm_bin}" "${_npm_args[@]}" 2>&1 \
-	| sed -u -r -e 's!^.*$![  ] &!g' >&2
-fi
+"${_scripts}/npm" install .
 
 exit 0

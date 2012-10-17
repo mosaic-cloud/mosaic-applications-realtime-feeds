@@ -1,6 +1,7 @@
 #!/dev/null
 
 _identifier="${1:-00000000cf14614e8810102fa887b6bc90dc2a40}"
+
 if test "${#}" -ge 1 ; then
 	for _argument in "${@}" ; do
 		if test -z "${_identifier}" ; then
@@ -39,3 +40,5 @@ mkdir -p -- "${_tmp}"
 cd -- "${_tmp}"
 
 exec env "${_java_env[@]}" "${_java_bin}" "${_java_args[@]}"
+
+exit 1

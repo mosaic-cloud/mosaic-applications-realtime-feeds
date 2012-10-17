@@ -6,8 +6,8 @@ trap 'printf "[ee] failed: %s\n" "${BASH_COMMAND}" >&2' ERR || exit 1
 _workbench="$( readlink -e -- . )"
 _sources="${_workbench}/sources"
 _scripts="${_workbench}/scripts"
-_outputs="${_workbench}/.outputs"
 _tools="${mosaic_distribution_tools:-${_workbench}/.tools}"
+_outputs="${_workbench}/.outputs"
 _temporary="${mosaic_distribution_temporary:-/tmp}"
 
 _PATH="${_tools}/bin:${PATH}"
@@ -24,17 +24,20 @@ if test -z "${_npm_bin}" ; then
 	exit 1
 fi
 
-_node_sources="${_sources}"
+_generic_env=(
+		PATH="${_PATH}"
+		TMPDIR="${_temporary}"
+)
+
 _node_args=()
 _node_env=(
-		PATH="${_PATH}"
+		"${_generic_env[@]}"
 		NODE_PATH="${_sources}:${_workbench}/node_modules"
 )
 
-_npm_args=(
-)
+_npm_args=()
 _npm_env=(
-		PATH="${_PATH}"
+		"${_generic_env[@]}"
 )
 
 _package_name="$( basename -- "$( readlink -e -- .. )" )-$( basename -- "$( readlink -e -- . )" )"

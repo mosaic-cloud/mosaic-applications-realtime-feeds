@@ -18,11 +18,7 @@ mkdir -- "${_outputs}/package"
 mkdir -- "${_outputs}/package/bin"
 mkdir -- "${_outputs}/package/lib"
 
-mkdir -- "${_outputs}/package/lib/node"
-find "${_sources}" -type f \( -name "*.js" -o -name "*.json" -o -name "*.txt" \) -print \
-| while read _source_path ; do
-	cp -t "${_outputs}/package/lib/node" -- "${_source_path}"
-done
+cp -H -R -T -- "${_sources}" "${_outputs}/package/lib/node"
 
 cp -H -R -T -- "${_workbench}/node_modules" "${_outputs}/package/lib/node_modules"
 
@@ -41,7 +37,7 @@ _package="$( readlink -e -- . )"
 cmp -s -- "${_package}/lib/scripts/_do.sh" "${_self_realpath}"
 test -e "${_package}/lib/scripts/${_self_basename}.bash"
 
-_PATH="${_package}/bin:${_package}/lib/applications-elf:${PATH}"
+_PATH="${_package}/bin:${PATH}"
 
 _node_bin="$( PATH="${_PATH}" type -P -- node || true )"
 if test -z "${_node_bin}" ; then
@@ -49,7 +45,6 @@ if test -z "${_node_bin}" ; then
 	exit 1
 fi
 
-_node_sources="${_package}/lib/node"
 _node_args=()
 _node_env=(
 		PATH="${_PATH}"
@@ -76,7 +71,7 @@ for _script_name in "${_package_scripts[@]}" ; do
 		_script_path="$( dirname -- "$( readlink -e -- "${_scripts}/${_script_name}" )" )/${_script_name}.bash"
 	fi
 	cp -T -- "${_script_path}" "${_outputs}/package/lib/scripts/${_script_name}.bash"
-	ln -s -T ./_do.sh "${_outputs}/package/lib/scripts/${_script_name}"
+	ln -s -T -- ./_do.sh "${_outputs}/package/lib/scripts/${_script_name}"
 	cat >"${_outputs}/package/bin/${_package_name}--${_script_name}" <<EOS
 #!/bin/bash
 if test "\${#}" -eq 0 ; then
@@ -92,8 +87,8 @@ cat >"${_outputs}/package/pkg.json" <<EOS
 {
 	"package" : "${_package_name}",
 	"version" : "${_package_version}",
-	"maintainer" : "mosaic-developers@lists.info.uvt.ro",
-	"description" : "mOSAIC Examples: Realtime Feeds",
+	"maintainer" : "developers@mosaic-cloud.eu",
+	"description" : "${_package_name}",
 	"directories" : [ "bin", "lib" ],
 	"depends" : [
 		"mosaic-utils",
