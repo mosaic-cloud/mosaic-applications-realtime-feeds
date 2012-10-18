@@ -2,6 +2,7 @@
 
 set -e -E -u -o pipefail -o noclobber -o noglob +o braceexpand || exit 1
 trap 'printf "[ee] failed: %s\n" "${BASH_COMMAND}" >&2' ERR || exit 1
+export -n BASH_ENV
 
 _workbench="$( readlink -e -- . )"
 _sources="${_workbench}/sources"
@@ -29,10 +30,11 @@ _generic_env=(
 		TMPDIR="${_temporary}"
 )
 
+_node_sources="${_sources}"
 _node_args=()
 _node_env=(
 		"${_generic_env[@]}"
-		NODE_PATH="${_sources}:${_workbench}/node_modules"
+		NODE_PATH="${_node_sources}:${_workbench}/node_modules"
 )
 
 _npm_args=()

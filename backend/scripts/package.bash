@@ -45,10 +45,11 @@ if test -z "${_node_bin}" ; then
 	exit 1
 fi
 
+_node_sources="${_package}/lib/node"
 _node_args=()
 _node_env=(
 		PATH="${_PATH}"
-		NODE_PATH="${_package}/lib/node:${_package}/lib/node_modules"
+		NODE_PATH="${_node_sources}:${_package}/lib/node_modules"
 )
 
 if test "${#}" -eq 0 ; then
