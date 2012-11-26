@@ -24,3 +24,4 @@ research project (an EC FP7-ICT Grant, agreement 256910).
 
 Developers:
  * Ciprian Dorin Craciun, ciprian@volution.ro / ciprian.craciun@gmail.com
+ * Alin Paulesc, paulesc.alin@info.uvt.ro
