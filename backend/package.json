@@ -9,7 +9,7 @@
 		"crypto" : "0.0.3",
 		"libxmljs" : "0.6.1",
 		"printf" : "0.0.4",
-		"rbytes" : "https://nodeload.github.com/peritus/rbytes/tarball/a26c1a9044cb22fbcbb2826a27cbc2cddab112dc",
+		"rbytes" : "git+https://github.com/vincentcr/rbytes#adefa5af8c3100ecc0ae6d4f1bb14963450810f9",
 		"riak-js" : "0.4.1"
 	}
 }
