@@ -181,8 +181,8 @@ function _fetchUrl (_url, _contentType, _etag, _timestamp, _callback) {
 		_requestOptions.headers["If-None-Match"] = _etag;
 	if (_timestamp !== null)
 		_requestOptions.headers["If-Modified-Since"] = new Date (_timestamp).toGMTString ();
-	_requestOptions.headers["User-Agent"] = "mosaic-examples-realtime-feeds/0.1";
-	_requestOptions.headers["Referer"] = "http://mosaic-cloud.eu/";
+	_requestOptions.headers["User-Agent"] = "mosaic-applications-realtime-feeds/0.1";
+	_requestOptions.headers["Referer"] = "http://developers.mosaic-cloud.eu/";
 	
 	_operation.request = {}
 	_operation.response = {};

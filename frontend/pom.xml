@@ -126,7 +126,7 @@
 	</build>
 	
 	<properties>
-		<_maven_pom_package>mosaic-examples-realtime-feeds-frontend-java</_maven_pom_package>
+		<_maven_pom_package>mosaic-applications-realtime-feeds-frontend-java</_maven_pom_package>
 		<_maven_pom_classifier>jetty-component</_maven_pom_classifier>
 	</properties>
 	

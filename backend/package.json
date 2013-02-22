@@ -1,5 +1,5 @@
 {
-	"name" : "mosaic-examples-realtime-feeds-backend",
+	"name" : "mosaic-applications-realtime-feeds-backend",
 	"version" : "0.1.0",
 	"scripts" : {},
 	"files" : ["./sources"],
