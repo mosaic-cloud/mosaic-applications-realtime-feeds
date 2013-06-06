@@ -163,7 +163,7 @@ public final class FeedsServlet
 				final String itemKey = feedItems.getString (index);
 				final RiakObject riakFeedJson = this.riakClient.fetch ("feed-items", itemKey)[0];
 				final JSONObject feedJson = new JSONObject (riakFeedJson.getValue ().toStringUtf8 ());
-				if (feedJson.has ("links:image"))
+				if (feedJson.has ("links:image") && (feedJson.getJSONArray ("links:image").length () > 0))
 					tempObj.put ("img", feedJson.getJSONArray ("links:image").getString (0));
 				if (feedJson.has ("title"))
 					tempObj.put ("title", feedJson.getString ("title"));
