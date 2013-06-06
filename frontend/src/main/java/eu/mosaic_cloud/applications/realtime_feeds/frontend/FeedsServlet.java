@@ -163,9 +163,12 @@ public final class FeedsServlet
 				final String itemKey = feedItems.getString (index);
 				final RiakObject riakFeedJson = this.riakClient.fetch ("feed-items", itemKey)[0];
 				final JSONObject feedJson = new JSONObject (riakFeedJson.getValue ().toStringUtf8 ());
-				tempObj.put ("img", feedJson.getJSONArray ("links:image").getString (0));
-				tempObj.put ("title", feedJson.getString ("title"));
-				tempObj.put ("link", feedJson.getString ("author:uri"));
+				if (feedJson.has ("links:image"))
+					tempObj.put ("img", feedJson.getJSONArray ("links:image").getString (0));
+				if (feedJson.has ("title"))
+					tempObj.put ("title", feedJson.getString ("title"));
+				if (feedJson.has ("author:uri"))
+					tempObj.put ("link", feedJson.getString ("author:uri"));
 				jsonArr.put (tempObj);
 				count++;
 				if (count >= this.feedLimit) {
