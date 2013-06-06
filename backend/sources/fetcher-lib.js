@@ -6,6 +6,7 @@ if (require.main === module)
 // ---------------------------------------
 
 var http = require ("http");
+var https = require ("https");
 var url = require ("url");
 
 var configuration = require ("./configuration");
@@ -165,8 +166,9 @@ function _fetchUrl (_url, _contentType, _etag, _timestamp, _callback) {
 	_operation.url = _url;
 	
 	_url = url.parse (_url, false);
+	_operation.urlProtocol = _url.protocol ? _url.protocol : "http:";
 	_operation.urlHost = _url.host;
-	_operation.urlPort = _url.port ? _url.port : 80;
+	_operation.urlPort = _url.port ? _url.port : ((_operation.urlProtocol === "https:") ? 443 : 80);
 	_operation.urlPath = _url.pathname + (_url.search ? _url.search : "");
 	
 	var _requestOptions = {
@@ -337,7 +339,7 @@ function _fetchUrl (_url, _contentType, _etag, _timestamp, _callback) {
 			_hosts420Last[_operation.urlHost] = null;
 	}
 	
-	var _request = http.get (_requestOptions);
+	var _request = (_operation.urlProtocol == "https:") ? https.get (_requestOptions) : http.get (_requestOptions);
 	
 	_request.on ("response", _onResponse);
 	_request.on ("error", _onError);
