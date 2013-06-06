@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
   #%L
-  mosaic-examples-realtime-feeds-frontend
+  mosaic-applications-realtime-feeds-frontend
   %%
   Copyright (C) 2010 - 2012 Institute e-Austria Timisoara (Romania)
   %%
@@ -25,7 +25,7 @@
 	
 	<servlet>
 		<servlet-name>feeds-servlet</servlet-name>
-		<servlet-class>eu.mosaic_cloud.examples.realtime_feeds.frontend.FeedsServlet</servlet-class>
+		<servlet-class>eu.mosaic_cloud.applications.realtime_feeds.frontend.FeedsServlet</servlet-class>
 		<load-on-startup>0</load-on-startup>
 	</servlet>
 	

@@ -1,6 +1,6 @@
 /*
  * #%L
- * mosaic-examples-realtime-feeds-indexer
+ * mosaic-applications-realtime-feeds-indexer
  * %%
  * Copyright (C) 2010 - 2013 Institute e-Austria Timisoara (Romania)
  * %%
@@ -18,7 +18,7 @@
  * #L%
  */
 
-package eu.mosaic_cloud.examples.realtime_feeds.indexer;
+package eu.mosaic_cloud.applications.realtime_feeds.indexer;
 
 
 import java.util.HashMap;
@@ -28,7 +28,7 @@ import eu.mosaic_cloud.cloudlets.connectors.kvstore.KvStoreCallbackCompletionArg
 import eu.mosaic_cloud.cloudlets.core.CallbackArguments;
 import eu.mosaic_cloud.cloudlets.core.ICallback;
 import eu.mosaic_cloud.cloudlets.tools.DefaultKvStoreConnectorCallback;
-import eu.mosaic_cloud.examples.realtime_feeds.indexer.IndexerCloudlet.IndexerCloudletContext;
+import eu.mosaic_cloud.applications.realtime_feeds.indexer.IndexerCloudlet.IndexerCloudletContext;
 import eu.mosaic_cloud.tools.callbacks.core.CallbackCompletion;
 
 import org.json.JSONObject;

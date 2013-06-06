@@ -1,6 +1,6 @@
 /*
  * #%L
- * mosaic-examples-realtime-feeds-indexer
+ * mosaic-applications-realtime-feeds-indexer
  * %%
  * Copyright (C) 2010 - 2013 Institute e-Austria Timisoara (Romania)
  * %%
@@ -18,13 +18,13 @@
  * #L%
  */
 
-package eu.mosaic_cloud.examples.realtime_feeds.indexer;
+package eu.mosaic_cloud.applications.realtime_feeds.indexer;
 
 
 import eu.mosaic_cloud.cloudlets.connectors.queue.amqp.AmqpQueueConsumeCallbackArguments;
 import eu.mosaic_cloud.cloudlets.core.ICallback;
 import eu.mosaic_cloud.cloudlets.tools.DefaultAmqpQueueConsumerConnectorCallback;
-import eu.mosaic_cloud.examples.realtime_feeds.indexer.IndexerCloudlet.IndexerCloudletContext;
+import eu.mosaic_cloud.applications.realtime_feeds.indexer.IndexerCloudlet.IndexerCloudletContext;
 import eu.mosaic_cloud.tools.callbacks.core.CallbackCompletion;
 
 import org.json.JSONObject;

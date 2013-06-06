@@ -1,6 +1,6 @@
 /*
  * #%L
- * mosaic-examples-realtime-feeds-indexer
+ * mosaic-applications-realtime-feeds-indexer
  * %%
  * Copyright (C) 2010 - 2013 Institute e-Austria Timisoara (Romania)
  * %%
@@ -18,7 +18,7 @@
  * #L%
  */
 
-package eu.mosaic_cloud.examples.realtime_feeds.indexer.tests;
+package eu.mosaic_cloud.applications.realtime_feeds.indexer.tests;
 
 
 import java.io.BufferedReader;
@@ -26,7 +26,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 
-import eu.mosaic_cloud.examples.realtime_feeds.indexer.FeedParser;
+import eu.mosaic_cloud.applications.realtime_feeds.indexer.FeedParser;
 
 import org.junit.After;
 import org.junit.Before;

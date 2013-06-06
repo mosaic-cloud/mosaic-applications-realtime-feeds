@@ -6,15 +6,16 @@
 	<modelVersion>4.0.0</modelVersion>
 	
 	<parent>
-		<groupId>eu.mosaic_cloud.examples</groupId>
-		<artifactId>examples-parent</artifactId>
+		<groupId>eu.mosaic_cloud</groupId>
+		<artifactId>parent</artifactId>
 		<version>0.5.1_mosaic_dev-SNAPSHOT</version>
-		<relativePath>../../mosaic-java-platform/examples/parent</relativePath>
+		<relativePath>../../mosaic-java-platform</relativePath>
 	</parent>
 	
-	<artifactId>examples-realtime-feeds-indexer</artifactId>
+	<groupId>eu.mosaic_cloud.applications.realtime_feeds</groupId>
+	<artifactId>applications-realtime-feeds-indexer</artifactId>
 	<packaging>jar</packaging>
-	<name>mosaic-examples-realtime-feeds-indexer</name>
+	<name>mosaic-applications-realtime-feeds-indexer</name>
 	
 	<dependencies>
 		<dependency>
@@ -120,7 +121,7 @@
 							</descriptorRefs>
 							<archive>
 								<manifest>
-									<mainClass>eu.mosaic_cloud.examples.realtime_feeds.indexer.IndexerComponentPreMain</mainClass>
+									<mainClass>eu.mosaic_cloud.applications.realtime_feeds.indexer.IndexerComponentPreMain</mainClass>
 								</manifest>
 							</archive>
 						</configuration>

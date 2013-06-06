@@ -1,6 +1,6 @@
 /*
  * #%L
- * mosaic-examples-realtime-feeds-frontend
+ * mosaic-applications-realtime-feeds-frontend
  * %%
  * Copyright (C) 2010 - 2012 Institute e-Austria Timisoara (Romania)
  * %%
@@ -18,7 +18,7 @@
  * #L%
  */
 
-package eu.mosaic_cloud.examples.realtime_feeds.frontend;
+package eu.mosaic_cloud.applications.realtime_feeds.frontend;
 
 
 import java.io.IOException;

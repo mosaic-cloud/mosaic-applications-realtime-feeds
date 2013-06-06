@@ -1,6 +1,6 @@
 /*
  * #%L
- * mosaic-examples-realtime-feeds-indexer
+ * mosaic-applications-realtime-feeds-indexer
  * %%
  * Copyright (C) 2010 - 2013 Institute e-Austria Timisoara (Romania)
  * %%
@@ -18,7 +18,7 @@
  * #L%
  */
 
-package eu.mosaic_cloud.examples.realtime_feeds.indexer;
+package eu.mosaic_cloud.applications.realtime_feeds.indexer;
 
 
 import java.util.UUID;

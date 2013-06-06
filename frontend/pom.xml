@@ -6,15 +6,16 @@
 	<modelVersion>4.0.0</modelVersion>
 	
 	<parent>
-		<groupId>eu.mosaic_cloud.examples</groupId>
-		<artifactId>examples-parent</artifactId>
+		<groupId>eu.mosaic_cloud</groupId>
+		<artifactId>parent</artifactId>
 		<version>0.5.1_mosaic_dev-SNAPSHOT</version>
-		<relativePath>../../mosaic-java-platform/examples/parent</relativePath>
+		<relativePath>../../mosaic-java-platform</relativePath>
 	</parent>
 	
-	<artifactId>examples-realtime-feeds-frontend</artifactId>
+	<groupId>eu.mosaic_cloud.applications.realtime_feeds</groupId>
+	<artifactId>applications-realtime-feeds-frontend</artifactId>
 	<packaging>war</packaging>
-	<name>mosaic-examples-realtime-feeds-frontend</name>
+	<name>mosaic-applications-realtime-feeds-frontend</name>
 	
 	<dependencies>
 		<dependency>
