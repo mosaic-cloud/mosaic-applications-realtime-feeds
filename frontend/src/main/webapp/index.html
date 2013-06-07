@@ -487,8 +487,7 @@ function getFeeds(feedUrl, seq, loop) {
 function refresh_feeds(loop) {
   var url = $("#url").val();
   var seq = $("#sequence").html();
-  // getFeeds("http://search.twitter.com/search.atom?q=%23" + url, seq, loop);
-  getFeeds("https://github.com/" + url + ".atom", seq, loop);
+  getFeeds("http://search.twitter.com/search.atom?q=%23" + url, seq, loop);
 }
 //
 //
@@ -542,8 +541,7 @@ $(document).ready(function(){
         });
       })();
       var keyword = $("#url").val();
-      // feed_keyword = "http://search.twitter.com/search.atom?q=%23" + keyword;
-      feed_keyword = "https://github.com/" + keyword + ".atom";
+      feed_keyword = "http://search.twitter.com/search.atom?q=%23" + keyword;
       getFeeds(feed_keyword, 0, updateTimeout);
       return false;
     });
