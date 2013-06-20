@@ -44,5 +44,5 @@ _npm_env=(
 
 _package_name="$( basename -- "$( readlink -e -- .. )" )-$( basename -- "$( readlink -e -- . )" )"
 _package_scripts=( run-fetcher run-indexer run-scavanger run-leacher run-pusher node )
-_package_version="${mosaic_distribution_version:-0.6.0}"
+_package_version="${mosaic_distribution_version:-0.7.0_mosaic_dev}"
 _package_cook="${mosaic_distribution_cook:-cook@agent1.builder.mosaic.ieat.ro}"
