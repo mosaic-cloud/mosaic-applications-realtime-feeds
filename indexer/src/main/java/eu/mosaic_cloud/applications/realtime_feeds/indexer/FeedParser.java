@@ -41,16 +41,13 @@ import com.sun.syndication.io.XmlReader;
 
 public class FeedParser
 {
-	public FeedParser ()
-	{
+	public FeedParser () {
 		this.input = new SyndFeedInput (true);
 		this.input.setPreserveWireFeed (true);
 	}
 	
 	public Timeline parseFeed (final byte[] xmlEntry)
-			throws IOException,
-				FeedException
-	{
+				throws IOException, FeedException {
 		// NOTE: Load the feed, regardless of RSS or Atom type
 		final XmlReader reader = new XmlReader (new ByteArrayInputStream (xmlEntry));
 		final SyndFeed feed;
@@ -59,16 +56,13 @@ public class FeedParser
 			feed = Threading.executeWithCurrentThreadClassLoader (FeedParser.class.getClassLoader (), new Callable<SyndFeed> () {
 				@Override
 				public SyndFeed call ()
-						throws Exception
-				{
+							throws Exception {
 					return FeedParser.this.input.build (reader);
 				}
 			});
-		} catch (final FeedException exception) {
-			throw (exception);
-		} catch (final IOException exception) {
-			throw (exception);
+			reader.close ();
 		} catch (final Exception exception) {
+			reader.close ();
 			throw new Error (exception);
 		}
 		// NOTE: check feed type, only ATOM is accepted

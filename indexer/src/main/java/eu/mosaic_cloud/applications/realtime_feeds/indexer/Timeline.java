@@ -35,8 +35,7 @@ import org.json.JSONObject;
 
 public class Timeline
 {
-	public Timeline (final String id, final String url, final long timestamp)
-	{
+	public Timeline (final String id, final String url, final long timestamp) {
 		super ();
 		this.id = id;
 		this.url = url;
@@ -44,30 +43,25 @@ public class Timeline
 		this.entries = new ArrayList<Entry> ();
 	}
 	
-	public Entry addEntry (final String entryId, final String title, final String titleType, final String content, final String contentType, final long entryTimestamp, final String authorName, final String authorEmail, final String authorURI)
-	{
+	public Entry addEntry (final String entryId, final String title, final String titleType, final String content, final String contentType, final long entryTimestamp, final String authorName, final String authorEmail, final String authorURI) {
 		final Entry entry = new Entry (entryId, title, titleType, content, contentType, entryTimestamp, authorName, authorEmail, authorURI);
 		this.entries.add (entry);
 		return entry;
 	}
 	
-	public List<Entry> getEntries ()
-	{
+	public List<Entry> getEntries () {
 		return this.entries;
 	}
 	
-	public String getId ()
-	{
+	public String getId () {
 		return this.id;
 	}
 	
-	public long getTimestamp ()
-	{
+	public long getTimestamp () {
 		return this.timestamp;
 	}
 	
-	public String getUrl ()
-	{
+	public String getUrl () {
 		return this.url;
 	}
 	
@@ -78,8 +72,7 @@ public class Timeline
 	
 	class Entry
 	{
-		public Entry (final String id, final String title, final String titleType, final String content, final String contentType, final long timestamp, final String authorName, final String authorEmail, final String authorURI)
-		{
+		public Entry (final String id, final String title, final String titleType, final String content, final String contentType, final long timestamp, final String authorName, final String authorEmail, final String authorURI) {
 			super ();
 			this.id = id;
 			this.title = title;
@@ -93,13 +86,11 @@ public class Timeline
 			this.links = new HashMap<String, String> ();
 		}
 		
-		public void addLink (final String linkKey, final String linkRef)
-		{
+		public void addLink (final String linkKey, final String linkRef) {
 			this.links.put (linkKey, linkRef);
 		}
 		
-		public JSONObject convertToJson ()
-		{
+		public JSONObject convertToJson () {
 			final JSONObject json = new JSONObject ();
 			try {
 				json.put ("id", this.id);
@@ -130,63 +121,51 @@ public class Timeline
 			return json;
 		}
 		
-		public String getAuthorEmail ()
-		{
+		public String getAuthorEmail () {
 			return this.authorEmail;
 		}
 		
-		public String getAuthorName ()
-		{
+		public String getAuthorName () {
 			return this.authorName;
 		}
 		
-		public String getAuthorURI ()
-		{
+		public String getAuthorURI () {
 			return this.authorURI;
 		}
 		
-		public String getContent ()
-		{
+		public String getContent () {
 			return this.content;
 		}
 		
-		public String getContentType ()
-		{
+		public String getContentType () {
 			return this.contentType;
 		}
 		
-		public String getId ()
-		{
+		public String getId () {
 			return this.id;
 		}
 		
-		public String getKey ()
-		{
+		public String getKey () {
 			return this.key;
 		}
 		
-		public Map<String, String> getLinks ()
-		{
+		public Map<String, String> getLinks () {
 			return this.links;
 		}
 		
-		public long getTimestamp ()
-		{
+		public long getTimestamp () {
 			return this.timestamp;
 		}
 		
-		public String getTitle ()
-		{
+		public String getTitle () {
 			return this.title;
 		}
 		
-		public String getTitleType ()
-		{
+		public String getTitleType () {
 			return this.titleType;
 		}
 		
-		public void setKey (final String key)
-		{
+		public void setKey (final String key) {
 			this.key = key;
 		}
 		

@@ -35,13 +35,11 @@ import com.google.common.base.Preconditions;
 
 
 public abstract class JsonServlet
-		extends HttpServlet
+			extends HttpServlet
 {
 	@Override
 	protected void doGet (final HttpServletRequest req, final HttpServletResponse resp)
-			throws ServletException,
-				IOException
-	{
+				throws ServletException, IOException {
 		try {
 			this.handleRequest (req, resp);
 		} catch (final JSONException e) {
@@ -51,9 +49,7 @@ public abstract class JsonServlet
 	
 	@Override
 	protected void doPost (final HttpServletRequest req, final HttpServletResponse resp)
-			throws ServletException,
-				IOException
-	{
+				throws ServletException, IOException {
 		try {
 			this.handleRequest (req, resp);
 		} catch (final JSONException e) {
@@ -62,15 +58,10 @@ public abstract class JsonServlet
 	}
 	
 	protected abstract JSONObject handleRequest (JSONObject jsonRequest)
-			throws JSONException,
-				ServletException,
-				IOException;
+				throws JSONException, ServletException, IOException;
 	
 	private final void handleRequest (final HttpServletRequest req, final HttpServletResponse resp)
-			throws JSONException,
-				IOException,
-				ServletException
-	{
+				throws JSONException, IOException, ServletException {
 		final JSONObject jsonRequest;
 		if ((req.getParameter ("url") != null) && (req.getParameter ("sequence") != null)) {
 			final JSONObject jsonRequestArguments = new JSONObject ();

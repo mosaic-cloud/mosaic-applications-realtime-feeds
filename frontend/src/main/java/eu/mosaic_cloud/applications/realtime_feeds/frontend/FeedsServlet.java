@@ -49,10 +49,11 @@ import com.rabbitmq.client.ShutdownSignalException;
 
 @SuppressWarnings ("serial")
 public final class FeedsServlet
-		extends JsonServlet
+			extends JsonServlet
 {
-	public FeedsServlet ()
-	{
+	private static final long serialVersionUID = 1L;
+	
+	public FeedsServlet () {
 		this.feedBucket = "feed-metadata";
 		this.feedExchange = "feeds.fetch-data";
 		this.feedRoutingKey = "urgent";
@@ -99,8 +100,7 @@ public final class FeedsServlet
 				this.rabbitChannel = this.rabbitConnection.createChannel ();
 				this.rabbitChannel.addShutdownListener (new ShutdownListener () {
 					@Override
-					public void shutdownCompleted (final ShutdownSignalException e)
-					{
+					public void shutdownCompleted (final ShutdownSignalException e) {
 						FeedsServlet.logger.error ("Rabbit failed; terminating!", e);
 						component.terminate ();
 					}
@@ -115,9 +115,7 @@ public final class FeedsServlet
 	
 	@Override
 	protected final JSONObject handleRequest (final JSONObject jsonRequest)
-			throws JSONException,
-				IOException
-	{
+				throws JSONException, IOException {
 		final String action = jsonRequest.getString ("action");
 		if (action.equals ("register") || action.equals ("refresh")) {
 			final String url = jsonRequest.getJSONObject ("arguments").getString ("url");
@@ -130,9 +128,7 @@ public final class FeedsServlet
 	}
 	
 	private final JSONObject buildFeedReply (final String md5, final String url, final String seque)
-			throws JSONException,
-				IOException
-	{
+				throws JSONException, IOException {
 		final int seq = Integer.parseInt (seque);
 		this.pushFeedRequest (url);
 		JSONObject feed = new JSONObject ();
@@ -182,8 +178,7 @@ public final class FeedsServlet
 		return result;
 	}
 	
-	private final String generateKey (final String string)
-	{
+	private final String generateKey (final String string) {
 		try {
 			final MessageDigest md5 = MessageDigest.getInstance ("MD5");
 			md5.update (string.getBytes (), 0, string.length ());
@@ -196,9 +191,7 @@ public final class FeedsServlet
 	}
 	
 	private final void pushFeedRequest (final String url)
-			throws JSONException,
-				IOException
-	{
+				throws JSONException, IOException {
 		final JSONObject request = new JSONObject ();
 		request.put ("url", url);
 		final AMQP.BasicProperties prop = new AMQP.BasicProperties.Builder ().contentType ("application/json").build ();

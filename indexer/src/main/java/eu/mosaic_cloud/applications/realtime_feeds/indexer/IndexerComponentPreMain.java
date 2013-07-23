@@ -21,21 +21,19 @@
 package eu.mosaic_cloud.applications.realtime_feeds.indexer;
 
 
-import eu.mosaic_cloud.cloudlets.implementation.container.CloudletComponentPreMain;
+import eu.mosaic_cloud.platform.implementation.v2.cloudlets.component.CloudletComponentPreMain;
 
 
 public final class IndexerComponentPreMain
-		extends Object
+			extends Object
 {
-	private IndexerComponentPreMain ()
-	{
+	private IndexerComponentPreMain () {
 		super ();
 		throw (new UnsupportedOperationException ());
 	}
 	
 	public static final void main (final String[] arguments)
-			throws Throwable
-	{
+				throws Throwable {
 		CloudletComponentPreMain.main ("indexer-cloudlet.properties", arguments);
 	}
 }

@@ -26,15 +26,13 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 
-public class StoreUtils
+public final class StoreUtils
 {
-	public static final String generateFeedItemKey (final String url, final String itemId)
-	{
+	public static final String generateFeedItemKey (final String url, final String itemId) {
 		return StoreUtils.generateTwoStringKey (url, itemId);
 	}
 	
-	public static final String generateFeedKey (final String url)
-	{
+	public static final String generateFeedKey (final String url) {
 		String key = null;
 		try {
 			MessageDigest md5;
@@ -48,19 +46,16 @@ public class StoreUtils
 		return key;
 	}
 	
-	public static final String generateFeedTaskKey (final String url, final String type)
-	{
+	public static final String generateFeedTaskKey (final String url, final String type) {
 		return StoreUtils.generateTwoStringKey (url, type);
 	}
 	
-	public static final String generateFeedTimelineKey (final String url, final int sequence)
-	{
+	public static final String generateFeedTimelineKey (final String url, final int sequence) {
 		final String seq = String.format ("%1$08x", Integer.valueOf (sequence)).toLowerCase ();
 		return StoreUtils.generateTwoStringKey (url, seq);
 	}
 	
-	public static final String generateKey (final String string)
-	{
+	public static final String generateKey (final String string) {
 		try {
 			final MessageDigest md5 = MessageDigest.getInstance ("MD5");
 			md5.update (string.getBytes (), 0, string.length ());
@@ -72,8 +67,7 @@ public class StoreUtils
 		}
 	}
 	
-	private static String generateTwoStringKey (final String string1, final String string2)
-	{
+	private static final String generateTwoStringKey (final String string1, final String string2) {
 		String key = null;
 		try {
 			MessageDigest md5;

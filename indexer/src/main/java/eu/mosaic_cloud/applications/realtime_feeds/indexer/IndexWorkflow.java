@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import eu.mosaic_cloud.cloudlets.connectors.kvstore.KvStoreCallbackCompletionArguments;
 import eu.mosaic_cloud.applications.realtime_feeds.indexer.IndexerCloudlet.IndexerCloudletContext;
 import eu.mosaic_cloud.tools.exceptions.core.FallbackExceptionTracer;
 import eu.mosaic_cloud.tools.exceptions.tools.BaseExceptionTracer;
@@ -44,8 +43,7 @@ import com.sun.syndication.io.FeedException;
 
 public class IndexWorkflow
 {
-	private IndexWorkflow (final IndexerCloudletContext context, final JSONObject recvMessage)
-	{
+	private IndexWorkflow (final IndexerCloudletContext context, final JSONObject recvMessage) {
 		super ();
 		this.parser = new FeedParser ();
 		this.currentFeedMetaData = new JSONObject ();
@@ -56,8 +54,7 @@ public class IndexWorkflow
 		this.exceptions = FallbackExceptionTracer.defaultInstance;
 	}
 	
-	private void doFeedDiff (final JSONObject fetchedData)
-	{
+	private void doFeedDiff (final JSONObject fetchedData) {
 		IndexWorkflow.logger.debug ("indexing " + IndexWorkflow.INDEX_TASK_TYPE + " step 4 (diff-ing latest feed) for " + this.key + "...");
 		String currentKey, currentURL, currentFeed, currentFeedId;
 		long currentTimestamp;
@@ -125,12 +122,9 @@ public class IndexWorkflow
 	}
 	
 	/**
-	 * Fetches latest feed data from the feeds-data bucket in the key-value
-	 * store.
-	 * 
+	 * Fetches latest feed data from the feeds-data bucket in the key-value store.
 	 */
-	private void fetchLatestFeed ()
-	{
+	private void fetchLatestFeed () {
 		try {
 			// FIXME: we should check if this feed isn't still pending for indexing...
 			IndexWorkflow.logger.info ("New indexer created for feed " + this.indexMessage.getString ("url") + " ...");
@@ -141,8 +135,7 @@ public class IndexWorkflow
 		}
 	}
 	
-	private void handleError (final Exception e)
-	{
+	private void handleError (final Exception e) {
 		final Map<String, String> errorMssg = new HashMap<String, String> ();
 		errorMssg.put ("reason", "unexpected parsing error");
 		errorMssg.put ("message", e.getMessage ());
@@ -150,17 +143,15 @@ public class IndexWorkflow
 		this.exceptions.traceIgnoredException (e);
 	}
 	
-	private void handleMetadataStored (final KvStoreCallbackCompletionArguments<JSONObject, UUID> arguments)
-	{
+	private void handleMetadataStored (final String key) {
 		if (this.indexDone) {
 			this.storeIndexOutcome ();
 		} else {
-			this.context.metadataStore.get (arguments.getKey (), this.key);
+			this.context.metadataStore.get (key, this.key);
 		}
 	}
 	
-	private void handleMetadataUpdate ()
-	{
+	private void handleMetadataUpdate () {
 		IndexWorkflow.logger.debug ("indexing " + IndexWorkflow.INDEX_TASK_TYPE + " step 5 (updating meta-data) for " + this.key + "...");
 		try {
 			this.context.metadataStore.set (this.currentFeedMetaData.getString ("key"), this.currentFeedMetaData, this.key);
@@ -170,8 +161,7 @@ public class IndexWorkflow
 	}
 	
 	private void indexFeed ()
-			throws JSONException
-	{
+				throws JSONException {
 		final String feedKey = StoreUtils.generateFeedKey (this.indexMessage.getString ("url"));
 		IndexWorkflow.logger.debug ("indexing " + IndexWorkflow.INDEX_TASK_TYPE + " step 3 (fetching latest meta-data) for " + this.key + "...");
 		// FIXME: ??? (I don't remember what the problem was...)
@@ -184,8 +174,7 @@ public class IndexWorkflow
 	 * @param fetchedData
 	 *            the fetched data
 	 */
-	private void parseFeed (final byte[] fetchedData)
-	{
+	private void parseFeed (final byte[] fetchedData) {
 		try {
 			IndexWorkflow.logger.debug ("indexing " + this.indexMessage.getString ("url") + " (from data) step 2 (parsing latest data) for " + this.key + "...");
 			final byte[] data = fetchedData;
@@ -200,8 +189,7 @@ public class IndexWorkflow
 		}
 	}
 	
-	private void storeIndexOutcome ()
-	{
+	private void storeIndexOutcome () {
 		IndexWorkflow.logger.debug ("indexing " + IndexWorkflow.INDEX_TASK_TYPE + " step 6 (updating index task) for " + this.key + "...");
 		try {
 			final String feedTaskKey = StoreUtils.generateFeedTaskKey (this.indexMessage.getString ("url"), IndexWorkflow.INDEX_TASK_TYPE);
@@ -226,59 +214,6 @@ public class IndexWorkflow
 		}
 	}
 	
-	public static void findNewFeeds (final JSONObject fetchedData, final Object extra)
-	{
-		IndexWorkflow.getIndexer ((UUID) extra).doFeedDiff (fetchedData);
-	}
-	
-	public static void indexNewFeed (final IndexerCloudletContext context, final JSONObject recvMessage)
-	{
-		final IndexWorkflow aIndexer = IndexWorkflow.createIndexer (context, recvMessage);
-		aIndexer.fetchLatestFeed ();
-	}
-	
-	public static void onIndexError (final Map<String, String> errorMessages)
-	{
-		IndexWorkflow.logger.error ("error encountered:");
-		for (final Map.Entry<String, String> entry : errorMessages.entrySet ()) {
-			IndexWorkflow.logger.error ("    {} -- {}", entry.getKey (), entry.getValue ());
-		}
-	}
-	
-	public static void onMetadataStored (final KvStoreCallbackCompletionArguments<JSONObject, UUID> arguments)
-	{
-		IndexWorkflow.getIndexer (arguments.getExtra ()).handleMetadataStored (arguments);
-	}
-	
-	/**
-	 * Parses latest fetched data.
-	 * 
-	 * @param fetchedData
-	 *            the fetched data
-	 */
-	public static void parseLatestFeed (final byte[] fetchedData, final UUID extra)
-	{
-		IndexWorkflow.getIndexer (extra).parseFeed (fetchedData);
-	}
-	
-	public static void updateFeedMetadata (final UUID extra)
-	{
-		IndexWorkflow.getIndexer (extra).handleMetadataUpdate ();
-	}
-	
-	private static final IndexWorkflow createIndexer (final IndexerCloudletContext context, final JSONObject recvMessage)
-	{
-		final IndexWorkflow aIndexer = new IndexWorkflow (context, recvMessage);
-		aIndexer.key = UUID.randomUUID ();
-		IndexWorkflow.indexers.put (aIndexer.key, aIndexer);
-		return aIndexer;
-	}
-	
-	private static final IndexWorkflow getIndexer (final UUID key)
-	{
-		return IndexWorkflow.indexers.get (key);
-	}
-	
 	private final IndexerCloudletContext context;
 	private JSONObject currentFeedMetaData;
 	private Timeline currentTimeline;
@@ -291,6 +226,52 @@ public class IndexWorkflow
 	private JSONObject newTimeline;
 	private final FeedParser parser;
 	private JSONObject previousFeedMetaData;
+	
+	public static void findNewFeeds (final JSONObject fetchedData, final Object extra) {
+		IndexWorkflow.getIndexer ((UUID) extra).doFeedDiff (fetchedData);
+	}
+	
+	public static void indexNewFeed (final IndexerCloudletContext context, final JSONObject recvMessage) {
+		final IndexWorkflow aIndexer = IndexWorkflow.createIndexer (context, recvMessage);
+		aIndexer.fetchLatestFeed ();
+	}
+	
+	public static void onIndexError (final Map<String, String> errorMessages) {
+		IndexWorkflow.logger.error ("error encountered:");
+		for (final Map.Entry<String, String> entry : errorMessages.entrySet ()) {
+			IndexWorkflow.logger.error ("    {} -- {}", entry.getKey (), entry.getValue ());
+		}
+	}
+	
+	public static void onMetadataStored (final String key, final UUID extra) {
+		IndexWorkflow.getIndexer (extra).handleMetadataStored (key);
+	}
+	
+	/**
+	 * Parses latest fetched data.
+	 * 
+	 * @param fetchedData
+	 *            the fetched data
+	 */
+	public static void parseLatestFeed (final byte[] fetchedData, final UUID extra) {
+		IndexWorkflow.getIndexer (extra).parseFeed (fetchedData);
+	}
+	
+	public static void updateFeedMetadata (final UUID extra) {
+		IndexWorkflow.getIndexer (extra).handleMetadataUpdate ();
+	}
+	
+	private static final IndexWorkflow createIndexer (final IndexerCloudletContext context, final JSONObject recvMessage) {
+		final IndexWorkflow aIndexer = new IndexWorkflow (context, recvMessage);
+		aIndexer.key = UUID.randomUUID ();
+		IndexWorkflow.indexers.put (aIndexer.key, aIndexer);
+		return aIndexer;
+	}
+	
+	private static final IndexWorkflow getIndexer (final UUID key) {
+		return IndexWorkflow.indexers.get (key);
+	}
+	
 	private static final String INDEX_TASK_TYPE = "index-data";
 	private static final Map<UUID, IndexWorkflow> indexers = new HashMap<UUID, IndexWorkflow> ();
 	private static final Logger logger = Transcript.create (IndexWorkflow.class).adaptAs (Logger.class);

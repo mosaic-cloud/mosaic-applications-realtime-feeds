@@ -40,18 +40,15 @@ import junit.framework.Assert;
 public class FeedParserTest
 {
 	@Before
-	public void setUp ()
-	{
+	public void setUp () {
 		this.parser = new FeedParser ();
 	}
 	
 	@After
-	public void tearDown ()
-	{}
+	public void tearDown () {}
 	
 	@Test
-	public void test ()
-	{
+	public void test () {
 		final byte[] entry = this.readAtom ("http://search.twitter.com/search.atom?q=%22cloud%22");
 		try {
 			this.parser.parseFeed (entry);
@@ -62,8 +59,7 @@ public class FeedParserTest
 		}
 	}
 	
-	private byte[] readAtom (final String feedsUrl)
-	{
+	private byte[] readAtom (final String feedsUrl) {
 		InputStreamReader streamReader = null;
 		BufferedReader reader = null;
 		final StringBuilder builder = new StringBuilder ();
