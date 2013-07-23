@@ -12,7 +12,7 @@
 	
 	<modules>
 		<module>.</module>
-		<module>../../mosaic-java-platform</module>
+		<module>../../mosaic-java-platform/parent</module>
 	</modules>
 	
 	<build>

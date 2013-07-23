@@ -9,7 +9,7 @@
 		<groupId>eu.mosaic_cloud</groupId>
 		<artifactId>parent</artifactId>
 		<version>0.7.0_mosaic_dev-SNAPSHOT</version>
-		<relativePath>../../mosaic-java-platform</relativePath>
+		<relativePath>../../mosaic-java-platform/parent</relativePath>
 	</parent>
 	
 	<groupId>eu.mosaic_cloud.applications.realtime_feeds</groupId>
