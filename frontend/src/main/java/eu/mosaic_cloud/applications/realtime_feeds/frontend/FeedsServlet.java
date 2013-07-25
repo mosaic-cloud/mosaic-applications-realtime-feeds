@@ -51,8 +51,6 @@ import com.rabbitmq.client.ShutdownSignalException;
 public final class FeedsServlet
 			extends JsonServlet
 {
-	private static final long serialVersionUID = 1L;
-	
 	public FeedsServlet () {
 		this.feedBucket = "feed-metadata";
 		this.feedExchange = "feeds.fetch-data";
@@ -214,4 +212,5 @@ public final class FeedsServlet
 	public static final String defaultRabbitGroup = "8cd74b5e4ecd322fd7bbfc762ed6cf7d601eede8";
 	public static final String defaultRiakGroup = "9cdce23e78027ef6a52636da7db820c47e695d11";
 	private static final Logger logger = LoggerFactory.getLogger (FeedsServlet.class);
+	private static final long serialVersionUID = 1L;
 }
