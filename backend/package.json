@@ -7,7 +7,7 @@
 	"dependencies" : {
 		"amqp" : "0.1.2",
 		"crypto" : "0.0.3",
-		"libxmljs" : "0.6.1",
+		"libxmljs" : "0.8.1",
 		"printf" : "0.0.4",
 		"rbytes" : "1.0.0",
 		"riak-js" : "0.4.1"
