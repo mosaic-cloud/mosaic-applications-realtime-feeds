@@ -22,15 +22,15 @@ function _main () {
 		return;
 	}
 	
-	if (process.env["_mosaic_feeds_pusher_urls"] === undefined) {
-		transcript.traceError ("missing environment variable `_mosaic_feeds_pusher_urls`; aborting!");
+	if (process.env["mosaic_feeds_pusher_urls"] === undefined) {
+		transcript.traceError ("missing environment variable `mosaic_feeds_pusher_urls`; aborting!");
 		process.exit (1);
 		return;
 	}
 	
 	var _context = {};
 	
-	_context.urls = fs.readFileSync (process.env["_mosaic_feeds_pusher_urls"], "ascii") .split ("\n");
+	_context.urls = fs.readFileSync (process.env["mosaic_feeds_pusher_urls"], "ascii") .split ("\n");
 	
 	_context.rabbit = queue.createConnector (configuration.rabbit);
 	_context.rabbit.on ("ready",

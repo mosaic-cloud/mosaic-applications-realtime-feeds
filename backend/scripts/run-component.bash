@@ -31,7 +31,7 @@ case "$( basename -- "${0}" .bash )" in
 	( run-pusher )
 		_component=pusher
 		_node_env+=(
-				_mosaic_feeds_pusher_urls="${MOSAIC_FEEDS_URLS:-${_node_sources}/pusher-urls-tests.txt}"
+				mosaic_feeds_pusher_urls="${MOSAIC_FEEDS_URLS:-${_node_sources}/pusher-urls-tests.txt}"
 		)
 	;;
 	( * )
