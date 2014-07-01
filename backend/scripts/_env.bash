@@ -7,11 +7,13 @@ export -n BASH_ENV
 _workbench="$( readlink -e -- . )"
 _sources="${_workbench}/sources"
 _scripts="${_workbench}/scripts"
-_tools="${pallur_tools:-${_workbench}/.tools}"
 _outputs="${_workbench}/.outputs"
-_temporary="${pallur_temporary:-/tmp}"
+_tools="${pallur_tools:-${_workbench}/.tools}"
+_temporary="${pallur_temporary:-${pallur_TMPDIR:-${TMPDIR:-/tmp}}}"
 
-_PATH="${_tools}/bin:${PATH}"
+_PATH="${pallur_PATH:-${_tools}/bin:${PATH}}"
+_HOME="${pallur_HOME:-${HOME}}"
+_TMPDIR="${pallur_TMPDIR:-${TMPDIR:-${_temporary}}}"
 
 if test -n "${pallur_pkg_nodejs:-}" ; then
 	_node_bin="${pallur_pkg_nodejs}/bin/node"
@@ -35,7 +37,8 @@ fi
 
 _generic_env=(
 		PATH="${_PATH}"
-		TMPDIR="${_temporary}"
+		HOME="${_HOME}"
+		TMPDIR="${_TMPDIR}"
 )
 
 _node_sources="${_sources}"
@@ -50,9 +53,9 @@ _npm_env=(
 		"${_generic_env[@]}"
 )
 if test -n "${pallur_pkg_nodejs:-}" ; then
-	_npm_env+=( NPM_CONFIG_CACHE="${pallur_pkg_nodejs}/cache" )
+	_npm_env+=( NPM_CONFIG_CACHE="${pallur_pkg_nodejs}/cache/npm" )
 else
-	_npm_env+=( NPM_CONFIG_CACHE="${_temporary}/npm-cache" )
+	_npm_env+=( NPM_CONFIG_CACHE="${_temporary}/nodejs--npm-cache" )
 fi
 
 _package_name="$( basename -- "$( readlink -e -- .. )" )-$( basename -- "$( readlink -e -- . )" )"
