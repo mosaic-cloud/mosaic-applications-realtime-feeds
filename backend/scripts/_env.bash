@@ -13,13 +13,21 @@ _temporary="${pallur_temporary:-/tmp}"
 
 _PATH="${_tools}/bin:${PATH}"
 
-_node_bin="$( PATH="${_PATH}" type -P -- node || true )"
+if test -n "${pallur_pkg_nodejs:-}" ; then
+	_node_bin="${pallur_pkg_nodejs}/bin/node"
+else
+	_node_bin="$( PATH="${_PATH}" type -P -- node || true )"
+fi
 if test -z "${_node_bin}" ; then
 	echo "[ee] missing \`node\` (Node.JS interpreter) executable in path: \`${_PATH}\`; ignoring!" >&2
 	exit 1
 fi
 
-_npm_bin="$( PATH="${_PATH}" type -P -- npm || true )"
+if test -n "${pallur_pkg_nodejs:-}" ; then
+	_npm_bin="${pallur_pkg_nodejs}/bin/npm"
+else
+	_npm_bin="$( PATH="${_PATH}" type -P -- npm || true )"
+fi
 if test -z "${_npm_bin}" ; then
 	echo "[ee] missing \`npm\` (Node.JS package manager) executable in path: \`${_PATH}\`; ignoring!" >&2
 	exit 1
@@ -41,6 +49,11 @@ _npm_args=()
 _npm_env=(
 		"${_generic_env[@]}"
 )
+if test -n "${pallur_pkg_nodejs:-}" ; then
+	_npm_env+=( NPM_CONFIG_CACHE="${pallur_pkg_nodejs}/cache" )
+else
+	_npm_env+=( NPM_CONFIG_CACHE="${_temporary}/npm-cache" )
+fi
 
 _package_name="$( basename -- "$( readlink -e -- .. )" )-$( basename -- "$( readlink -e -- . )" )"
 _package_version="${pallur_distribution_version:-0.7.0_dev}"
