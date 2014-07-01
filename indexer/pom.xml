@@ -89,7 +89,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>
-				<version>${versions.plugins.assembly}</version>
 				<dependencies>
 					<dependency>
 						<groupId>eu.mosaic_cloud.platform</groupId>
