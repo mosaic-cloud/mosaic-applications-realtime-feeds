@@ -21,7 +21,7 @@ if test -n "${mosaic_component_temporary:-}" ; then
 elif test -n "${mosaic_temporary:-}" ; then
 	_tmp="${mosaic_temporary}/components/${_identifier}"
 else
-	_tmp="/tmp/mosaic/components/${_identifier}"
+	_tmp="${TMPDIR:-/tmp}/mosaic/components/${_identifier}"
 fi
 
 if test -n "${mosaic_component_debug:-}" ; then
