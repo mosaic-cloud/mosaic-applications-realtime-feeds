@@ -132,8 +132,8 @@
 	
 	<properties>
 		<versions.dependencies.rome>1.0</versions.dependencies.rome>
-		<_pom_package>mosaic-applications-realtime-feeds-indexer-java</_maven_pom_package>
-		<_pom_classifier>component</_maven_pom_classifier>
+		<_pom_package>mosaic-applications-realtime-feeds-indexer-java</_pom_package>
+		<_pom_classifier>component</_pom_classifier>
 	</properties>
 	
 </project>
