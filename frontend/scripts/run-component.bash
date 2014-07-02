@@ -28,7 +28,7 @@ if test -n "${mosaic_component_debug:-}" ; then
 	_java_args+=( -Dlogback.levels.root=debug )
 fi
 
-_jar="${_java_jars:-${_workbench}/target}/${_package_jar_name}"
+_jar="${_java_jars:-${_outputs}/${_pom_group}--${_pom_artifact}--${_pom_version}/target}/${_package_jar_name}"
 
 _java_args+=(
 		-jar "${_jar}"

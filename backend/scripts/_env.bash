@@ -7,9 +7,9 @@ export -n BASH_ENV
 _workbench="$( readlink -e -- . )"
 _sources="${_workbench}/sources"
 _scripts="${_workbench}/scripts"
-_outputs="${_workbench}/.outputs"
 _tools="${pallur_tools:-${_workbench}/.tools}"
 _temporary="${pallur_temporary:-${pallur_TMPDIR:-${TMPDIR:-/tmp}}}"
+_outputs="${_temporary}/$( basename -- "${_workbench}" )--outputs--$( readlink -e -- "${_workbench}" | tr -d '\n' | md5sum -t | tr -d ' \n-' )"
 
 _PATH="${pallur_PATH:-${_tools}/bin:${PATH}}"
 _HOME="${pallur_HOME:-${HOME}}"
@@ -42,10 +42,12 @@ _generic_env=(
 )
 
 _node_sources="${_sources}"
+_node_root="${_outputs}/node"
+_node_modules="${_node_root}/node_modules"
 _node_args=()
 _node_env=(
 		"${_generic_env[@]}"
-		NODE_PATH="${_node_sources}:${_workbench}/node_modules"
+		NODE_PATH="${_node_sources}:${_node_modules}"
 )
 
 _npm_args=()

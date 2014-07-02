@@ -20,7 +20,7 @@ mkdir -- "${_outputs}/package/lib"
 
 cp -H -R -T -- "${_sources}" "${_outputs}/package/lib/node"
 
-cp -H -R -T -- "${_workbench}/node_modules" "${_outputs}/package/lib/node_modules"
+cp -H -R -T -- "${_node_modules}" "${_outputs}/package/lib/node_modules"
 
 mkdir -- "${_outputs}/package/lib/scripts"
 

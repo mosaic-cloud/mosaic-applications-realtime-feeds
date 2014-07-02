@@ -5,28 +5,20 @@ if ! test "${#}" -eq 0 ; then
 	exit 1
 fi
 
-if test ! -e "${_outputs}" ; then
-	if test -L "${_outputs}" ; then
-		_outputs_store="$( readlink -- "${_outputs}" )"
-	else
-		_outputs_store="${_temporary}/$( basename -- "${_workbench}" )--$( readlink -m -- "${_outputs}" | tr -d '\n' | md5sum -t | tr -d ' \n-' )"
-		ln -s -T -- "${_outputs_store}" "${_outputs}"
-	fi
-	if test ! -e "${_outputs_store}" ; then
-		mkdir -- "${_outputs_store}"
-	fi
+if test ! -e "${_temporary}" ; then
+	mkdir -- "${_temporary}"
 fi
-
-if test ! -e ./node_modules ; then
-	if test -L ./node_modules ; then
-		_node_modules_store="$( readlink -- ./node_modules )"
-	else
-		_node_modules_store="${_outputs}/node_modules"
-		ln -s -T -- "${_node_modules_store}" ./node_modules
-	fi
-	if test ! -e "${_node_modules_store}" ; then
-		mkdir -- "${_node_modules_store}"
-	fi
+if test ! -e "${_outputs}" ; then
+	mkdir -- "${_outputs}"
+fi
+if test ! -e "${_node_root}" ; then
+	mkdir -- "${_node_root}"
+fi
+if test ! -e "${_node_modules}" ; then
+	mkdir -- "${_node_modules}"
+fi
+if test ! -e "${_node_root}/package.json" ; then
+	ln -s -T -- "${_workbench}/package.json" "${_node_root}/package.json"
 fi
 
 "${_scripts}/npm" install .
