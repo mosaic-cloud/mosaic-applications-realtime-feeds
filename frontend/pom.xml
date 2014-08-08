@@ -124,8 +124,11 @@
 	</build>
 	
 	<properties>
-		<_pom_package>mosaic-applications-realtime-feeds-frontend-java</_pom_package>
+		<_pom_group>eu.mosaic_cloud.applications.realtime_feeds</_pom_group>
+		<_pom_artifact>applications-realtime-feeds-frontend</_pom_artifact>
+		<_pom_version>0.7.0_mosaic_dev-SNAPSHOT</_pom_version>
 		<_pom_classifier>jetty-component</_pom_classifier>
+		<_pom_package>mosaic-applications-realtime-feeds-frontend-java</_pom_package>
 	</properties>
 	
 </project>
