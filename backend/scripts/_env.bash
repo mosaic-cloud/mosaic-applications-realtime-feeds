@@ -24,7 +24,7 @@ else
 fi
 if test -z "${_node_bin}" ; then
 	echo "[ee] missing \`node\` (Node.JS interpreter) executable in path: \`${_PATH}\`; ignoring!" >&2
-	exit 1
+	_node_bin=false
 fi
 
 if test -n "${pallur_pkg_nodejs:-}" ; then
@@ -36,7 +36,7 @@ else
 fi
 if test -z "${_npm_bin}" ; then
 	echo "[ee] missing \`npm\` (Node.JS package manager) executable in path: \`${_PATH}\`; ignoring!" >&2
-	exit 1
+	_npm_bin=false
 fi
 
 _generic_env=(
