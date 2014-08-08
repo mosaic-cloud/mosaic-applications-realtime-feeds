@@ -63,3 +63,4 @@ fi
 _package_name="$( basename -- "$( readlink -e -- .. )" )-$( basename -- "$( readlink -e -- . )" )"
 _package_version="${pallur_distribution_version:-0.7.0_dev}"
 _package_scripts=( run-fetcher run-indexer run-scavanger run-leacher run-pusher node )
+_artifacts_cache="${pallur_artifacts:-}"

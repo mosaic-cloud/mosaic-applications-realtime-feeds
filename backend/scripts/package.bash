@@ -94,4 +94,8 @@ find . \
 | cpio -o -H newc -0 --quiet \
 | gzip --fast >"${_outputs}/package.cpio.gz"
 
+if test -n "${_artifacts_cache}" ; then
+	cp -T -- "${_outputs}/package.cpio.gz" "${_artifacts_cache}/${_package_name}--${_package_version}.cpio.gz"
+fi
+
 exit 0
