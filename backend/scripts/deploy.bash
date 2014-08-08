@@ -23,12 +23,4 @@ if test "${pallur_deploy_curl:-false}" == true ; then
 			-- "${pallur_deploy_curl_target}"
 fi
 
-if test "${pallur_deploy_cook:-false}" == true ; then
-	test -n "${pallur_deploy_cook_server}"
-	echo "[ii] deploying via \`cook\` method to \`${pallur_deploy_cook_server}\`..." >&2
-	env -i "${_ssh_env[@]}" "${_ssh_bin}" "${_ssh_args[@]}" \
-			-T "${pallur_deploy_cook_server}" \
-		<"${_outputs}/package.cpio.gz"
-fi
-
 exit 0
