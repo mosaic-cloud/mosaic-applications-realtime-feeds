@@ -9,9 +9,9 @@ if test -e "${_outputs}/package" ; then
 	chmod -R +w -- "${_outputs}/package"
 	rm -R -- "${_outputs}/package"
 fi
-if test -e "${_outputs}/package.tar.gz" ; then
-	chmod +w -- "${_outputs}/package.tar.gz"
-	rm -- "${_outputs}/package.tar.gz"
+if test -e "${_outputs}/package.cpio.gz" ; then
+	chmod +w -- "${_outputs}/package.cpio.gz"
+	rm -- "${_outputs}/package.cpio.gz"
 fi
 
 mkdir -- "${_outputs}/package"
@@ -84,23 +84,14 @@ EOS
 	chmod +x -- "${_outputs}/package/bin/${_package_name}--${_script_name}"
 done
 
-cat >"${_outputs}/package/pkg.json" <<EOS
-{
-	"package" : "${_package_name}",
-	"version" : "${_package_version}",
-	"maintainer" : "developers@mosaic-cloud.eu",
-	"description" : "${_package_name}",
-	"directories" : [ "bin", "lib" ],
-	"depends" : [
-		"mosaic-utils",
-		"mosaic-nodejs-0.8.4",
-		"libxml2"
-	]
-}
-EOS
-
 chmod -R a+rX-w -- "${_outputs}/package"
 
-tar -czf "${_outputs}/package.tar.gz" -C "${_outputs}/package" .
+cd "${_outputs}/package"
+find . \
+		-xdev -depth \
+		\( -type d -o -type l -o -type f \) \
+		-print0 \
+| cpio -o -H newc -0 --quiet \
+| gzip --fast >"${_outputs}/package.cpio.gz"
 
 exit 0
