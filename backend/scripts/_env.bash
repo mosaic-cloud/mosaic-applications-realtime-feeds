@@ -17,6 +17,8 @@ _TMPDIR="${pallur_TMPDIR:-${TMPDIR:-${_temporary}}}"
 
 if test -n "${pallur_pkg_nodejs:-}" ; then
 	_node_bin="${pallur_pkg_nodejs}/bin/node"
+elif test -e "${_tools}/pkg/nodejs" ; then
+	_node_bin="${_tools}/pkg/nodejs/bin/node"
 else
 	_node_bin="$( PATH="${_PATH}" type -P -- node || true )"
 fi
@@ -27,6 +29,8 @@ fi
 
 if test -n "${pallur_pkg_nodejs:-}" ; then
 	_npm_bin="${pallur_pkg_nodejs}/bin/npm"
+elif test -e "${_tools}/pkg/nodejs" ; then
+	_npm_bin="${_tools}/pkg/nodejs/bin/npm"
 else
 	_npm_bin="$( PATH="${_PATH}" type -P -- npm || true )"
 fi
@@ -56,6 +60,8 @@ _npm_env=(
 )
 if test -n "${pallur_pkg_nodejs:-}" ; then
 	_npm_env+=( NPM_CONFIG_CACHE="${pallur_pkg_nodejs}/cache/npm" )
+elif test -e "${_tools}/pkg/nodejs" ; then
+	_npm_env+=( NPM_CONFIG_CACHE="${_tools}/pkg/nodejs/cache/npm" )
 else
 	_npm_env+=( NPM_CONFIG_CACHE="${_temporary}/nodejs--npm-cache" )
 fi
