@@ -10,16 +10,16 @@ cat <<EOS
 ${_package_name}@requisites : pallur-packages@nodejs pallur-bootstrap
 
 ${_package_name}@prepare : ${_package_name}@requisites
-	${_scripts}/prepare
+	!exec ${_scripts}/prepare
 
 ${_package_name}@package : ${_package_name}@compile
-	${_scripts}/package
+	!exec ${_scripts}/package
 
 ${_package_name}@compile : ${_package_name}@prepare
-	${_scripts}/compile
+	!exec ${_scripts}/compile
 
 ${_package_name}@deploy : ${_package_name}@package
-	${_scripts}/deploy
+	!exec ${_scripts}/deploy
 
 pallur-distribution@requisites : ${_package_name}@requisites
 pallur-distribution@prepare : ${_package_name}@prepare
