@@ -20,8 +20,8 @@ ${_package_name}@package : ${_package_name}@compile
 ${_package_name}@compile : ${_package_name}@prepare
 	!exec ${_scripts}/compile
 
-${_package_name}@deploy : ${_package_name}@package
-	!exec ${_scripts}/deploy
+${_package_name}@publish : ${_package_name}@package
+	!exec ${_scripts}/publish
 
 EOS
 
