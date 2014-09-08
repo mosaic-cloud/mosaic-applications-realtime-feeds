@@ -1,10 +1,9 @@
 
 .*
-
 !.gitignore
-!.hgignore
 
 node_modules
+
 target
 META-INF
 
