@@ -22,6 +22,12 @@ cp -H -R -T -- "${_sources}" "${_outputs}/package/lib/node"
 
 cp -H -R -T -- "${_node_modules}" "${_outputs}/package/lib/node_modules"
 
+mkdir -- "${_outputs}/package/lib/mosaic-platform-definitions"
+find -H "${_resources}" -maxdepth 1 -type f -name 'mosaic_platform_definitions*.term' \
+| while read _definitions ; do
+	cp -t "${_outputs}/package/lib/mosaic-platform-definitions" -- "${_definitions}"
+done
+
 mkdir -- "${_outputs}/package/lib/scripts"
 
 cat >"${_outputs}/package/lib/scripts/_do.sh" <<'EOS'

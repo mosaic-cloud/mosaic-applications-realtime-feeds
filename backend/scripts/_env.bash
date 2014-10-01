@@ -6,6 +6,7 @@ export -n BASH_ENV
 
 _workbench="$( readlink -e -- . )"
 _sources="${_workbench}/sources"
+_resources="${_workbench}/resources"
 _scripts="${_workbench}/scripts"
 _tools="${pallur_tools:-${_workbench}/.tools}"
 _temporary="${pallur_temporary:-${pallur_TMPDIR:-${TMPDIR:-/tmp}}}"
