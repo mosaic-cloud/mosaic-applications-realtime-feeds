@@ -1,4 +1,5 @@
 #!/dev/null
+## chunk::473ab0e774c3ea7faf31cf7a0647a288::begin ##
 
 if ! test "${#}" -eq 0 ; then
 	echo "[ee] invalid arguments; aborting!" >&2
@@ -10,6 +11,11 @@ cat <<EOS
 ${_package_name}@requisites : \
 		pallur-packages@nodejs \
 		pallur-environment
+
+EOS
+
+## chunk::932c58c3bfa226a242ff74d65a335f0b::begin ##
+cat <<EOS
 
 ${_package_name}@prepare : ${_package_name}@requisites
 	!exec ${_scripts}/prepare
@@ -24,5 +30,7 @@ ${_package_name}@publish : ${_package_name}@package
 	!exec ${_scripts}/publish
 
 EOS
+## chunk::932c58c3bfa226a242ff74d65a335f0b::end ##
 
 exit 0
+## chunk::473ab0e774c3ea7faf31cf7a0647a288::end ##

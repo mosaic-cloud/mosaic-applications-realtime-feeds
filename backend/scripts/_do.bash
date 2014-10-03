@@ -1,4 +1,5 @@
 #!/bin/bash
+## chunk::c2b5caeda7bcc91bc6d65a6089099d63::begin ##
 
 set -e -E -u -o pipefail -o noclobber -o noglob +o braceexpand || exit 1
 trap 'printf "[ee] failed: %s\n" "${BASH_COMMAND}" >&2' ERR || exit 1
@@ -68,3 +69,4 @@ else
 	BASH_ENV="${_env}" exec bash -- "${_main}" "${@}"
 fi
 exit 1
+## chunk::c2b5caeda7bcc91bc6d65a6089099d63::end ##

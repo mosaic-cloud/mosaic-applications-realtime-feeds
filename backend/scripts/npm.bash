@@ -1,4 +1,5 @@
 #!/dev/null
+## chunk::10351733ecea6b30eaa93e0052dd3602::begin ##
 
 if test "${#}" -ge 1 ; then
 	_npm_args+=( "${@}" )
@@ -13,3 +14,4 @@ else
 fi
 
 exit 1
+## chunk::10351733ecea6b30eaa93e0052dd3602::end ##

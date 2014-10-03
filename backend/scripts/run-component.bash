@@ -5,8 +5,9 @@ if ! test "${#}" -le 1 ; then
 	exit 1
 fi
 
-_identifier="${1:-00000000071d84820b074866a9f56dcf5b863cb4}"
+_identifier="${1:-0000000000000000000000000000000000000000}"
 
+## chunk::c91018535aebeaa9d30f5eb4a51f389b::begin ##
 if test -n "${mosaic_component_temporary:-}" ; then
 	_tmp="${mosaic_component_temporary:-}"
 elif test -n "${mosaic_temporary:-}" ; then
@@ -14,6 +15,10 @@ elif test -n "${mosaic_temporary:-}" ; then
 else
 	_tmp="${TMPDIR:-/tmp}/mosaic/components/${_identifier}"
 fi
+if test "${_identifier}" == 0000000000000000000000000000000000000000 ; then
+	_tmp="${_tmp}--${$}--$( date +%s )"
+fi
+## chunk::c91018535aebeaa9d30f5eb4a51f389b::end ##
 
 case "$( basename -- "${0}" .bash )" in
 	( run-fetcher )
@@ -43,16 +48,24 @@ _node_args+=(
 		"${_node_sources}/component-main.js" "${_component}"
 )
 
-if test "${_identifier}" != 00000000071d84820b074866a9f56dcf5b863cb4 ; then
+if test "${_identifier}" != 0000000000000000000000000000000000000000 ; then
 	_node_env+=(
 			mosaic_component_identifier="${_identifier}"
 			mosaic_component_temporary="${_tmp}"
 	)
 fi
 
+_exec=( env "${_node_env[@]}" "${_node_bin}" "${_node_args[@]}" )
+
+## chunk::28123944cc9e9fddd23208a1405324fb::begin ##
 mkdir -p -- "${_tmp}"
 cd -- "${_tmp}"
 
-exec env "${_node_env[@]}" "${_node_bin}" "${_node_args[@]}"
+if test -n "${mosaic_component_log:-}" ; then
+	exec 2>"${mosaic_component_log}"
+fi
+
+exec "${_exec[@]}"
 
 exit 1
+## chunk::28123944cc9e9fddd23208a1405324fb::end ##

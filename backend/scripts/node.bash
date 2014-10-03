@@ -1,4 +1,5 @@
 #!/dev/null
+## chunk::81daef3426e46c59ead66c589ef919d7::begin ##
 
 if test "${#}" -ge 1 ; then
 	_node_args+=( "${@}" )
@@ -11,3 +12,4 @@ else
 fi
 
 exit 1
+## chunk::81daef3426e46c59ead66c589ef919d7::end ##
