@@ -1,4 +1,5 @@
 
 {process_group_alias, 'mosaic-applications-realtime-feeds:frontend-java', <<16#a2e40f0b2c041bc694ace68ace08420d40f9cbc0 : 160>>}.
-{process_configurator, 'mosaic-applications-realtime-feeds:frontend-java', term, {mosaic_component_process_configurators, configure_hardcoded, defaults}}.
-{process_configurator, 'mosaic-applications-realtime-feeds:frontend-java', json, {mosaic_component_process_configurators, configure_hardcoded, defaults}}.
+
+{process_configurator, 'mosaic-applications-realtime-feeds:frontend-java', [term, json],
+		{mosaic_component_process_configurators, configure_hardcoded, defaults}}.
