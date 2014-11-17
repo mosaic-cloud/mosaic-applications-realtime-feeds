@@ -49,6 +49,12 @@ _exec=( env "${_java_env[@]}" "${_java_bin}" "${_java_args[@]}" )
 mkdir -p -- "${_tmp}"
 cd -- "${_tmp}"
 
+exec {_lock}<"${_tmp}"
+if ! flock -x -n "${_lock}" ; then
+	echo '[ee] failed to acquire lock; aborting!' >&2
+	exit 1
+fi
+
 if test -n "${mosaic_component_log:-}" ; then
 	exec 2>"${mosaic_component_log}"
 fi
